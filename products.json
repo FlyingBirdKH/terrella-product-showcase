@@ -1,0 +1,178 @@
+[
+  {
+    "sku": "CAT-016",
+    "code": "TR2605005",
+    "name": "一鸣惊人",
+    "category": "东方非遗",
+    "status": "imported",
+    "thumb": "images/CAT-016.jpg",
+    "original": "https://drive.google.com/file/d/1vo6OiEtoHnWtyxOpIulHq0Q7W-e4I5F-/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:7.4*1.2cm | 材质:银镀金/珍珠/碧玉/人造宝石/锆石"
+  },
+  {
+    "sku": "CAT-019",
+    "code": "TR2605008",
+    "name": "蝴蝶结耳环",
+    "category": "东方非遗",
+    "status": "imported",
+    "thumb": "images/CAT-019.jpg",
+    "original": "https://drive.google.com/file/d/1H8TeUd1KtfE9zHQzbsV1KqjxHE_Zha4C/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:6cm*3cm*1cm(淡水珠） | 材质:银镀金/人造宝石/锆石/淡水珠/南红"
+  },
+  {
+    "sku": "CAT-020",
+    "code": "TR2605009",
+    "name": "扇影清欢",
+    "category": "东方非遗",
+    "status": "imported",
+    "thumb": "images/CAT-020.jpg",
+    "original": "https://drive.google.com/file/d/1CXXSUJ6A9kNAQWMUCOP9cShCVnFLef0U/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:55*55mm(圈口） | 材质:银镀金/和田玉/碧玉/人造宝石/锆石"
+  },
+  {
+    "sku": "CAT-034",
+    "code": "TR2508009",
+    "name": "晶灰",
+    "category": "望山系列",
+    "status": "imported",
+    "thumb": "images/CAT-034.jpg",
+    "original": "https://drive.google.com/file/d/1cSqRtfL9FMurK9UotCe2E_AD9_MYOkSt/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:14.5/15/16\n17/18cm | 材质:灰色两面光巴洛克珍珠／白水晶斜方糖／白水晶长牙／纯银logo小吊牌／纯银大孔圆珠"
+  },
+  {
+    "sku": "CAT-035",
+    "code": "TR2508145",
+    "name": "魔晶-幻珠",
+    "category": "望山系列",
+    "status": "imported",
+    "thumb": "images/CAT-035.jpg",
+    "original": "https://drive.google.com/file/d/1ojJ2FsJ1QgtXnwzklcHRfLevnaJygfdU/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:动感茶晶/大巴洛克/银几何光面亮片/纯银吊牌"
+  },
+  {
+    "sku": "CAT-036",
+    "code": "TR2508216",
+    "name": "焰璃",
+    "category": "望山系列",
+    "status": "imported",
+    "thumb": "images/CAT-036.jpg",
+    "original": "https://drive.google.com/file/d/170ErK9LPJ7cWnioHkgCW_sL5Cx2wr5es/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 疑似同款图，编号待确认 | 尺寸:14.5/15/16\n17/18cm | 材质:淡水异形长牙珍珠/红波斯玛瑙随形/纯银吊牌"
+  },
+  {
+    "sku": "CAT-074",
+    "code": "TR2607001",
+    "name": "埃及艳后",
+    "category": "中古系列",
+    "status": "imported",
+    "thumb": "images/CAT-074.jpg",
+    "original": "https://drive.google.com/file/d/14FMHY5E69PUHmh4w8rsipgWTss4SJxKD/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:45cm | 材质:铜，施华洛水钻，俄罗斯真金"
+  },
+  {
+    "sku": "CAT-075",
+    "code": "TR2607002",
+    "name": "至尊公主",
+    "category": "中古系列",
+    "status": "imported",
+    "thumb": "images/CAT-075.jpg",
+    "original": "https://drive.google.com/file/d/1grTyDu-Cwq2wXj1ElctyJpodsAJRIps7/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:58cm | 材质:铜，南洋奶金色珍珠，施华洛水钻，24K俄罗斯真金"
+  },
+  {
+    "sku": "CAT-076",
+    "code": "TR2607003",
+    "name": "蓝色之恋",
+    "category": "中古系列",
+    "status": "imported",
+    "thumb": "images/CAT-076.jpg",
+    "original": "https://drive.google.com/file/d/1tCWpsKSZh11r3y8QwAUtN8TA8aED3XfS/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:20cm | 材质:铜，天然蓝晶芽石，南洋澳白粉光珍珠，施华洛水钻，电镀素银做旧"
+  },
+  {
+    "sku": "CAT-085",
+    "code": "TR2603001",
+    "name": "蔚蓝海岸-平静与智慧",
+    "category": "Yis-Duan",
+    "status": "imported",
+    "thumb": "images/CAT-085.jpg",
+    "original": "https://drive.google.com/file/d/1-0qeuDo5RhGG51Zm9cTMtA_QwKd4QeH9/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.6 | 材质:海蓝宝、海纹石、蓝纹玛瑙、s925银"
+  },
+  {
+    "sku": "CAT-086",
+    "code": "TR2603002",
+    "name": "蔚蓝海岸-自由呼吸",
+    "category": "Yis-Duan",
+    "status": "imported",
+    "thumb": "images/CAT-086.jpg",
+    "original": "https://drive.google.com/file/d/1JfLmwg3mIER93-9668ZWaoHV0sw4NiSb/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:45cm | 材质:海蓝宝、海纹石、s925银"
+  },
+  {
+    "sku": "CAT-087",
+    "code": "TR2603003",
+    "name": "紫野之夏-松弛守护",
+    "category": "Yis-Duan",
+    "status": "imported",
+    "thumb": "images/CAT-087.jpg",
+    "original": "https://drive.google.com/file/d/1Iut6dLtyFq0oyCKvW9KthFqDEctlbAek/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.9 | 材质:紫锂辉石、紫水晶、白水晶、白玛瑙、s925银"
+  },
+  {
+    "sku": "CAT-079",
+    "code": null,
+    "name": "赤羽灵雀・净心晶韵",
+    "category": "Nina水晶画",
+    "status": "imported",
+    "thumb": "images/CAT-079.jpg",
+    "original": "https://drive.google.com/file/d/1Rw_TRg7ViF5i8AV2Gnf7VoWfoWCDnRK8/view?usp=drivesdk",
+    "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸）"
+  },
+  {
+    "sku": "CAT-082",
+    "code": null,
+    "name": "星澜灵豹・天河晶能",
+    "category": "Nina水晶画",
+    "status": "imported",
+    "thumb": "images/CAT-082.jpg",
+    "original": "https://drive.google.com/file/d/1MyEWoekzF9Sr_yDEj-R2ZiyyZHO_iyVA/view?usp=drivesdk",
+    "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸）"
+  },
+  {
+    "sku": "CAT-083",
+    "code": null,
+    "name": "双骏鎏晶・鸿运乘风",
+    "category": "Nina水晶画",
+    "status": "imported",
+    "thumb": "images/CAT-083.jpg",
+    "original": "https://drive.google.com/file/d/1BSx8Z7Rjq2osxVCOfKhrpc845TZEB4EK/view?usp=drivesdk",
+    "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸）"
+  },
+  {
+    "sku": "CAT-021",
+    "code": "TR2605010",
+    "name": "鎏金",
+    "category": "东方非遗",
+    "status": "imported",
+    "thumb": "images/CAT-021.jpg",
+    "original": "https://drive.google.com/file/d/1P0QmUdtnTSZOpm5knzo73MQDz1y-2wk-/view?usp=drivesdk",
+    "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit",
+    "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:58*54mm(圈口） | 材质:银镀金/和田玉/碧玉/人造宝石/锆石"
+  }
+]

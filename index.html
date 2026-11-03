@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terrella Product Showcase · Batch</title>
+<style>
+  :root { --bg:#f7f1e8; --ink:#1c1917; --muted:#78716c; --card:#fffdf8; --line:#e7e0d4; --accent:#8b5e3c; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", serif; background:var(--bg); color:var(--ink); }
+  header { padding: 28px 20px 12px; max-width: 1100px; margin: 0 auto; }
+  header h1 { margin:0 0 6px; font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing:.02em; font-weight:600; }
+  header p { margin:0; color:var(--muted); font-size:.95rem; line-height:1.5; }
+  .meta { margin-top:10px; font-size:.85rem; color:var(--muted); }
+  .meta code { background:#efe7da; padding:1px 6px; border-radius:4px; }
+  nav.filters { display:flex; flex-wrap:wrap; gap:8px; max-width:1100px; margin:12px auto 0; padding:0 20px; }
+  nav.filters button { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:6px 12px; cursor:pointer; font:inherit; font-size:.85rem; }
+  nav.filters button.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+  main { max-width:1100px; margin:0 auto; padding:18px 20px 48px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:16px; }
+  article { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+  article .imgwrap { aspect-ratio: 4/5; background:#ebe4d8; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  article img { width:100%; height:100%; object-fit:cover; display:block; }
+  article .body { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .cat { font-size:.75rem; color:var(--accent); letter-spacing:.04em; text-transform:none; }
+  .name { font-size:1.05rem; margin:0; font-weight:600; }
+  .code { font-size:.8rem; color:var(--muted); }
+  .gap { color:#b45309; font-size:.78rem; }
+  footer { max-width:1100px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:.8rem; line-height:1.5; }
+  .section-title { margin: 22px 0 10px; font-size:1.05rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Terrella 产品库 · 小批量展示</h1>
+  <p>独立于正式站。数据来自 Jenny 选品主表（2026-10-26）导入 Supabase <code>terrella-product-db</code>；缩略图为 Drive 原图压缩托管（非 Bunny）。</p>
+  <p class="meta">项目 ref：<code>wwsfmfxwhktglgmeukgr</code> · 本页：16 款有名+有图 · 主表登记 96（81 缩略图）；未导入全量，Bunny 未接。</p>
+</header>
+<nav class="filters" id="filters"></nav>
+<main id="app"></main>
+<footer>
+  真源主表：<a href="https://docs.google.com/spreadsheets/d/1FCoD3BOs95yAOkfCl5uudeAICDvsB6KpdS13raJyUB8/edit">Terrella 产品库｜图片与原文件链接｜2026-10-26</a>
+  · Drive 根：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 选品</a>
+  · 不写入 silu-supplier-db / image-video-prompts · 未合并 storefront。
+</footer>
+<script>
+const PRODUCTS = [{"sku": "CAT-016", "code": "TR2605005", "name": "一鸣惊人", "category": "东方非遗", "status": "imported", "thumb": "images/CAT-016.jpg", "original": "https://drive.google.com/file/d/1vo6OiEtoHnWtyxOpIulHq0Q7W-e4I5F-/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:7.4*1.2cm | 材质:银镀金/珍珠/碧玉/人造宝石/锆石"}, {"sku": "CAT-019", "code": "TR2605008", "name": "蝴蝶结耳环", "category": "东方非遗", "status": "imported", "thumb": "images/CAT-019.jpg", "original": "https://drive.google.com/file/d/1H8TeUd1KtfE9zHQzbsV1KqjxHE_Zha4C/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:6cm*3cm*1cm(淡水珠） | 材质:银镀金/人造宝石/锆石/淡水珠/南红"}, {"sku": "CAT-020", "code": "TR2605009", "name": "扇影清欢", "category": "东方非遗", "status": "imported", "thumb": "images/CAT-020.jpg", "original": "https://drive.google.com/file/d/1CXXSUJ6A9kNAQWMUCOP9cShCVnFLef0U/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:55*55mm(圈口） | 材质:银镀金/和田玉/碧玉/人造宝石/锆石"}, {"sku": "CAT-034", "code": "TR2508009", "name": "晶灰", "category": "望山系列", "status": "imported", "thumb": "images/CAT-034.jpg", "original": "https://drive.google.com/file/d/1cSqRtfL9FMurK9UotCe2E_AD9_MYOkSt/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:14.5/15/16\n17/18cm | 材质:灰色两面光巴洛克珍珠／白水晶斜方糖／白水晶长牙／纯银logo小吊牌／纯银大孔圆珠"}, {"sku": "CAT-035", "code": "TR2508145", "name": "魔晶-幻珠", "category": "望山系列", "status": "imported", "thumb": "images/CAT-035.jpg", "original": "https://drive.google.com/file/d/1ojJ2FsJ1QgtXnwzklcHRfLevnaJygfdU/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:动感茶晶/大巴洛克/银几何光面亮片/纯银吊牌"}, {"sku": "CAT-036", "code": "TR2508216", "name": "焰璃", "category": "望山系列", "status": "imported", "thumb": "images/CAT-036.jpg", "original": "https://drive.google.com/file/d/170ErK9LPJ7cWnioHkgCW_sL5Cx2wr5es/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 疑似同款图，编号待确认 | 尺寸:14.5/15/16\n17/18cm | 材质:淡水异形长牙珍珠/红波斯玛瑙随形/纯银吊牌"}, {"sku": "CAT-074", "code": "TR2607001", "name": "埃及艳后", "category": "中古系列", "status": "imported", "thumb": "images/CAT-074.jpg", "original": "https://drive.google.com/file/d/14FMHY5E69PUHmh4w8rsipgWTss4SJxKD/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:45cm | 材质:铜，施华洛水钻，俄罗斯真金"}, {"sku": "CAT-075", "code": "TR2607002", "name": "至尊公主", "category": "中古系列", "status": "imported", "thumb": "images/CAT-075.jpg", "original": "https://drive.google.com/file/d/1grTyDu-Cwq2wXj1ElctyJpodsAJRIps7/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:58cm | 材质:铜，南洋奶金色珍珠，施华洛水钻，24K俄罗斯真金"}, {"sku": "CAT-076", "code": "TR2607003", "name": "蓝色之恋", "category": "中古系列", "status": "imported", "thumb": "images/CAT-076.jpg", "original": "https://drive.google.com/file/d/1tCWpsKSZh11r3y8QwAUtN8TA8aED3XfS/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:20cm | 材质:铜，天然蓝晶芽石，南洋澳白粉光珍珠，施华洛水钻，电镀素银做旧"}, {"sku": "CAT-085", "code": "TR2603001", "name": "蔚蓝海岸-平静与智慧", "category": "Yis-Duan", "status": "imported", "thumb": "images/CAT-085.jpg", "original": "https://drive.google.com/file/d/1-0qeuDo5RhGG51Zm9cTMtA_QwKd4QeH9/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.6 | 材质:海蓝宝、海纹石、蓝纹玛瑙、s925银"}, {"sku": "CAT-086", "code": "TR2603002", "name": "蔚蓝海岸-自由呼吸", "category": "Yis-Duan", "status": "imported", "thumb": "images/CAT-086.jpg", "original": "https://drive.google.com/file/d/1JfLmwg3mIER93-9668ZWaoHV0sw4NiSb/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:45cm | 材质:海蓝宝、海纹石、s925银"}, {"sku": "CAT-087", "code": "TR2603003", "name": "紫野之夏-松弛守护", "category": "Yis-Duan", "status": "imported", "thumb": "images/CAT-087.jpg", "original": "https://drive.google.com/file/d/1Iut6dLtyFq0oyCKvW9KthFqDEctlbAek/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.9 | 材质:紫锂辉石、紫水晶、白水晶、白玛瑙、s925银"}, {"sku": "CAT-079", "code": null, "name": "赤羽灵雀・净心晶韵", "category": "Nina水晶画", "status": "imported", "thumb": "images/CAT-079.jpg", "original": "https://drive.google.com/file/d/1Rw_TRg7ViF5i8AV2Gnf7VoWfoWCDnRK8/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸）"}, {"sku": "CAT-082", "code": null, "name": "星澜灵豹・天河晶能", "category": "Nina水晶画", "status": "imported", "thumb": "images/CAT-082.jpg", "original": "https://drive.google.com/file/d/1MyEWoekzF9Sr_yDEj-R2ZiyyZHO_iyVA/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸）"}, {"sku": "CAT-083", "code": null, "name": "双骏鎏晶・鸿运乘风", "category": "Nina水晶画", "status": "imported", "thumb": "images/CAT-083.jpg", "original": "https://drive.google.com/file/d/1BSx8Z7Rjq2osxVCOfKhrpc845TZEB4EK/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸）"}, {"sku": "CAT-021", "code": "TR2605010", "name": "鎏金", "category": "东方非遗", "status": "imported", "thumb": "images/CAT-021.jpg", "original": "https://drive.google.com/file/d/1P0QmUdtnTSZOpm5knzo73MQDz1y-2wk-/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:58*54mm(圈口） | 材质:银镀金/和田玉/碧玉/人造宝石/锆石"}];
+const app = document.getElementById('app');
+const filters = document.getElementById('filters');
+const cats = ['全部', ...Array.from(new Set(PRODUCTS.map(p => p.category).filter(Boolean)))];
+let active = '全部';
+function renderFilters(){
+  filters.innerHTML = cats.map(c => `<button type="button" data-cat="${c}" class="${c===active?'active':''}">${c}</button>`).join('');
+}
+function render(){
+  const list = PRODUCTS.filter(p => active==='全部' || p.category===active);
+  const byCat = {};
+  for (const p of list){ (byCat[p.category||'未分类'] ||= []).push(p); }
+  app.innerHTML = Object.entries(byCat).map(([cat, items]) => `
+    <h2 class="section-title">${cat} <span style="color:var(--muted);font-weight:400;font-size:.9rem">(${items.length})</span></h2>
+    <div class="grid">${items.map(card).join('')}</div>
+  `).join('');
+}
+function card(p){
+  const code = p.code ? `<div class="code">${p.code} · ${p.sku}</div>` : `<div class="code">${p.sku}</div>`;
+  return `<article>
+    <div class="imgwrap"><img src="${p.thumb}" alt="${p.name}" loading="lazy" /></div>
+    <div class="body">
+      <div class="cat">${p.category||''}</div>
+      <h3 class="name">${p.name}</h3>
+      ${code}
+    </div>
+  </article>`;
+}
+filters.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-cat]');
+  if(!btn) return;
+  active = btn.dataset.cat;
+  renderFilters();
+  render();
+});
+renderFilters();
+render();
+</script>
+</body>
+</html>
