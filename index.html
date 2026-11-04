@@ -34,8 +34,7 @@
 <body>
 <header>
   <h1>Terrella 产品库 · 全量展示</h1>
-  <p>独立于正式站（非 terralla-storefront）。数据来自 Jenny 选品主表导入 Supabase <code>terrella-product-db</code>；缩略图约 200KB，托管于本 GitHub Pages（Bunny 暂未接）。</p>
-  <p class="meta" id="meta">加载中…</p>
+  <p>图片来源：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 的 Drive 文件夹</a></p>
 </header>
 <nav class="filters" id="filters"></nav>
 <main id="app"></main>
@@ -55,7 +54,6 @@ async function loadProducts(){
 }
 const app = document.getElementById('app');
 const filters = document.getElementById('filters');
-const meta = document.getElementById('meta');
 let PRODUCTS = [];
 let active = '全部';
 function renderFilters(cats){
@@ -99,9 +97,6 @@ filters.addEventListener('click', e => {
 });
 loadProducts().then(list => {
   PRODUCTS = list;
-  const withThumb = PRODUCTS.filter(p=>p.thumb).length;
-  const noThumb = PRODUCTS.length - withThumb;
-  meta.innerHTML = `项目 ref：<code>wwsfmfxwhktglgmeukgr</code> · 本页 <strong>${PRODUCTS.length}</strong> 款（有图 ${withThumb} · 缺图 ${noThumb}）· 缩略图 GitHub Pages · Bunny／独立 Vercel 待凭证`;
   const cats = ['全部', ...Array.from(new Set(PRODUCTS.map(p => p.category).filter(Boolean)))];
   renderFilters(cats);
   render();
