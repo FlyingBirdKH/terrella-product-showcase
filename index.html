@@ -25,6 +25,9 @@
   .cat { font-size:.75rem; color:var(--accent); letter-spacing:.04em; }
   .name { font-size:1rem; margin:0; font-weight:600; }
   .code { font-size:.78rem; color:var(--muted); }
+  .original-link { align-self:flex-start; margin-top:6px; color:var(--accent); font-size:.85rem; text-underline-offset:3px; }
+  .original-link:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+  .image-note { margin-top:4px; color:#92400e; font-size:.75rem; line-height:1.5; }
   .gap { color:#b45309; font-size:.75rem; }
   footer { max-width:1200px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:.8rem; line-height:1.5; }
   .section-title { margin: 22px 0 10px; font-size:1.05rem; }
@@ -59,12 +62,51 @@ let active = '全部';
 function renderFilters(cats){
   filters.innerHTML = cats.map(c => `<button type="button" data-cat="${c}" class="${c===active?'active':''}">${c}</button>`).join('');
 }
+function escapeAttribute(value){
+  return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Display existing source caveats without changing catalog records or image mappings.
+const IMAGE_ANNOTATIONS = {
+  'CAT-007': {kind:'对应待核',detail:'同一编号跨类别重复，产品编号待核。',linkText:'查看待核图片'},
+  'CAT-008': {kind:'对应待核',detail:'同一编号跨类别重复，产品编号待核。',linkText:'查看待核图片'},
+  'CAT-010': {kind:'对应待核',detail:'文档材质与图片名称不一致，图文对应待核。',linkText:'查看待核图片'},
+  'CAT-028': {kind:'参考图',detail:'香囊设计稿，非产品实拍。',linkText:'查看参考图'},
+  'CAT-031': {kind:'参考图',detail:'仅背面参考。',linkText:'查看参考图'},
+  'CAT-033': {kind:'原图缺失',detail:'原表未提供照片。'},
+  'CAT-036': {kind:'对应待核',detail:'疑似同款图，编号对应尚未确认。',linkText:'查看待核图片'},
+  'CAT-052': {kind:'参考图',detail:'来源文件标为屏幕快照。',linkText:'查看参考图'},
+  'CAT-061': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-062': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-063': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-064': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-065': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-066': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-067': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-068': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-069': {kind:'对应待核',detail:'火系旧编号未完成映射，暂不链接未确认图片。'},
+  'CAT-080': {kind:'对应待核',detail:'名称与图片不一致，尚未确认或交换。',linkText:'查看待核图片'},
+  'CAT-081': {kind:'对应待核',detail:'名称与图片不一致，尚未确认或交换。',linkText:'查看待核图片'},
+  'CAT-094': {kind:'参考图',detail:'产品设计／说明拼图，非纯产品实拍。',linkText:'查看参考图'},
+  'CAT-095': {kind:'参考图',detail:'产品设计／说明拼图，非纯产品实拍。',linkText:'查看参考图'}
+};
+function imageAnnotation(p){
+  const note = IMAGE_ANNOTATIONS[p.sku];
+  return note ? `<div class="image-note" role="note"><strong>${escapeAttribute(note.kind)}</strong>：${escapeAttribute(note.detail)}</div>` : '';
+}
+function originalImageLink(p){
+  const original = typeof p.original === 'string' ? p.original.trim() : '';
+  // Keep the existing Drive file URL. Never substitute a thumbnail or source document.
+  if (!/^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]+\/view(?:\?[^\s]*)?$/.test(original)) {
+    return '<span class="gap">原图待补</span>';
+  }
+  const label = IMAGE_ANNOTATIONS[p.sku]?.linkText || '查看原图';
+  return `<a class="original-link" href="${escapeAttribute(original)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttribute(p.sku)} ${escapeAttribute(label)}（Google Drive，新窗口打开）">${escapeAttribute(label)}</a>`;
+}
 function card(p){
   const code = p.code ? `<div class="code">${p.code} · ${p.sku}</div>` : `<div class="code">${p.sku}</div>`;
   const img = p.thumb
     ? `<img src="${p.thumb}" alt="${p.name||p.sku}" loading="lazy" />`
     : `<div>暂无缩略图<br/><span class="gap">${p.sku}</span></div>`;
-  const gap = p.thumb ? '' : `<div class="gap">缺图（Drive 原图链未登记）</div>`;
   const badge = (p.status||'').includes('candidate') ? `<span class="badge">目录候选</span>` : '';
   return `<article>
     <div class="imgwrap">${img}</div>
@@ -72,7 +114,8 @@ function card(p){
       <div class="cat">${p.category||''}${badge}</div>
       <h3 class="name">${p.name||p.sku}</h3>
       ${code}
-      ${gap}
+      ${originalImageLink(p)}
+      ${imageAnnotation(p)}
     </div>
   </article>`;
 }
