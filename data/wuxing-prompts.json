@@ -1,0 +1,161 @@
+{
+  "source_canvas_id": "F0CES4G6PCJ",
+  "source_canvas_url": "https://huansbusiness.slack.com/docs/T0C6DL058CV/F0CES4G6PCJ",
+  "prompt_version": "v2026.11.04-11",
+  "recorded_on": "2026-11-06",
+  "note": "五行五款的 Prompt 与成图文件编号按 Canvas v2026.11.04-11 收录。成图字节未复制进本仓库，也未上传 Bunny。模型、模型版本、seed、API 参数、精确生成时间正文未系统字段化，一律 unknown，不倒填。废稿 *-product-new.jpg 按 Canvas 标明非交付。",
+  "shared_lens_source_sku": "CAT-045",
+  "lens_lines": {
+    "hero": "正面／3/4 英雄构图，居中偏大",
+    "top": "正上方 flat lay，完整外形",
+    "macro": "珠面／垫片／焦点珠择一，浅景深",
+    "side": "严格侧面，厚度可读",
+    "editorial": "极简绒布褶皱静物，禁止换SKU"
+  },
+  "wood_base": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层；产品约放大30%紧裁；柔光＋微反射；五视角造型／材质／石色／金工必须与原片一致。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop.",
+  "products": [
+    {
+      "sku": "CAT-045",
+      "code": "TR2604007",
+      "element": "木",
+      "product_type": "手串",
+      "canvas_drive_folder": "https://drive.google.com/drive/folders/1JjWpre3eZbU5GF_sE83j3aol555cLhbb",
+      "points": "淡绿兔毛，白水晶交替；金铜垫片；棱纹焦点珠。",
+      "base_mode": "verbatim_wood",
+      "lens_mode": "verbatim_bullets",
+      "macro_parenthetical": null,
+      "thumb_file_id": "F0CEX1ZH8D7",
+      "thumb_filename": "mu-tr2604007-thumb.jpg",
+      "rejected_draft_drive_file": "https://drive.google.com/file/d/1CheBwFqhfMrcQo-SB0R8yETESXvdPAFn/view?usp=drivesdk",
+      "ai_files": {
+        "hero": {"file_id": "F0CEVNL3W9H", "filename": "mu-tr2604007-ai-01-hero.jpg"},
+        "top": {"file_id": "F0CF3SA7KK3", "filename": "mu-tr2604007-ai-02-top.jpg"},
+        "macro": {"file_id": "F0CF3SA8Q0H", "filename": "mu-tr2604007-ai-03-macro.jpg"},
+        "side": {"file_id": "F0CEVNL8UN7", "filename": "mu-tr2604007-ai-04-side.jpg"},
+        "editorial": {"file_id": "F0CF1Q0R4V8", "filename": "mu-tr2604007-ai-05-editorial.jpg"}
+      }
+    },
+    {
+      "sku": "CAT-059",
+      "code": "TR2604021",
+      "element": "火",
+      "product_type": "手串",
+      "canvas_drive_folder": "https://drive.google.com/drive/folders/1p-CULDcx6pBjU4TQKlZFii9sBE1OjDZA",
+      "points": "紫系混珠；金铜点缀；金色螺旋螺吊坠。",
+      "base_mode": "same_as_wood",
+      "base_recorded": "同上（深蓝绒布，放大约30%，一致性硬锁，原片图生图）。",
+      "lens_mode": "same_five_lines",
+      "lens_recorded": "主视觉／俯视／材质微距（螺吊或珠面）／侧轮廓／编辑静物——同上五句。",
+      "macro_parenthetical": "螺吊或珠面",
+      "thumb_file_id": "F0CET663970",
+      "thumb_filename": "huo-tr2604021-thumb.jpg",
+      "rejected_draft_drive_file": "https://drive.google.com/file/d/1Gp_iRKrBWDRXfiMrEC3jL-Ewzvm5-0SI/view?usp=drivesdk",
+      "ai_files": {
+        "hero": {"file_id": "F0CF5LN5QUU", "filename": "huo-tr2604021-ai-01-hero.jpg"},
+        "top": {"file_id": "F0CELJDAXGF", "filename": "huo-tr2604021-ai-02-top.jpg"},
+        "macro": {"file_id": "F0CELJDC4GP", "filename": "huo-tr2604021-ai-03-macro.jpg"},
+        "side": {"file_id": "F0CF5LN75L4", "filename": "huo-tr2604021-ai-04-side.jpg"},
+        "editorial": {"file_id": "F0CF1Q3M49Y", "filename": "huo-tr2604021-ai-05-editorial.jpg"}
+      }
+    },
+    {
+      "sku": "CAT-070",
+      "code": "TR2604032",
+      "element": "土",
+      "product_type": "手串",
+      "canvas_drive_folder": "https://drive.google.com/drive/folders/1bdHmLhzJZnseSufTfz42nxIKJL10IM_O",
+      "points": "琥珀黄／茶棕大珠；针状内含；珠径有差。",
+      "base_mode": "same_as_wood",
+      "base_recorded": "同上。",
+      "lens_mode": "same_five_lines",
+      "lens_recorded": "主视觉／俯视／材质微距（内含）／侧轮廓／编辑静物——同上五句。",
+      "macro_parenthetical": "内含",
+      "thumb_file_id": "F0CFPG3ERCG",
+      "thumb_filename": "tu-tr2604032-thumb.jpg",
+      "rejected_draft_drive_file": "https://drive.google.com/file/d/1dWIgfJ74hum8w1eQ42XxgCf7f2Hm3THe/view?usp=drivesdk",
+      "ai_files": {
+        "hero": {"file_id": "F0CFWB5B4L8", "filename": "tu-tr2604032-ai-01-hero.jpg"},
+        "top": {"file_id": "F0CEWLW3Q93", "filename": "tu-tr2604032-ai-02-top.jpg"},
+        "macro": {"file_id": "F0CFWB5FCP2", "filename": "tu-tr2604032-ai-03-macro.jpg"},
+        "side": {"file_id": "F0CELJFUH5M", "filename": "tu-tr2604032-ai-04-side.jpg"},
+        "editorial": {"file_id": "F0CELJFVBGX", "filename": "tu-tr2604032-ai-05-editorial.jpg"}
+      }
+    },
+    {
+      "sku": "CAT-090",
+      "code": "TR2603006",
+      "element": "金",
+      "product_type": "项链",
+      "canvas_drive_folder": "https://drive.google.com/drive/folders/1bSA7qHNB60kxT0n1-HpMIdWn2p6U9e1W",
+      "points": "细银盒链；四枚泪滴吊坠簇（三水晶一金属）。",
+      "base_mode": "same_as_wood",
+      "base_recorded": "同上。",
+      "lens_mode": "same_five_lines",
+      "lens_recorded": "主视觉／俯视／材质微距（泪滴切面）／侧轮廓／编辑静物——同上五句。",
+      "macro_parenthetical": "泪滴切面",
+      "thumb_file_id": "F0CEX1ZU6KT",
+      "thumb_filename": "jin-tr2603006-thumb.jpg",
+      "rejected_draft_drive_file": "https://drive.google.com/file/d/13OvqiKyyYfO7uLc-8V8d2SSPAhBQCmhF/view?usp=drivesdk",
+      "ai_files": {
+        "hero": {"file_id": "F0CFWB8K9EU", "filename": "jin-tr2603006-ai-01-hero.jpg"},
+        "top": {"file_id": "F0CEWLZF6CV", "filename": "jin-tr2603006-ai-02-top.jpg"},
+        "macro": {"file_id": "F0CF3SK2S2D", "filename": "jin-tr2603006-ai-03-macro.jpg"},
+        "side": {"file_id": "F0CFWB8R6M6", "filename": "jin-tr2603006-ai-04-side.jpg"},
+        "editorial": {"file_id": "F0CF5LU2SEQ", "filename": "jin-tr2603006-ai-05-editorial.jpg"}
+      }
+    },
+    {
+      "sku": "CAT-085",
+      "code": "TR2603001",
+      "element": "水",
+      "product_type": "手串",
+      "canvas_drive_folder": "https://drive.google.com/drive/folders/1cl7pOivPnbZ2zBB7qYAMc9HebVZqba2a",
+      "points": "浅蓝圆珠；银鲸鱼尾吊坠；浅灰小流苏。",
+      "base_mode": "same_as_wood",
+      "base_recorded": "同上。",
+      "lens_mode": "same_five_lines",
+      "lens_recorded": "主视觉／俯视／材质微距（鲸鱼尾／珠面）／侧轮廓／编辑静物——同上五句。",
+      "macro_parenthetical": "鲸鱼尾／珠面",
+      "thumb_file_id": "F0CEYRNR22Y",
+      "thumb_filename": "shui-tr2603001-thumb.jpg",
+      "rejected_draft_drive_file": "https://drive.google.com/file/d/10blzVpofp9wd-JQiryWKDpNRyFxKBdtU/view?usp=drivesdk",
+      "ai_files": {
+        "hero": {"file_id": "F0CEWM1RTE1", "filename": "shui-tr2603001-ai-01-hero.jpg"},
+        "top": {"file_id": "F0CF1QBUHC2", "filename": "shui-tr2603001-ai-02-top.jpg"},
+        "macro": {"file_id": "F0CEWM21KNH", "filename": "shui-tr2603001-ai-03-macro.jpg"},
+        "side": {"file_id": "F0CF01BSFAS", "filename": "shui-tr2603001-ai-04-side.jpg"},
+        "editorial": {"file_id": "F0CFWBBCDH6", "filename": "shui-tr2603001-ai-05-editorial.jpg"}
+      }
+    }
+  ],
+  "unbound_demonstrations": [
+    {
+      "label": "未命名文件夹6",
+      "canvas_status": "鎏金示范，Canvas 写明已过，未绑定稳定产品 ID",
+      "prompt_body_status": "unknown",
+      "prompt_note": "Canvas 写明全文 Prompt 不贴回本页，此处不补写。",
+      "files": [
+        {"role": "original_thumb", "view": null, "file_id": "F0CEZ8B80F6", "filename": "liujin6-orig-thumb.jpg"},
+        {"role": "ai", "view": "hero", "file_id": "F0CEE5WBS3H", "filename": "liujin6-ai-01-hero.jpg"},
+        {"role": "ai", "view": "top", "file_id": "F0CEE5W7NS3", "filename": "liujin6-ai-02-top.jpg"},
+        {"role": "ai", "view": "macro", "file_id": "F0CEPA68KM1", "filename": "liujin6-ai-03-macro.jpg"},
+        {"role": "ai", "view": "side", "file_id": "F0CEZ85F0N8", "filename": "liujin6-ai-04-side.jpg"},
+        {"role": "ai", "view": "editorial", "file_id": "F0CFPU0FDH6", "filename": "liujin6-ai-05-editorial.jpg"}
+      ]
+    },
+    {
+      "label": "未命名文件夹7",
+      "canvas_status": "鎏金示范，Canvas 写明已过，未绑定稳定产品 ID",
+      "prompt_body_status": "unknown",
+      "prompt_note": "Canvas 写明全文 Prompt 不贴回本页，此处不补写。",
+      "files": [
+        {"role": "original_thumb", "view": null, "file_id": "F0CEPACJG6P", "filename": "liujin7-orig-thumb.jpg"},
+        {"role": "ai", "view": "hero", "file_id": "F0CEE5ZT5HD", "filename": "liujin7-ai-01-hero.jpg"},
+        {"role": "ai", "view": "top", "file_id": "F0CEE6065P1", "filename": "liujin7-ai-02-top.jpg"},
+        {"role": "ai", "view": "macro", "file_id": "F0CFPU3L49W", "filename": "liujin7-ai-03-macro.jpg"},
+        {"role": "ai", "view": "side", "file_id": "F0CEVBQLL9G", "filename": "liujin7-ai-04-side.jpg"},
+        {"role": "ai", "view": "editorial", "file_id": "F0CETJ6LQAJ", "filename": "liujin7-ai-05-editorial.jpg"}
+      ]
+    }
+  ]
+}

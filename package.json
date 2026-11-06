@@ -1,0 +1,9 @@
+{
+  "name": "terrella-product-showcase",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-catalog.mjs",
+    "test": "node --test"
+  }
+}
