@@ -32,13 +32,39 @@
   footer { max-width:1200px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:.8rem; line-height:1.5; }
   .section-title { margin: 22px 0 10px; font-size:1.05rem; }
   .badge { display:inline-block; font-size:.7rem; border:1px solid var(--line); border-radius:999px; padding:1px 8px; color:var(--muted); margin-left:4px; }
+  .compare-btn, .choice { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:6px 12px; cursor:pointer; font:inherit; font-size:.85rem; }
+  .compare-btn { align-self:flex-start; margin-top:6px; }
+  .choice.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+  #detail { max-width:1200px; margin:0 auto; padding:0 20px; }
+  .detail-card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-top:12px; }
+  .detail-card h2, .detail-card h3 { margin:0 0 8px; font-weight:600; }
+  .detail-meta, .kept-notes, .storage { color:var(--muted); font-size:.85rem; }
+  .choices { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .pair-fig { margin:0; background:#f3ecdf; border-radius:12px; overflow:hidden; }
+  .pair-fig img { width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:#efe7da; }
+  .pair-fig figcaption { padding:8px 10px 0; font-size:.85rem; }
+  .missing-box { min-height:180px; margin:8px; padding:12px; border:1px dashed #b45309; border-radius:10px; color:#92400e; font-size:.85rem; line-height:1.5; }
+  .prompt-body { white-space:pre-wrap; word-break:break-word; background:#f6f1e8; border-radius:10px; padding:12px; font-size:.85rem; line-height:1.55; }
+  .trace-block dl { display:grid; grid-template-columns:8.5rem 1fr; gap:4px 10px; font-size:.85rem; }
+  .trace-block dt { color:var(--muted); }
+  .trace-block dd { margin:0; overflow-wrap:anywhere; }
+  .fixture-banner { background:#fff7ed; border:1px solid #fdba74; border-radius:10px; padding:8px 10px; color:#9a3412; }
+  .status-line { margin-top:8px; color:var(--muted); font-size:.85rem; line-height:1.5; }
+  @media (max-width: 720px) {
+    .pair, .trace-block dl { grid-template-columns:1fr; }
+    .choices .choice, .compare-btn { min-height:44px; }
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>Terrella 产品库 · 全量展示</h1>
   <p>图片来源：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 的 Drive 文件夹</a></p>
+  <p class="status-line" id="trace-status">正在读取多图与 Prompt 清单。</p>
+  <p class="status-line"><button type="button" class="compare-btn" data-open-sku="FIXTURE-STRUCTURE">打开结构验收样例（合成色块，非真实产品）</button></p>
 </header>
+<section id="detail" hidden></section>
 <nav class="filters" id="filters"></nav>
 <main id="app"></main>
 <footer>
@@ -115,6 +141,7 @@ function card(p){
       <h3 class="name">${p.name||p.sku}</h3>
       ${code}
       ${originalImageLink(p)}
+      <button type="button" class="compare-btn" data-open-sku="${escapeAttribute(p.sku)}">原图 / AI 对照</button>
       ${imageAnnotation(p)}
     </div>
   </article>`;
@@ -145,5 +172,6 @@ loadProducts().then(list => {
   render();
 });
 </script>
+<script type="module" src="web/boot.js"></script>
 </body>
 </html>

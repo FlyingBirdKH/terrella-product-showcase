@@ -1,0 +1,20 @@
+{
+  "policy_id": "terrella-upload-limits-2026-11-06",
+  "bunny_uploads_executed": false,
+  "production_database_writes_executed": false,
+  "blocked_packages": [
+    {
+      "id": "F0CFVBR7ZQQ",
+      "name": "Terrella-multi-image-release-20261105.zip",
+      "reason": "Slack 原帖记录：多图补丁上传展示库时被审核拒绝。读取器上限 10MB，本文件约 68MB，本次读取结果为 file_too_large。不得换渠道、换代理、换服务、换账号或拆批重传。"
+    }
+  ],
+  "credential_gaps": [
+    "缺少 Terrella 专用 Bunny storage zone、hostname 与 API key。",
+    "环境中若仅有 NOVA_BUNNY_STORAGE_PASSWORD，不得挪作 Terrella 上传。",
+    "本仓库不存放密钥。"
+  ],
+  "do_not_rehost_private_bytes": true,
+  "preserve_existing_github_pages_thumbs": true,
+  "do_not_import_unmapped_main_branch_images": ["CAT-061", "CAT-062", "CAT-063", "CAT-064", "CAT-065", "CAT-066", "CAT-067", "CAT-068", "CAT-069"]
+}

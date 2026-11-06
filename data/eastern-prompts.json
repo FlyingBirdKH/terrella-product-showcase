@@ -1,0 +1,1518 @@
+{
+  "source_canvas_id": "F0CEPRS2BBP",
+  "source_canvas_url": "https://huansbusiness.slack.com/docs/T0C6DL058CV/F0CEPRS2BBP",
+  "recorded_on": "2026-11-06",
+  "record_count_expected": 32,
+  "note": "Prompt 正文按 Canvas 收录。缩略图文件编号只作来源指针，图片字节未复制进本仓库。模型、seed、API 参数、生成时间 Canvas 未给出，保持 unknown，不倒填。",
+  "products": [
+    {
+      "heading": "TR260002｜耳环",
+      "sku": "CAT-001",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEWERHHSM",
+          "filename": "tr260002-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEWERHHSM/tr260002-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1qssnuZZcXi7owf7NfRk3r_6OnJlWPl12"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1va3K3sNI4zQLj9Scp39fOt21ozlpx38C"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葡萄串耳坠；圆润紫水晶葡萄珠；錾刻金叶＋铺锆石银白叶；点缀绿玛瑙小芽；银镀金。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葡萄串耳坠；圆润紫水晶葡萄珠；錾刻金叶＋铺锆石银白叶；点缀绿玛瑙小芽；银镀金。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葡萄串耳坠；圆润紫水晶葡萄珠；錾刻金叶＋铺锆石银白叶；点缀绿玛瑙小芽；银镀金。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葡萄串耳坠；圆润紫水晶葡萄珠；錾刻金叶＋铺锆石银白叶；点缀绿玛瑙小芽；银镀金。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葡萄串耳坠；圆润紫水晶葡萄珠；錾刻金叶＋铺锆石银白叶；点缀绿玛瑙小芽；银镀金。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260003｜耳环",
+      "sku": "CAT-002",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEP95Q0Q5",
+          "filename": "tr260003-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEP95Q0Q5/tr260003-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1woj0ZYBcUOWzbIhQwp_m9za1oNG-88nJ"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1L7UrTynSdMwf7Suzm7zODHid2JTjOheV"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽圈珍珠耳环；银镀金；中槽一圈天然淡水珍珠；两侧米粒／錾刻金边。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽圈珍珠耳环；银镀金；中槽一圈天然淡水珍珠；两侧米粒／錾刻金边。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽圈珍珠耳环；银镀金；中槽一圈天然淡水珍珠；两侧米粒／錾刻金边。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽圈珍珠耳环；银镀金；中槽一圈天然淡水珍珠；两侧米粒／錾刻金边。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽圈珍珠耳环；银镀金；中槽一圈天然淡水珍珠；两侧米粒／錾刻金边。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260004｜耳环",
+      "sku": "CAT-003",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEP96NVU5",
+          "filename": "tr260004-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEP96NVU5/tr260004-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1ymYP1ml4xPUyrYqeV35GKfb-9q_hj7BI"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1CfGZR8B4hBpMUCRVnAV__7aPhBVDUgjC"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝立体花耳坠；半透明白玉／水晶花瓣交替金花丝瓣；中心松石色圆珠；小绿／浅蓝点缀；尾端水滴松石。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝立体花耳坠；半透明白玉／水晶花瓣交替金花丝瓣；中心松石色圆珠；小绿／浅蓝点缀；尾端水滴松石。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝立体花耳坠；半透明白玉／水晶花瓣交替金花丝瓣；中心松石色圆珠；小绿／浅蓝点缀；尾端水滴松石。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝立体花耳坠；半透明白玉／水晶花瓣交替金花丝瓣；中心松石色圆珠；小绿／浅蓝点缀；尾端水滴松石。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝立体花耳坠；半透明白玉／水晶花瓣交替金花丝瓣；中心松石色圆珠；小绿／浅蓝点缀；尾端水滴松石。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260005｜戒指",
+      "sku": "CAT-004",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CENB36B0T",
+          "filename": "tr260005-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CENB36B0T/tr260005-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1BH5GJo1mkPSpm7HvucUxX0U20Y_DoLGj"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1MqMK5_wa5ZD77epW8Y69RXFdwbnI11Az"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽戒圈；银镀金；中槽淡水珍珠一圈（或双排）；两侧米粒金边；与同系列珍珠金环视觉一致。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽戒圈；银镀金；中槽淡水珍珠一圈（或双排）；两侧米粒金边；与同系列珍珠金环视觉一致。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽戒圈；银镀金；中槽淡水珍珠一圈（或双排）；两侧米粒金边；与同系列珍珠金环视觉一致。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽戒圈；银镀金；中槽淡水珍珠一圈（或双排）；两侧米粒金边；与同系列珍珠金环视觉一致。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：宽戒圈；银镀金；中槽淡水珍珠一圈（或双排）；两侧米粒金边；与同系列珍珠金环视觉一致。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260006｜手镯",
+      "sku": "CAT-005",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNUWP93J",
+          "filename": "tr260006-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNUWP93J/tr260006-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/16onQ7FBBcxZMufR32yqZg7mIJ8R_Ipz4"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1HJCrFNBd5LbKXPaJHmm9DpYPKkwL-klZ"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：厚金珍珠手镯；银镀金；中槽一圈淡水珍珠；细錾刻／米粒金边；勿串成别款。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：厚金珍珠手镯；银镀金；中槽一圈淡水珍珠；细錾刻／米粒金边；勿串成别款。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：厚金珍珠手镯；银镀金；中槽一圈淡水珍珠；细錾刻／米粒金边；勿串成别款。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：厚金珍珠手镯；银镀金；中槽一圈淡水珍珠；细錾刻／米粒金边；勿串成别款。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：厚金珍珠手镯；银镀金；中槽一圈淡水珍珠；细錾刻／米粒金边；勿串成别款。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260007｜手镯",
+      "sku": "CAT-006",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEUCJJZMY",
+          "filename": "tr260007-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEUCJJZMY/tr260007-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1Fd1e4GiElCy9nNrInHJOEHQKCZ0s4Lp9"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/11O66IUwR7JdRQRt9dpF-JDNu8koWKMKh"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：四排淡水珍珠手链；如意形金花丝主扣；碧玉蝴蝶；粉红宝石＋小钻／锆石光环；珍珠间隔金条铺石。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：四排淡水珍珠手链；如意形金花丝主扣；碧玉蝴蝶；粉红宝石＋小钻／锆石光环；珍珠间隔金条铺石。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：四排淡水珍珠手链；如意形金花丝主扣；碧玉蝴蝶；粉红宝石＋小钻／锆石光环；珍珠间隔金条铺石。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：四排淡水珍珠手链；如意形金花丝主扣；碧玉蝴蝶；粉红宝石＋小钻／锆石光环；珍珠间隔金条铺石。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：四排淡水珍珠手链；如意形金花丝主扣；碧玉蝴蝶；粉红宝石＋小钻／锆石光环；珍珠间隔金条铺石。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260008-定制｜戒指",
+      "sku": "CAT-007",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNUYSML0",
+          "filename": "tr260008-______-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNUYSML0/tr260008-______-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1ujDvzhX-V2qSavDuiQmtiAnohbV2FN4r"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/125EJe43SwNAoqeZbSfDV9Awj_Y6IddV2"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：盘绕蛇形／龙形金戒；大颗正圆珍珠主石；戒头祖母绿＋珍珠；戒尾祖母绿珍珠环；全身錾刻卷草。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：盘绕蛇形／龙形金戒；大颗正圆珍珠主石；戒头祖母绿＋珍珠；戒尾祖母绿珍珠环；全身錾刻卷草。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：盘绕蛇形／龙形金戒；大颗正圆珍珠主石；戒头祖母绿＋珍珠；戒尾祖母绿珍珠环；全身錾刻卷草。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：盘绕蛇形／龙形金戒；大颗正圆珍珠主石；戒头祖母绿＋珍珠；戒尾祖母绿珍珠环；全身錾刻卷草。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：盘绕蛇形／龙形金戒；大颗正圆珍珠主石；戒头祖母绿＋珍珠；戒尾祖母绿珍珠环；全身錾刻卷草。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260008-定制款90天｜手镯",
+      "sku": "CAT-008",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNUYRZKJ",
+          "filename": "tr260008-_________90___-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNUYRZKJ/tr260008-_________90___-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1EYgSfRSzDlBUXBefa50OKXTtNDgMaYHz"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1KF9yZDA76lsEVa-XiJoDHEr94_PLEeyN"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：多圈蛇形编织金手镯；蛇头梨形祖母绿＋红宝石眼／点缀＋铺钻；鳞纹编织肌理；勿改成戒。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：多圈蛇形编织金手镯；蛇头梨形祖母绿＋红宝石眼／点缀＋铺钻；鳞纹编织肌理；勿改成戒。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：多圈蛇形编织金手镯；蛇头梨形祖母绿＋红宝石眼／点缀＋铺钻；鳞纹编织肌理；勿改成戒。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：多圈蛇形编织金手镯；蛇头梨形祖母绿＋红宝石眼／点缀＋铺钻；鳞纹编织肌理；勿改成戒。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：多圈蛇形编织金手镯；蛇头梨形祖母绿＋红宝石眼／点缀＋铺钻；鳞纹编织肌理；勿改成戒。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260009-定制｜耳环",
+      "sku": "CAT-009",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CED6VGFN3",
+          "filename": "tr260009-______-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CED6VGFN3/tr260009-______-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1w2BRiBZGdNVXxzVNOEqFYl9xinEOIiUE"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1Tib7fM5uL7zUrUE81fTBe_GYMWDpJk-e"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蛇形长耳坠一对；黄金錾刻鳞纹；头部椭圆祖母绿＋碎钻；身侧小珍珠串；尾端方框祖母绿珍珠环坠。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蛇形长耳坠一对；黄金錾刻鳞纹；头部椭圆祖母绿＋碎钻；身侧小珍珠串；尾端方框祖母绿珍珠环坠。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蛇形长耳坠一对；黄金錾刻鳞纹；头部椭圆祖母绿＋碎钻；身侧小珍珠串；尾端方框祖母绿珍珠环坠。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蛇形长耳坠一对；黄金錾刻鳞纹；头部椭圆祖母绿＋碎钻；身侧小珍珠串；尾端方框祖母绿珍珠环坠。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蛇形长耳坠一对；黄金錾刻鳞纹；头部椭圆祖母绿＋碎钻；身侧小珍珠串；尾端方框祖母绿珍珠环坠。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260010-定制｜粉晶凝炉｜香炉｜天然粉水晶器身；铜镀金累丝（PDF）",
+      "sku": "CAT-010",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEUCL9AG2",
+          "filename": "tr260010-______-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEUCL9AG2/tr260010-______-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1PlxmbkuPq7v-SvKADacocuqqvNLZYPZe"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1Uz8u3L-PZ69XjnQcflA9ehCA9HhIATXZ"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶凝炉；半透明粉水晶球形炉身；铜镀金累丝底座／盖／龙形提环；嵌绿玉与红宝石色珠；可卸盖。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶凝炉；半透明粉水晶球形炉身；铜镀金累丝底座／盖／龙形提环；嵌绿玉与红宝石色珠；可卸盖。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶凝炉；半透明粉水晶球形炉身；铜镀金累丝底座／盖／龙形提环；嵌绿玉与红宝石色珠；可卸盖。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶凝炉；半透明粉水晶球形炉身；铜镀金累丝底座／盖／龙形提环；嵌绿玉与红宝石色珠；可卸盖。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶凝炉；半透明粉水晶球形炉身；铜镀金累丝底座／盖／龙形提环；嵌绿玉与红宝石色珠；可卸盖。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR260011-定制｜胸针",
+      "sku": "CAT-011",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNV0CQAC",
+          "filename": "tr260011-______-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNV0CQAC/tr260011-______-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1w7piWvo4R1u3ccRW8ZeBp97ZxoO1ziRi"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1VSIsEqfM-o2BemiLlkMmYCUqK0BaAnko"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：中式花丝胸针；按原片造型／石色／金工锁死，禁止改款。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：中式花丝胸针；按原片造型／石色／金工锁死，禁止改款。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：中式花丝胸针；按原片造型／石色／金工锁死，禁止改款。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：中式花丝胸针；按原片造型／石色／金工锁死，禁止改款。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：中式花丝胸针；按原片造型／石色／金工锁死，禁止改款。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605001｜耳环｜银镀金／玛瑙／珍珠／人工宝石／锆石",
+      "sku": "CAT-012",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEWEXAU8Z",
+          "filename": "tr2605001-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEWEXAU8Z/tr2605001-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/13k_yYMour9ZliCRRKtGEQebB2dndmjRs"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/13K_3Oh0y77KsGLqkENBWTllArRDoWmmc"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；双连环淡紫玉髓／玛瑙环；下方金花丝花卉；珍珠／锆石／小彩石；一侧可卸长珍珠流苏。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；双连环淡紫玉髓／玛瑙环；下方金花丝花卉；珍珠／锆石／小彩石；一侧可卸长珍珠流苏。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；双连环淡紫玉髓／玛瑙环；下方金花丝花卉；珍珠／锆石／小彩石；一侧可卸长珍珠流苏。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；双连环淡紫玉髓／玛瑙环；下方金花丝花卉；珍珠／锆石／小彩石；一侧可卸长珍珠流苏。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；双连环淡紫玉髓／玛瑙环；下方金花丝花卉；珍珠／锆石／小彩石；一侧可卸长珍珠流苏。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605002｜耳环｜银镀金／碧玉／人工宝石／锆石／紫水晶",
+      "sku": "CAT-013",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEY96H2G4",
+          "filename": "tr2605002-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEY96H2G4/tr2605002-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/11ESxz_inOup8bsbHYAHeiaTKFyU4PNLL"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/18fUCiaz2vCMShcJaeljp7FWUlf2VPWvQ"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉主石＋紫水晶／锆石／人造宝石；银镀金花丝；锁碧玉色与花丝轮廓。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉主石＋紫水晶／锆石／人造宝石；银镀金花丝；锁碧玉色与花丝轮廓。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉主石＋紫水晶／锆石／人造宝石；银镀金花丝；锁碧玉色与花丝轮廓。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉主石＋紫水晶／锆石／人造宝石；银镀金花丝；锁碧玉色与花丝轮廓。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉主石＋紫水晶／锆石／人造宝石；银镀金花丝；锁碧玉色与花丝轮廓。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605003｜耳环｜银镀金／碧玉／人工宝石／锆石／粉水晶",
+      "sku": "CAT-014",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEUCP77J6",
+          "filename": "tr2605003-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEUCP77J6/tr2605003-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1HnHlSAdwa9DNLRsEd4MxVanxl0kqi7w5"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1Z7iYDeE7-atK6Tyrv5pwuMJfDNY5ALOA"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉＋粉水晶／锆石；银镀金；勿改成紫水晶款。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉＋粉水晶／锆石；银镀金；勿改成紫水晶款。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉＋粉水晶／锆石；银镀金；勿改成紫水晶款。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉＋粉水晶／锆石；银镀金；勿改成紫水晶款。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；碧玉＋粉水晶／锆石；银镀金；勿改成紫水晶款。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605004｜耳环｜银镀金／南红／和田玉／人工宝石／锆石",
+      "sku": "CAT-015",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CENB8G8N7",
+          "filename": "tr2605004-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CENB8G8N7/tr2605004-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1CfChyuD0kuRhDaP8lJOobMqo3xbhe6SB"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1vpyg82EzS646X-laMhgftmC_alNj2BJM"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；南红＋和田玉／锆石；银镀金；南红色必须贴原片。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；南红＋和田玉／锆石；银镀金；南红色必须贴原片。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；南红＋和田玉／锆石；银镀金；南红色必须贴原片。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；南红＋和田玉／锆石；银镀金；南红色必须贴原片。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；南红＋和田玉／锆石；银镀金；南红色必须贴原片。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605005｜一鸣惊人｜耳环｜银镀金／珍珠／碧玉／人造宝石／锆石",
+      "sku": "CAT-016",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNV2PZ0Q",
+          "filename": "tr2605005-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNV2PZ0Q/tr2605005-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1FSRrSPYRl_2BbdVoBOg596C5hfHFwTjQ"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1vo6OiEtoHnWtyxOpIulHq0Q7W-e4I5F-"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：一鸣惊人；竹叶／枝金工；翠绿珐琅或碧玉鱼／叶形主件；上珍珠＋下坠水滴珍珠；银镀金。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：一鸣惊人；竹叶／枝金工；翠绿珐琅或碧玉鱼／叶形主件；上珍珠＋下坠水滴珍珠；银镀金。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：一鸣惊人；竹叶／枝金工；翠绿珐琅或碧玉鱼／叶形主件；上珍珠＋下坠水滴珍珠；银镀金。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：一鸣惊人；竹叶／枝金工；翠绿珐琅或碧玉鱼／叶形主件；上珍珠＋下坠水滴珍珠；银镀金。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：一鸣惊人；竹叶／枝金工；翠绿珐琅或碧玉鱼／叶形主件；上珍珠＋下坠水滴珍珠；银镀金。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605006｜耳环｜银镀金／珍珠／人造宝石／锆石",
+      "sku": "CAT-017",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CESK6EZ54",
+          "filename": "tr2605006-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CESK6EZ54/tr2605006-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [
+        {
+          "file_id": "F0CEPPU13N1",
+          "filename": "_____________20261104_223352.png"
+        }
+      ],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1DdPSqnFSGSuovobJNZ1CxxK5U5hadQCt"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1HCoaZXrZokKTnNPfn6AiyETjgW0RQ8_A"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；珍珠＋人造宝石／锆石；银镀金；造型贴原片。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；珍珠＋人造宝石／锆石；银镀金；造型贴原片。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；珍珠＋人造宝石／锆石；银镀金；造型贴原片。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；珍珠＋人造宝石／锆石；银镀金；造型贴原片。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；珍珠＋人造宝石／锆石；银镀金；造型贴原片。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605007｜耳环｜银镀金／人造宝石／锆石／红玉髓",
+      "sku": "CAT-018",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEP9EU33P",
+          "filename": "tr2605007-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEP9EU33P/tr2605007-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/13judG19gkFkU7Tw3JIRvLZh46KszHtm7"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1fPoLDrGhHKy4cDvSrKIIqSGi2nE8ggK0"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；红玉髓／人造宝石／锆石；银镀金。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；红玉髓／人造宝石／锆石；银镀金。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；红玉髓／人造宝石／锆石；银镀金。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；红玉髓／人造宝石／锆石；银镀金。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：花丝耳环；红玉髓／人造宝石／锆石；银镀金。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605008｜蝴蝶结耳环｜耳环｜银镀金／人造宝石／锆石／淡水珠／南红",
+      "sku": "CAT-019",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNV4K0V6",
+          "filename": "tr2605008-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNV4K0V6/tr2605008-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1jCCXHDkOdtH94O8sud3VZSYrF3ruX48J"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1H8TeUd1KtfE9zHQzbsV1KqjxHE_Zha4C"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝴蝶结耳环；金花丝蝴蝶结；中心南红椭圆蛋面；结缘绿石；下坠大珍珠外包金圈铺石。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝴蝶结耳环；金花丝蝴蝶结；中心南红椭圆蛋面；结缘绿石；下坠大珍珠外包金圈铺石。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝴蝶结耳环；金花丝蝴蝶结；中心南红椭圆蛋面；结缘绿石；下坠大珍珠外包金圈铺石。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝴蝶结耳环；金花丝蝴蝶结；中心南红椭圆蛋面；结缘绿石；下坠大珍珠外包金圈铺石。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝴蝶结耳环；金花丝蝴蝶结；中心南红椭圆蛋面；结缘绿石；下坠大珍珠外包金圈铺石。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605009｜扇影清欢｜手镯｜银镀金／和田玉／碧玉／人造宝石／锆石",
+      "sku": "CAT-020",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CESK845E2",
+          "filename": "tr2605009-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CESK845E2/tr2605009-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1zv8U9jQ9pGsVGPk78rOEHkD_TwlOgkjw"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1CXXSUJ6A9kNAQWMUCOP9cShCVnFLef0U"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：扇影清欢；方形轮廓金手镯；正面白玉／和田玉扇面镶片；碧玉／锆石点缀花丝。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：扇影清欢；方形轮廓金手镯；正面白玉／和田玉扇面镶片；碧玉／锆石点缀花丝。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：扇影清欢；方形轮廓金手镯；正面白玉／和田玉扇面镶片；碧玉／锆石点缀花丝。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：扇影清欢；方形轮廓金手镯；正面白玉／和田玉扇面镶片；碧玉／锆石点缀花丝。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：扇影清欢；方形轮廓金手镯；正面白玉／和田玉扇面镶片；碧玉／锆石点缀花丝。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605010｜鎏金｜手镯｜银镀金／和田玉／碧玉／人造宝石／锆石",
+      "sku": "CAT-021",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEWF1V481",
+          "filename": "tr2605010-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEWF1V481/tr2605010-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1bagu401NdlakVLhiGNVeokTx2atxLgyf"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1P0QmUdtnTSZOpm5knzo73MQDz1y-2wk-"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：鎏金手镯；银镀金花丝；和田玉／碧玉镶片；造型贴原片勿改扇面款。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：鎏金手镯；银镀金花丝；和田玉／碧玉镶片；造型贴原片勿改扇面款。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：鎏金手镯；银镀金花丝；和田玉／碧玉镶片；造型贴原片勿改扇面款。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：鎏金手镯；银镀金花丝；和田玉／碧玉镶片；造型贴原片勿改扇面款。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：鎏金手镯；银镀金花丝；和田玉／碧玉镶片；造型贴原片勿改扇面款。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605011｜香囊｜银镀金／碧玉／人造宝石／锆石／贝母",
+      "sku": "CAT-022",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNV6DY8G",
+          "filename": "tr2605011-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNV6DY8G/tr2605011-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1ZhLztrT1ClRnWcVG7hYe3-_kDpeiU8_K"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1cPHDw2nyHeh9cJ4vQHEzSTVnk8iq3kyG"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊吊坠；银镀金花丝；碧玉＋贝母／锆石；锁外形与开窗玉片。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊吊坠；银镀金花丝；碧玉＋贝母／锆石；锁外形与开窗玉片。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊吊坠；银镀金花丝；碧玉＋贝母／锆石；锁外形与开窗玉片。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊吊坠；银镀金花丝；碧玉＋贝母／锆石；锁外形与开窗玉片。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊吊坠；银镀金花丝；碧玉＋贝母／锆石；锁外形与开窗玉片。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605012｜香囊｜银镀金／老翠片／人造宝石／锆石／贝母／珍珠",
+      "sku": "CAT-023",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CED73G031",
+          "filename": "tr2605012-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CED73G031/tr2605012-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1_5ThTU66jueBHTfuhyskc4rKRix6ArsM"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1NNmOdP1fhIbIqEf-qUZXzG9xCHy5qL5w"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；老翠片＋贝母／珍珠／锆石；翠色贴原片。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；老翠片＋贝母／珍珠／锆石；翠色贴原片。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；老翠片＋贝母／珍珠／锆石；翠色贴原片。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；老翠片＋贝母／珍珠／锆石；翠色贴原片。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；老翠片＋贝母／珍珠／锆石；翠色贴原片。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605013｜香囊｜银镀金／贝母／锆石／人造宝石／和田玉／翡翠",
+      "sku": "CAT-024",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEUCTKCV8",
+          "filename": "tr2605013-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEUCTKCV8/tr2605013-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1PAzMabZBTqh5yNVKUF2QAovQm7iFDEgM"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1BtSV9WFSWe2L4Fu7l2A4xIwlKP2PQfI9"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／翡翠片＋锆石；正面构图贴原片。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／翡翠片＋锆石；正面构图贴原片。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／翡翠片＋锆石；正面构图贴原片。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／翡翠片＋锆石；正面构图贴原片。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／翡翠片＋锆石；正面构图贴原片。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605014｜香囊｜银镀金／贝母／锆石／人造宝石／和田玉",
+      "sku": "CAT-025",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CESKACF54",
+          "filename": "tr2605014-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CESKACF54/tr2605014-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1ptRwkjKoA14dZke0f7zwpoEjmzhoNioU"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1ZEo6FAg98T6DdzZNQxu-8ObTDAWCoeGw"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／锆石。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／锆石。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／锆石。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／锆石。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：香囊；银镀金；贝母／和田玉／锆石。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605015｜葫芦香囊｜香囊｜银镀金／锆石／人造宝石",
+      "sku": "CAT-026",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEWF4FV33",
+          "filename": "tr2605015-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEWF4FV33/tr2605015-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1rduRShpnCXBzg_hRPacx-STlafp_g7_V"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1RqJOLij1uI04aZFe-9PrrM2IMaGJ4piZ"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葫芦香囊；圆形花丝香囊／挂坠；中心翠绿玉滴；多层金镂空＋红橙宝石点；顶部莲花／花冠吊头。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葫芦香囊；圆形花丝香囊／挂坠；中心翠绿玉滴；多层金镂空＋红橙宝石点；顶部莲花／花冠吊头。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葫芦香囊；圆形花丝香囊／挂坠；中心翠绿玉滴；多层金镂空＋红橙宝石点；顶部莲花／花冠吊头。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葫芦香囊；圆形花丝香囊／挂坠；中心翠绿玉滴；多层金镂空＋红橙宝石点；顶部莲花／花冠吊头。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：葫芦香囊；圆形花丝香囊／挂坠；中心翠绿玉滴；多层金镂空＋红橙宝石点；顶部莲花／花冠吊头。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605016｜马上有钱｜香囊｜银镀金／锆石／人造宝石",
+      "sku": "CAT-027",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CENBFNDDZ",
+          "filename": "tr2605016-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CENBFNDDZ/tr2605016-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1h7U9gzy4kUrJTmFCEJR5ueVmlBaOcHZ8"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1_8_Aw7oULkethuGMtALkQ3Z7X7bibF5v"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：马上有钱香囊；银镀金花丝＋锆石／人造宝石；马／钱币意象按原片，禁止臆造。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：马上有钱香囊；银镀金花丝＋锆石／人造宝石；马／钱币意象按原片，禁止臆造。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：马上有钱香囊；银镀金花丝＋锆石／人造宝石；马／钱币意象按原片，禁止臆造。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：马上有钱香囊；银镀金花丝＋锆石／人造宝石；马／钱币意象按原片，禁止臆造。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：马上有钱香囊；银镀金花丝＋锆石／人造宝石；马／钱币意象按原片，禁止臆造。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605017｜NOOR定制香囊｜银镀金／人造宝石／锆石",
+      "sku": "CAT-028",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNV9EG1E",
+          "filename": "tr2605017-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNV9EG1E/tr2605017-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1bCN7U73W_AL28rLUlXjVl70w2nPcdON-"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/10f30IE-6rH-OtlBNlafeIjRPAoQRB4gV"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：NOOR定制香囊；银镀金花丝＋人造宝石／锆石；按原片定制造型。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：NOOR定制香囊；银镀金花丝＋人造宝石／锆石；按原片定制造型。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：NOOR定制香囊；银镀金花丝＋人造宝石／锆石；按原片定制造型。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：NOOR定制香囊；银镀金花丝＋人造宝石／锆石；按原片定制造型。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：NOOR定制香囊；银镀金花丝＋人造宝石／锆石；按原片定制造型。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605018｜锦鲤｜胸针｜银镀金／碧玉／锆石／珍珠／人造宝石",
+      "sku": "CAT-029",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEP9JM3FX",
+          "filename": "tr2605018-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEP9JM3FX/tr2605018-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1ucMXzhxYDz1gFLcPX42u1XrmTYNdJxvf"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1uVdJ0Sd0IzfQOLxDR56SJLlShSsg3bcR"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：锦鲤胸针；金鱼形；头部碧玉蛋面；身铺锆石过渡錾金；尾鳍波浪金＋银白铺石条；珍珠／小彩石点缀。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：锦鲤胸针；金鱼形；头部碧玉蛋面；身铺锆石过渡錾金；尾鳍波浪金＋银白铺石条；珍珠／小彩石点缀。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：锦鲤胸针；金鱼形；头部碧玉蛋面；身铺锆石过渡錾金；尾鳍波浪金＋银白铺石条；珍珠／小彩石点缀。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：锦鲤胸针；金鱼形；头部碧玉蛋面；身铺锆石过渡錾金；尾鳍波浪金＋银白铺石条；珍珠／小彩石点缀。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：锦鲤胸针；金鱼形；头部碧玉蛋面；身铺锆石过渡錾金；尾鳍波浪金＋银白铺石条；珍珠／小彩石点缀。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605019｜蝶舞｜胸针｜银镀金／碧玉／锆石／珍珠／人造宝石",
+      "sku": "CAT-030",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEP9MDUPP",
+          "filename": "tr2605019-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEP9MDUPP/tr2605019-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/13fOJL25085sPRdwd1tnHGBnGwOhm8MgT"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1kbV6fVU2Wuo1WGV0JgoYdfFr1ZIF8zMM"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝶舞胸针；蝴蝶形；碧玉翅／身＋锆石珍珠；银镀金；翅脉与石位贴原片。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝶舞胸针；蝴蝶形；碧玉翅／身＋锆石珍珠；银镀金；翅脉与石位贴原片。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝶舞胸针；蝴蝶形；碧玉翅／身＋锆石珍珠；银镀金；翅脉与石位贴原片。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝶舞胸针；蝴蝶形；碧玉翅／身＋锆石珍珠；银镀金；翅脉与石位贴原片。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：蝶舞胸针；蝴蝶形；碧玉翅／身＋锆石珍珠；银镀金；翅脉与石位贴原片。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2605020｜弦音｜胸针｜银镀金／碧玉／锆石／珍珠／人造宝石",
+      "sku": "CAT-031",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CEP9NE58V",
+          "filename": "tr2605020-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CEP9NE58V/tr2605020-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1CZyPIlMrOskiNmX6j4kFfME5btotxYSi"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1cN26vZkw8lCVTJUYQ-GYZ8N5Ombum2uu"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：弦音胸针；银镀金；碧玉＋锆石／珍珠；乐器／弦意象按原片，禁止改成蝶或鱼。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：弦音胸针；银镀金；碧玉＋锆石／珍珠；乐器／弦意象按原片，禁止改成蝶或鱼。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：弦音胸针；银镀金；碧玉＋锆石／珍珠；乐器／弦意象按原片，禁止改成蝶或鱼。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：弦音胸针；银镀金；碧玉＋锆石／珍珠；乐器／弦意象按原片，禁止改成蝶或鱼。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：弦音胸针；银镀金；碧玉＋锆石／珍珠；乐器／弦意象按原片，禁止改成蝶或鱼。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    },
+    {
+      "heading": "TR2610001｜粉晶玉兰花耳饰｜耳环",
+      "sku": "CAT-032",
+      "source_canvas_id": "F0CEPRS2BBP",
+      "source_note": "从出图流程页 F0CES4G6PCJ 迁出（v2026.11.04-8）。东方页未另给独立版本号。",
+      "prompt_version": "F0CEPRS2BBP@recorded-2026-11-06",
+      "thumb_files": [
+        {
+          "file_id": "F0CFNVB9L9E",
+          "filename": "tr2610001-thumb.jpg](https://huansbusiness.slack.com/files/U0C6MA4GSFK/F0CFNVB9L9E/tr2610001-thumb.jpg"
+        }
+      ],
+      "ancillary_files": [],
+      "canvas_drive_folders": [
+        "https://drive.google.com/drive/folders/1FPq-EHMlVtqlyr0DMswUB3nodjU22aJb"
+      ],
+      "canvas_drive_files": [
+        "https://drive.google.com/file/d/1Np3CK6EN9uckEeJxAL0wUw2n8hxrBPpb"
+      ],
+      "prompts": [
+        {
+          "view_label": "主视觉",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶玉兰花耳饰；半透粉晶花瓣；金花丝＋铺钻包边；多条金链流苏嵌小钻；约69×26mm可卸流苏两戴不另开SKU。镜头：主视觉—正面／3/4英雄构图，产品居中偏大，深蓝绒布自然褶皱垫底，仅此一只／一对。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "俯视",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶玉兰花耳饰；半透粉晶花瓣；金花丝＋铺钻包边；多条金链流苏嵌小钻；约69×26mm可卸流苏两戴不另开SKU。镜头：俯视—正上方俯视 flat lay，完整外形轮廓可读，深蓝绒布铺底，紧裁，无道具抢戏。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "材质微距",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶玉兰花耳饰；半透粉晶花瓣；金花丝＋铺钻包边；多条金链流苏嵌小钻；约69×26mm可卸流苏两戴不另开SKU。镜头：材质微距—局部微距：花丝／錾刻／宝石切面／珍珠光泽择一最有辨识度的材质区，浅景深，深蓝绒布虚化。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "侧轮廓",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶玉兰花耳饰；半透粉晶花瓣；金花丝＋铺钻包边；多条金链流苏嵌小钻；约69×26mm可卸流苏两戴不另开SKU。镜头：侧轮廓—严格侧面／半侧，厚度与外轮廓清晰，深蓝绒布，紧裁。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        },
+        {
+          "view_label": "编辑静物",
+          "body": "Image-to-image，参考上传原片。静奢棚拍；深蓝丝绒垫层（deep navy velvet，非奶油／暖灰）；产品约占画面更大约30%紧裁（中心约1.3×）；柔光＋微反射；输入＝该产品原片；五视角造型／材质／石色／金工必须与原片一致，禁止串款、改石色、乱改金工。 本品：粉晶玉兰花耳饰；半透粉晶花瓣；金花丝＋铺钻包边；多条金链流苏嵌小钻；约69×26mm可卸流苏两戴不另开SKU。镜头：编辑静物—稍偏编辑感的静物摆法仍以产品为主角，极简深蓝绒布褶皱，禁止文字水印、禁止换SKU。Quiet luxury studio product shot, deep navy velvet fabric base, tight crop."
+        }
+      ],
+      "ai_output_in_canvas": false,
+      "model_name_status": "unknown",
+      "generated_at_status": "unknown",
+      "seed_status": "unknown",
+      "api_parameters_status": "unknown"
+    }
+  ]
+}
