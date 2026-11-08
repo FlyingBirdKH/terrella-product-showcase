@@ -17,8 +17,8 @@
   nav.filters button { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:6px 12px; cursor:pointer; font:inherit; font-size:.85rem; }
   nav.filters button.active { background:var(--accent); color:#fff; border-color:var(--accent); }
   main { max-width:1200px; margin:0 auto; padding:18px 20px 48px; }
-  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:14px; }
-  article { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+  .grid { display:grid; grid-template-columns: 1fr; gap:16px; }
+  article { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:row; align-items:stretch; }
   article .imgwrap { aspect-ratio: 4/5; background:#ebe4d8; display:flex; align-items:center; justify-content:center; overflow:hidden; color:var(--muted); font-size:.85rem; text-align:center; padding:12px; }
   article img { width:100%; height:100%; object-fit:cover; display:block; }
   article .body { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1; }
@@ -33,7 +33,17 @@
   .section-title { margin: 22px 0 10px; font-size:1.05rem; }
   .badge { display:inline-block; font-size:.7rem; border:1px solid var(--line); border-radius:999px; padding:1px 8px; color:var(--muted); margin-left:4px; }
 
-  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:24px; }
+  .grid { grid-template-columns:1fr; align-items:stretch; gap:16px; }
+  article.product-row, article { flex-direction:row; align-items:stretch; gap:0; }
+  article > .gallery, article > .gallery-empty, article > .imgwrap { flex:0 0 auto; width:min(42vw, 280px); max-width:280px; }
+  article > .body { flex:1 1 auto; min-width:0; justify-content:center; }
+  .gallery { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; padding:8px; width:100%; box-sizing:border-box; }
+  .gallery-item img { width:100%; max-width:120px; height:auto; max-height:120px; aspect-ratio:1; object-fit:contain; margin:0 auto; }
+  @media(max-width:700px){
+    article.product-row, article { flex-direction:column; }
+    article > .gallery, article > .gallery-empty, article > .imgwrap { width:100%; max-width:none; }
+    .gallery-item img { max-width:100px; max-height:100px; }
+  }
   .gallery { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:10px; }
   .gallery.single { grid-template-columns:1fr; }
   .gallery-item { margin:0; min-width:0; background:#f1ebe1; border-radius:8px; overflow:hidden; }
@@ -64,7 +74,7 @@
   <h1>Terrella 产品库 · 全量展示</h1>
   <p>图片来源：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 的 Drive 文件夹</a></p>
 </header>
-<p class="meta" style="background:#fff7e7;padding:8px 12px;border-radius:8px;border:1px solid #e7e0d4;">预览验收版 v2（多图＋品类→子系列分层）· 非生产 · 子系列来自 Jenny 主表 · Asia/Shanghai 2026-11-08</p>
+<p class="meta" style="background:#fff7e7;padding:8px 12px;border-radius:8px;border:1px solid #e7e0d4;">预览验收版 v3（每行一款＋图缩约50%＋品类→子系列）· 非生产 · 子系列来自 Jenny 主表 · Asia/Shanghai 2026-11-08</p>
 <nav class="filters" id="filters" aria-label="品类筛选"></nav>
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
