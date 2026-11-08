@@ -25,7 +25,9 @@
   .cat { font-size:.75rem; color:var(--accent); letter-spacing:.04em; }
   .name { font-size:1rem; margin:0; font-weight:600; }
   .code { font-size:.78rem; color:var(--muted); }
+  .folder-links { display:flex; flex-direction:column; align-items:flex-start; gap:2px; margin-top:6px; }
   .original-link { align-self:flex-start; margin-top:6px; color:var(--accent); font-size:.85rem; text-underline-offset:3px; }
+  .folder-links .original-link { margin-top:0; }
   .original-link:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
   .image-note { margin-top:4px; color:#92400e; font-size:.75rem; line-height:1.5; }
   .gap { color:#b45309; font-size:.75rem; }
@@ -235,10 +237,26 @@ function validFolder(group){
   } catch { return false; }
 }
 function folderLink(p){
+  const parts = [];
   const g = GALLERY[p.sku];
-  if (!unchangedIdentity(p) || !validFolder(g)) return '<span class="gap">产品文件夹待补</span>';
-  const label = g.folderKind === 'shared' ? '产品原图文件夹（共享目录）' : IDENTITY_HOLDS.has(p.sku) ? '原图文件夹（对应待核）' : '产品原图文件夹';
-  return `<a class="original-link" href="${esc(g.folderUrl)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(p.sku)} ${label}（Google Drive，新窗口打开）">${label}</a>`;
+  if (unchangedIdentity(p) && validFolder(g)) {
+    const label = g.folderKind === 'shared' ? '产品原图文件夹（共享目录）' : IDENTITY_HOLDS.has(p.sku) ? '原图文件夹（对应待核）' : '产品原图文件夹';
+    parts.push(`<a class="original-link" href="${esc(g.folderUrl)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(p.sku)} ${label}（Google Drive，新窗口打开）">${label}</a>`);
+  } else {
+    parts.push('<span class="gap">产品原图文件夹待补</span>');
+  }
+  const bunnyFiles = imagesFor(p).filter(a => a && validImagePath(a.path) && !/\/CAT-\d{3}\.jpg$/.test(a.path));
+  if (bunnyFiles.length) {
+    parts.push(`<a class="original-link" href="bunny.html#${esc(p.sku)}" aria-label="${esc(p.sku)} Bunny文件夹">Bunny文件夹</a>`);
+  } else {
+    parts.push('<span class="gap">Bunny文件夹待补</span>');
+  }
+  if (aiImagesFor(p).some(a => a && validImagePath(a.path))) {
+    parts.push(`<a class="original-link" href="ai.html#${esc(p.sku)}" aria-label="${esc(p.sku)} AI图文件夹">AI图文件夹</a>`);
+  } else {
+    parts.push('<span class="gap">AI图文件夹待补</span>');
+  }
+  return `<div class="folder-links">${parts.join('')}</div>`;
 }
 function imageAnnotation(p){
   const note = IMAGE_ANNOTATIONS[p.sku];
