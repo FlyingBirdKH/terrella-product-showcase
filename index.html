@@ -33,19 +33,52 @@
   .section-title { margin: 22px 0 10px; font-size:1.05rem; }
   .badge { display:inline-block; font-size:.7rem; border:1px solid var(--line); border-radius:999px; padding:1px 8px; color:var(--muted); margin-left:4px; }
 
-  .grid { grid-template-columns:1fr; align-items:stretch; gap:16px; }
-  article.product-row, article { flex-direction:row; align-items:stretch; gap:0; }
-  article > .gallery, article > .gallery-empty, article > .imgwrap { flex:0 0 auto; width:min(42vw, 280px); max-width:280px; }
-  article > .body { flex:1 1 auto; min-width:0; justify-content:center; }
-  .gallery { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; padding:8px; width:100%; box-sizing:border-box; }
-  .gallery-item img { width:100%; max-width:120px; height:auto; max-height:120px; aspect-ratio:1; object-fit:contain; margin:0 auto; }
-  @media(max-width:700px){
-    article.product-row, article { flex-direction:column; }
-    article > .gallery, article > .gallery-empty, article > .imgwrap { width:100%; max-width:none; }
-    .gallery-item img { max-width:100px; max-height:100px; }
+  /* v4: each product = one full-width row; thumbs scroll horizontally; info on the right */
+  .grid { grid-template-columns:1fr; align-items:stretch; gap:14px; }
+  article.product-row, article {
+    flex-direction:row; align-items:stretch; gap:12px;
+    padding:10px; box-sizing:border-box;
   }
-  .gallery { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:10px; }
-  .gallery.single { grid-template-columns:1fr; }
+  article > .gallery, article > .gallery-empty, article > .imgwrap {
+    flex:1 1 auto; min-width:0; width:auto; max-width:none;
+  }
+  article > .body {
+    flex:0 0 clamp(180px, 28vw, 280px); min-width:160px; justify-content:center;
+    padding:8px 10px 8px 0;
+  }
+  .gallery, .gallery.single {
+    display:flex; flex-direction:row; flex-wrap:nowrap;
+    gap:8px; padding:4px 2px;
+    overflow-x:auto; overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity;
+    align-items:flex-start;
+  }
+  .gallery-item {
+    flex:0 0 auto; width:96px; margin:0;
+    scroll-snap-align:start;
+    background:#f1ebe1; border-radius:8px; overflow:hidden;
+  }
+  .gallery-item img {
+    width:96px; height:96px; max-width:96px; max-height:96px;
+    aspect-ratio:1; object-fit:contain; display:block; margin:0;
+  }
+  .gallery-item figcaption {
+    padding:4px 6px; font-size:.65rem; line-height:1.3;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .gallery-empty {
+    min-height:96px; padding:16px; display:grid; place-items:center;
+    color:var(--muted); background:#ebe4d8; border-radius:8px;
+  }
+  @media(max-width:700px){
+    article.product-row, article { flex-direction:column; gap:8px; }
+    article > .body { flex:1 1 auto; min-width:0; width:100%; padding:4px 2px 8px; }
+    .gallery-item { width:88px; }
+    .gallery-item img { width:88px; height:88px; max-width:88px; max-height:88px; }
+  }
+  /* gallery layout owned by v4 flex scroll rules */
+  .gallery.single { /* still horizontal strip */ }
   .gallery-item { margin:0; min-width:0; background:#f1ebe1; border-radius:8px; overflow:hidden; }
   .gallery-item img { width:100%; height:auto; aspect-ratio:1; object-fit:contain; display:block; }
   .gallery-item img[hidden], [hidden] { display:none !important; }
@@ -74,7 +107,7 @@
   <h1>Terrella 产品库 · 全量展示</h1>
   <p>图片来源：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 的 Drive 文件夹</a></p>
 </header>
-<p class="meta" style="background:#fff7e7;padding:8px 12px;border-radius:8px;border:1px solid #e7e0d4;">预览验收版 v3（每行一款＋图缩约50%＋品类→子系列）· 非生产 · 子系列来自 Jenny 主表 · Asia/Shanghai 2026-11-08</p>
+<p class="meta" style="background:#fff7e7;padding:8px 12px;border-radius:8px;border:1px solid #e7e0d4;">预览验收版 v4（图横向一排可滑＋同行右侧信息＋品类→子系列）· 非生产 · 子系列来自 Jenny 主表 · Asia/Shanghai 2026-11-08</p>
 <nav class="filters" id="filters" aria-label="品类筛选"></nav>
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
