@@ -27,3 +27,6 @@
 - 报告 PR（未上线）：https://github.com/FlyingBirdKH/terrella-product-showcase/pull/1
 - Drive ZIP：`1ESbNCtHrJ318a7-f0HMvo55a2y1RQZ57`（本轮 DownloadFile 已成功，68MB）
 - Supabase `terrella-product-db`：96 products / 172 assets（kind=thumb+original 各 86）；无多图资产行。
+
+## PR
+- 本预览分支 draft PR：https://github.com/FlyingBirdKH/terrella-product-showcase/pull/2
