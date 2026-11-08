@@ -1,16 +1,15 @@
-# 预览验收（非生产）· v4 图横向一排可滑
+# 预览验收（非生产）· CDN 多图
 
 时间：2026-11-08 Asia/Shanghai
 
-## 带图预览 URL（匿名 Netlify Drop，约 60 分钟内认领）
+## CDN
 
-- **v4** Site：https://tubular-liger-5e0844.netlify.app/
-- Password：`My-Drop-Site`
-- 正式站未动：https://terrella-product-showcase.vercel.app/
+- Base：https://terralla-internal.b-cdn.net/showcase/multi-image-20261108/
+- Bunny 上传：ok=564 fail=0
+- `index.html` / `products.json` 图片地址已改为上述 CDN（本地 `images/`、`g-`、`ai-`、`CAT-` 文件引用：0）
 
-## v4 UI（Kevin 标注）
+## 部署范围
 
-- 每款产品一整行（单列）
-- 多张图 **横向一排、可横滑**（小图约 96×96）
-- 产品信息在 **同行右侧**（窄屏改为图排下方）
-- 保留品类 → 子系列筛选与分组
+- 仅 Preview 分支 `preview/ava-multi-image-20261108`（draft PR #2）
+- 生产未动：https://terrella-product-showcase.vercel.app/
+- 未合并 main，未做 production deploy
