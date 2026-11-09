@@ -286,11 +286,9 @@ function folderLink(p){
   } else {
     parts.push('<span class="gap">产品原图文件夹待补</span>');
   }
-  const bunnyUrl = bunnyFileManagerUrl(p);
+  const bunnyUrl = imagesFor(p).length ? bunnyFileManagerUrl(p) : '';
   if (bunnyUrl) {
     parts.push(`<a class="original-link" href="${esc(bunnyUrl)}" target="_blank" rel="noopener noreferrer" title="打开 Bunny 控制台 File Manager（需登录）" aria-label="${esc(p.sku)} Bunny文件夹：打开 Bunny File Manager">Bunny文件夹</a>`);
-  } else {
-    parts.push('<span class="gap">Bunny文件夹待补</span>');
   }
   const firstAi = aiImagesFor(p).find(a => a && validImagePath(a.path));
   const aiFolderUrl = firstAi ? bunnyAiFileManagerUrl(p) : '';
@@ -421,6 +419,9 @@ app.addEventListener('error',e=>{
     const aiN=article.querySelectorAll('.media-stack .gallery.ai-gallery figure').length;
     const count=article.querySelector('.image-count');
     if(count) count.textContent=(real? '真图 '+real : '真图待补')+' · '+(aiN? 'AI '+aiN : 'AI 待补');
+    if(!real){
+      article.querySelectorAll('a.original-link').forEach(a=>{ if((a.textContent||'').trim()==='Bunny文件夹') a.remove(); });
+    }
   }
 },true);
 function validProducts(list){
