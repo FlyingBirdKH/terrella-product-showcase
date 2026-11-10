@@ -32,6 +32,7 @@
   .copy-bar { max-width:1200px; margin:12px auto 0; padding:0 20px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
   .copy-bar button { border:1px solid var(--accent); background:var(--card); color:var(--accent); border-radius:999px; padding:6px 12px; cursor:pointer; font:inherit; font-size:.85rem; }
   .copy-bar p { margin:0; color:var(--muted); font-size:.8rem; line-height:1.4; }
+  #copy-fallback { flex:1 0 100%; margin:0; max-height:16rem; overflow:auto; white-space:pre-wrap; word-break:break-word; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff7e7; color:var(--ink); font:inherit; font-size:.8rem; line-height:1.45; user-select:text; -webkit-user-select:text; }
   .short-id { margin-top:4px; }
   .short-id code { background:#efe7da; padding:1px 6px; border-radius:4px; font-size:.75rem; }
   .release-pick { display:flex; align-items:center; gap:6px; margin-top:4px; font-size:.75rem; }
@@ -149,6 +150,7 @@
 <div class="copy-bar">
   <button type="button" id="copy-release">复制放行清单</button>
   <p id="copy-status">勾选只留在这一页，刷新会消失。复制后贴回 Slack，还没有写入仓库。</p>
+  <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
 </div>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
 <p id="load-status" role="status" aria-live="polite" hidden></p>
@@ -459,10 +461,43 @@ app.addEventListener('change', e => {
   const status = document.getElementById('copy-status');
   if (status) status.textContent = `已勾选 ${releasePicks.size} 张。这只留在这一页，还没有写入仓库。`;
 });
+function hideManualList(){
+  const list = document.getElementById('copy-fallback');
+  if (!list) return;
+  list.textContent = '';
+  list.hidden = true;
+}
+function showManualList(text){
+  const list = document.getElementById('copy-fallback');
+  if (!list) return;
+  list.textContent = text;
+  list.hidden = false;
+}
+function fallbackCopy(text){
+  let area = null;
+  try {
+    area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('aria-hidden', 'true');
+    area.style.position = 'fixed';
+    area.style.left = '-9999px';
+    document.body.appendChild(area);
+    area.focus();
+    area.select();
+    return document.execCommand('copy') === true;
+  } catch (err) {
+    return false;
+  } finally {
+    if (area) {
+      try { area.remove(); } catch (cleanupErr) {}
+    }
+  }
+}
 document.getElementById('copy-release').addEventListener('click', async () => {
   const status = document.getElementById('copy-status');
   const items = [...releasePicks.values()];
   if (!items.length) {
+    hideManualList();
     status.textContent = '还没有勾选。勾选后复制，再贴回 Slack。';
     return;
   }
@@ -476,17 +511,26 @@ document.getElementById('copy-release').addEventListener('click', async () => {
     lines.push('');
   }
   const text = lines.join('\n');
+  let copied = false;
   try {
-    await navigator.clipboard.writeText(text);
+    const clipboard = navigator.clipboard;
+    if (!clipboard || typeof clipboard.writeText !== 'function') throw new Error('clipboard-unavailable');
+    await clipboard.writeText(text);
+    copied = true;
   } catch (err) {
-    const area = document.createElement('textarea');
-    area.value = text;
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    area.remove();
+    try {
+      copied = fallbackCopy(text) === true;
+    } catch (fallbackErr) {
+      copied = false;
+    }
   }
-  status.textContent = `已复制 ${items.length} 张。这还没写入仓库，请贴回 Slack。`;
+  if (copied) {
+    hideManualList();
+    status.textContent = `已复制 ${items.length} 张。这还没写入仓库，请贴回 Slack。`;
+  } else {
+    showManualList(text);
+    status.textContent = '复制没有成功，剪贴板没有改变。请手动选中下面的清单再复制，然后贴回 Slack。这还没有写入仓库。';
+  }
 });
 
 function validProducts(list){
