@@ -458,6 +458,7 @@ app.addEventListener('change', e => {
   } else {
     releasePicks.delete(key);
   }
+  hideManualList();
   const status = document.getElementById('copy-status');
   if (status) status.textContent = `已勾选 ${releasePicks.size} 张。这只留在这一页，还没有写入仓库。`;
 });
