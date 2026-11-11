@@ -339,6 +339,7 @@ function versionLabel(a){
   return a.version || '';
 }
 const releasePicks = new Map();
+let copyEpoch = 0;
 function stripGallery(items, aria, extraClass='', product){
   if (!items.length) return '';
   return `<div class="gallery${items.length === 1 ? ' single' : ''}${extraClass ? ' '+extraClass : ''}" aria-label="${esc(aria)}">${items.map((a,i) => {
@@ -459,6 +460,7 @@ app.addEventListener('change', e => {
     releasePicks.delete(key);
   }
   hideManualList();
+  copyEpoch++;
   const status = document.getElementById('copy-status');
   if (status) status.textContent = `已勾选 ${releasePicks.size} 张。这只留在这一页，还没有写入仓库。`;
 });
@@ -495,6 +497,7 @@ function fallbackCopy(text){
   }
 }
 document.getElementById('copy-release').addEventListener('click', async () => {
+  const requestEpoch = ++copyEpoch;
   const status = document.getElementById('copy-status');
   const items = [...releasePicks.values()];
   if (!items.length) {
@@ -517,14 +520,17 @@ document.getElementById('copy-release').addEventListener('click', async () => {
     const clipboard = navigator.clipboard;
     if (!clipboard || typeof clipboard.writeText !== 'function') throw new Error('clipboard-unavailable');
     await clipboard.writeText(text);
+    if (requestEpoch !== copyEpoch) return;
     copied = true;
   } catch (err) {
+    if (requestEpoch !== copyEpoch) return;
     try {
       copied = fallbackCopy(text) === true;
     } catch (fallbackErr) {
       copied = false;
     }
   }
+  if (requestEpoch !== copyEpoch) return;
   if (copied) {
     hideManualList();
     status.textContent = `已复制 ${items.length} 张。这还没写入仓库，请贴回 Slack。`;
