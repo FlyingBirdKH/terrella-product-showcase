@@ -29,6 +29,14 @@
   .original-link:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
   .image-note { margin-top:4px; color:#92400e; font-size:.75rem; line-height:1.5; }
   .gap { color:#b45309; font-size:.75rem; }
+  .copy-bar { max-width:1200px; margin:12px auto 0; padding:0 20px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .copy-bar button { border:1px solid var(--accent); background:var(--card); color:var(--accent); border-radius:999px; padding:6px 12px; cursor:pointer; font:inherit; font-size:.85rem; }
+  .copy-bar button:disabled { opacity:.55; cursor:not-allowed; }
+  .copy-bar p { margin:0; color:var(--muted); font-size:.8rem; line-height:1.4; }
+  #copy-fallback { flex:1 0 100%; margin:0; max-height:16rem; overflow:auto; white-space:pre-wrap; word-break:break-word; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff7e7; color:var(--ink); font:inherit; font-size:.8rem; line-height:1.45; user-select:text; -webkit-user-select:text; }
+  .short-id { margin-top:4px; }
+  .short-id code { background:#efe7da; padding:1px 6px; border-radius:4px; font-size:.75rem; }
+  .release-pick { display:flex; align-items:center; gap:6px; margin-top:4px; font-size:.75rem; }
   footer { max-width:1200px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:.8rem; line-height:1.5; }
   .section-title { margin: 22px 0 10px; font-size:1.05rem; }
   .badge { display:inline-block; font-size:.7rem; border:1px solid var(--line); border-radius:999px; padding:1px 8px; color:var(--muted); margin-left:4px; }
@@ -140,6 +148,11 @@
 <p class="meta" style="background:#fff7e7;padding:8px 12px;border-radius:8px;border:1px solid #e7e0d4;">预览验收版 v4（图横向一排可滑＋同行右侧信息＋品类→子系列）· 非生产 · 子系列来自 Jenny 主表 · Asia/Shanghai 2026-11-08</p>
 <nav class="filters" id="filters" aria-label="品类筛选"></nav>
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
+<div class="copy-bar">
+  <button type="button" id="copy-release">复制放行清单</button>
+  <p id="copy-status">勾选只留在这一页，刷新会消失。复制后贴回 Slack，还没有写入仓库。</p>
+  <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
+</div>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
 <p id="load-status" role="status" aria-live="polite" hidden></p>
 <main id="app"></main>
@@ -308,9 +321,40 @@ function imageAnnotation(p){
   const note = IMAGE_ANNOTATIONS[p.sku];
   return note ? `<div class="image-note" role="note"><strong>${esc(note.kind)}</strong>：${esc(note.detail)}</div>` : '';
 }
-function stripGallery(items, aria, extraClass=''){
+function shortId(p, a){
+  const sku = ((p.sku || '').match(/(\d+)$/) || ['',''])[1];
+  const sha = String(a.outputSha256 || '').toLowerCase();
+  const prefix = /^[a-f0-9]{64}$/.test(sha) ? sha.slice(0, 6) : '';
+  const file = String(a.path || '').split('/').pop();
+  const named = file.match(/-(\d{2})-v(\d+)/i);
+  if (named && prefix) return `${sku}-${named[1]}-V${named[2]}·${prefix}`;
+  const shot = String(a.shot || '').match(/^(\d{2})/);
+  if (shot && prefix) return `${sku}-${shot[1]}·${prefix}`;
+  const token = file.match(/^g-([a-f0-9]{6})/i);
+  if (token) return `${sku}·${token[1].toLowerCase()}`;
+  return prefix ? `${sku}·${prefix}` : '';
+}
+function versionLabel(a){
+  const file = String(a.path || '').split('/').pop();
+  const named = file.match(/-(\d{2})-v(\d+)/i);
+  if (named) return `V${named[2]}`;
+  return a.version || '';
+}
+const releasePicks = new Map();
+let copyEpoch = 0;
+let copyBusy = false;
+function stripGallery(items, aria, extraClass='', product){
   if (!items.length) return '';
-  return `<div class="gallery${items.length === 1 ? ' single' : ''}${extraClass ? ' '+extraClass : ''}" aria-label="${esc(aria)}">${items.map((a,i) => `<figure class="gallery-item"><img src="${esc(a.path)}" alt="${esc(a.label || '图')} ${i+1}" loading="lazy" decoding="async"><span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}</figcaption></figure>`).join('')}</div>`;
+  return `<div class="gallery${items.length === 1 ? ' single' : ''}${extraClass ? ' '+extraClass : ''}" aria-label="${esc(aria)}">${items.map((a,i) => {
+    const id = product ? shortId(product, a) : '';
+    const ai = a.kind === 'ai' && /^[a-f0-9]{64}$/.test(String(a.outputSha256 || '').toLowerCase());
+    const sha = String(a.outputSha256 || '').toLowerCase();
+    const key = ai ? `${product.sku}\n${sha}` : '';
+    const checked = key && releasePicks.has(key) ? ' checked' : '';
+    const code = id ? `<div class="short-id"><code>${esc(id)}</code></div>` : '';
+    const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${checked}> 选入放行清单</label>` : '';
+    return `<figure class="gallery-item"><img src="${esc(a.path)}" alt="${esc(a.label || '图')} ${i+1}" loading="lazy" decoding="async"><span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${pick}</figcaption></figure>`;
+  }).join('')}</div>`;
 }
 function aiImagesFor(p){
   const g = AI_GALLERY[p.sku];
@@ -335,12 +379,12 @@ function gallery(p){
   const ai = aiImagesFor(p);
   const ag = AI_GALLERY[p.sku];
   const realBlock = real.length
-    ? `<div class="media-row-label"><strong>真图／产品图</strong> · ${real.length} 张</div>${stripGallery(real, p.sku+' 真图／产品图')}`
+    ? `<div class="media-row-label"><strong>真图／产品图</strong> · ${real.length} 张</div>${stripGallery(real, p.sku+' 真图／产品图', '', p)}`
     : `<div class="media-row-label"><strong>真图／产品图</strong></div><div class="gallery-empty">原图待补</div>`;
   let aiBlock;
   if (ai.length) {
     const meta = `<div class="ai-meta"><div>AI · ${esc(ag.version || '')}${ag.style ? ' · '+esc(ag.style) : ''}${ag.element ? ' · '+esc(ag.element) : ''}</div>${ag.prompt ? `<div class="ai-prompt" title="${esc(ag.prompt)}">Prompt：${esc(ag.prompt)}</div>` : ''}</div>`;
-    aiBlock = `<div class="media-row-label"><strong>AI 产品图</strong> · ${ai.length} 张 · <span role="note">AI候选，保真待验</span></div>${stripGallery(ai, p.sku+' AI 产品图', 'ai-gallery')}${meta}`;
+    aiBlock = `<div class="media-row-label"><strong>AI 产品图</strong> · ${ai.length} 张 · <span role="note">AI候选，保真待验</span></div>${stripGallery(ai, p.sku+' AI 产品图', 'ai-gallery', p)}${meta}`;
   } else {
     aiBlock = `<div class="media-row-label"><strong>AI 产品图</strong></div><div class="ai-empty">AI 待补（东方非遗等仍在样图阶段；浅灰 rembg 废稿不展示）</div>`;
   }
@@ -403,6 +447,119 @@ function render(){
 filters.addEventListener('click',e=>{const btn=e.target.closest('button[data-cat]');if(!btn||!categories().includes(btn.dataset.cat))return;active=btn.dataset.cat;activeSub='全部';renderFilters();render();});
 subfilters.addEventListener('click',e=>{const btn=e.target.closest('button[data-sub]');if(!btn)return;const v=btn.dataset.sub;if(!subSeriesOptions().includes(v))return;activeSub=v;renderFilters();render();});
 app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG')return;img.hidden=true;const f=img.parentElement?.querySelector('.image-failure');if(f)f.hidden=false;},true);
+app.addEventListener('change', e => {
+  const box = e.target.closest('input[data-release]');
+  if (!box) return;
+  const key = `${box.dataset.sku}\n${box.dataset.sha}`;
+  if (box.checked) {
+    releasePicks.set(key, {
+      short_id: box.dataset.short,
+      sku: box.dataset.sku,
+      sha256: box.dataset.sha,
+      version: box.dataset.version,
+      path: box.dataset.path
+    });
+  } else {
+    releasePicks.delete(key);
+  }
+  hideManualList();
+  copyEpoch++;
+  const status = document.getElementById('copy-status');
+  if (status) status.textContent = `已勾选 ${releasePicks.size} 张。这只留在这一页，还没有写入仓库。`;
+});
+function hideManualList(){
+  const list = document.getElementById('copy-fallback');
+  if (!list) return;
+  list.textContent = '';
+  list.hidden = true;
+}
+function showManualList(text){
+  const list = document.getElementById('copy-fallback');
+  if (!list) return;
+  list.textContent = text;
+  list.hidden = false;
+}
+function fallbackCopy(text){
+  let area = null;
+  try {
+    area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('aria-hidden', 'true');
+    area.style.position = 'fixed';
+    area.style.left = '-9999px';
+    document.body.appendChild(area);
+    area.focus();
+    area.select();
+    return document.execCommand('copy') === true;
+  } catch (err) {
+    return false;
+  } finally {
+    if (area) {
+      try { area.remove(); } catch (cleanupErr) {}
+    }
+  }
+}
+document.getElementById('copy-release').addEventListener('click', async () => {
+  const button = document.getElementById('copy-release');
+  if (copyBusy || button.disabled) return;
+  const requestEpoch = ++copyEpoch;
+  const status = document.getElementById('copy-status');
+  const items = [...releasePicks.values()];
+  if (!items.length) {
+    hideManualList();
+    status.textContent = '还没有勾选。勾选后复制，再贴回 Slack。';
+    return;
+  }
+  const lines = ['放行清单草稿（只是复制，尚未写入仓库）', '目标：terralla.com', `张数：${items.length}`, ''];
+  for (const item of items) {
+    lines.push(`- short_id: ${item.short_id}`);
+    lines.push(`  sku: ${item.sku}`);
+    lines.push(`  version: ${item.version || '见文件名'}`);
+    lines.push(`  sha256: ${item.sha256}`);
+    lines.push(`  path: ${item.path}`);
+    lines.push('');
+  }
+  const text = lines.join('\n');
+  copyBusy = true;
+  button.disabled = true;
+  let outcome = 'failed';
+  try {
+    try {
+      const clipboard = navigator.clipboard;
+      if (!clipboard || typeof clipboard.writeText !== 'function') throw new Error('clipboard-unavailable');
+      await clipboard.writeText(text);
+      outcome = requestEpoch !== copyEpoch ? 'stale' : 'copied';
+    } catch (err) {
+      if (requestEpoch !== copyEpoch) {
+        outcome = 'stale';
+      } else {
+        try {
+          outcome = fallbackCopy(text) === true ? 'copied' : 'failed';
+        } catch (fallbackErr) {
+          outcome = 'failed';
+        }
+        if (requestEpoch !== copyEpoch) outcome = 'stale';
+      }
+    }
+  } catch (err) {
+    outcome = requestEpoch !== copyEpoch ? 'stale' : 'failed';
+  } finally {
+    copyBusy = false;
+    button.disabled = false;
+  }
+  if (outcome === 'stale' || requestEpoch !== copyEpoch) {
+    status.textContent = '选择已变化，请再次复制';
+    return;
+  }
+  if (outcome === 'copied') {
+    hideManualList();
+    status.textContent = `已复制 ${items.length} 张。这还没写入仓库，请贴回 Slack。`;
+  } else {
+    showManualList(text);
+    status.textContent = '复制没有成功，剪贴板没有改变。请手动选中下面的清单再复制，然后贴回 Slack。这还没有写入仓库。';
+  }
+});
+
 function validProducts(list){
   return Array.isArray(list) && list.length===FALLBACK.length && new Set(list.map(p=>p?.sku)).size===list.length && list.every(p=>p && BASELINE.has(p.sku) && ['name','category','status','product_type','thumb','original','code'].every(k=>p[k]===null || p[k]===undefined || typeof p[k]==='string'));
 }
