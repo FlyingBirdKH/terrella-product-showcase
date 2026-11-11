@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CAT-001 四图静态核验 · 尚未同步商城</title>
+<style>
+  :root { --bg:#f7f1e8; --ink:#1c1917; --muted:#78716c; --card:#fffdf8; --line:#e7e0d4; --accent:#8b5e3c; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", serif; background:var(--bg); color:var(--ink); }
+  header, main, footer { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  h1 { margin: 0 0 8px; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 600; }
+  .banner { margin: 0 0 12px; padding: 10px 12px; border: 2px solid #9a3412; background: #fff7ed; color: #9a3412; font-weight: 700; letter-spacing: .04em; }
+  p { margin: 0 0 10px; line-height: 1.5; }
+  .muted { color: var(--muted); }
+  #summary { font-size: .95rem; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  li { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  figure { margin: 0; }
+  img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #f1ebe1; display: block; }
+  figcaption { padding: 10px 12px 12px; font-size: .82rem; line-height: 1.45; }
+  .order { font-weight: 700; }
+  code { background: #efe7da; padding: 1px 6px; border-radius: 4px; word-break: break-all; }
+  .load { margin-top: 6px; font-weight: 700; }
+  .load[data-state="pending"] { color: var(--muted); }
+  .load[data-state="loaded"] { color: #166534; }
+  .load[data-state="failed"] { color: #9a3412; }
+  footer { color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<header>
+  <p class="banner" role="status">静态核验，尚未同步商城</p>
+  <h1>CAT-001 四图加载与顺序</h1>
+  <p class="muted">只核对展示清单里这四条 Bunny 地址能否按原顺序打开。不是商品页，没有购买，也不证明目标站已上架或已读回。</p>
+  <p id="summary" role="status">正在加载 0 / 4。</p>
+</header>
+<main>
+  <ol id="frames" aria-label="CAT-001 静态核验顺序"></ol>
+</main>
+<footer>
+  顺序来自展示页 CAT-001 AI 清单的原排列。短号按页面规则取 SKU 末段加 SHA-256 前 6 位。正式上架仍须 Kevin 的明确 GO。
+</footer>
+<script>
+const MANIFEST = [
+  { order: 1, sku: 'CAT-001', shortId: '001·ff4696', sha256: 'ff4696836d2ac0320db1bf247cd8e89e3760795c696caf0bbf61ffeb3033f342', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-01-ff469683.png' },
+  { order: 2, sku: 'CAT-001', shortId: '001·af3760', sha256: 'af3760c6b82472fcc1999dec44079feb5089613ccc6e247b4a9c94acfc7746c4', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-02-af3760c6.png' },
+  { order: 3, sku: 'CAT-001', shortId: '001·2f8919', sha256: '2f89191684cdab6756eafe1e4c116d801a36451cd6bc1f3be3c647f19929f44d', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-03-2f891916.png' },
+  { order: 4, sku: 'CAT-001', shortId: '001·91cd1d', sha256: '91cd1d7d67d7bacfba741d14c26dc340789a0836412518af4241fe0bb4a3fa0c', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-04-91cd1d7d.png' }
+];
+const list = document.getElementById('frames');
+const summary = document.getElementById('summary');
+const states = new Map();
+function esc(value){
+  return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function paint(){
+  const loaded = [...states.values()].filter(state => state === 'loaded').length;
+  const failed = [...states.values()].filter(state => state === 'failed').length;
+  const pending = MANIFEST.length - loaded - failed;
+  summary.textContent = pending
+    ? `正在加载 ${loaded} / ${MANIFEST.length}。失败 ${failed}。`
+    : `加载完成 ${loaded} / ${MANIFEST.length}。失败 ${failed}。顺序为清单 1 到 4。尚未同步商城。`;
+}
+list.innerHTML = MANIFEST.map(item => {
+  states.set(item.order, 'pending');
+  return `<li data-order="${item.order}"><figure><img alt="CAT-001 静态核验第 ${item.order} 张" src="${esc(item.path)}" data-order="${item.order}"><figcaption><div class="order">顺序 ${item.order} / 4 · ${esc(item.sku)}</div><div>短号 <code>${esc(item.shortId)}</code></div><div>SHA-256 <code>${esc(item.sha256)}</code></div><div class="load" data-state="pending" data-order="${item.order}">正在加载</div></figcaption></figure></li>`;
+}).join('');
+paint();
+for (const img of list.querySelectorAll('img')) {
+  const mark = (state) => {
+    states.set(Number(img.dataset.order), state);
+    const label = img.parentElement.querySelector('.load');
+    label.dataset.state = state;
+    label.textContent = state === 'loaded' ? '已加载' : '未加载';
+    paint();
+  };
+  img.addEventListener('load', () => mark(img.naturalWidth > 0 ? 'loaded' : 'failed'));
+  img.addEventListener('error', () => mark('failed'));
+  if (img.complete) mark(img.naturalWidth > 0 ? 'loaded' : 'failed');
+}
+</script>
+</body>
+</html>
