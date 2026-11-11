@@ -88,8 +88,8 @@ test('revoked, failed, and conflicting records do not show success', () => {
     records: [
       row({ approval: { state: 'revoked', evidence: 'example-revoked' }, sync: { state: 'revoked', evidence: 'example-revoked' } }),
       row({ sha256: OTHER_SHA, approval: { state: 'approved', evidence: 'example-approval-evidence' }, sync: { state: 'failed', evidence: 'example-failed' } }),
-      row({ sha256: EXAMPLE_SHA_B, sync: { state: 'verified', evidence: 'one' } }),
-      row({ sha256: EXAMPLE_SHA_B, sync: { state: 'verified', evidence: 'two' } })
+      row({ sha256: EXAMPLE_SHA_B, revision: 1, eventId: 'left', sync: { state: 'verified', evidence: 'one' } }),
+      row({ sha256: EXAMPLE_SHA_B, revision: 1, eventId: 'right', sync: { state: 'verified', evidence: 'two' } })
     ]
   });
   assert.deepEqual(fns.badgesForImage(parsed.index, 'CAT-001', EXAMPLE_SHA_A).approved, []);
@@ -121,6 +121,95 @@ test('revoked, failed, and conflicting records do not show success', () => {
   assert.deepEqual(failed.synced, []);
   assert.deepEqual(fns.badgesForImage(parsed.index, 'CAT-001', EXAMPLE_SHA_B).conflict, ['example-target']);
   assert.deepEqual(fns.badgesForImage(parsed.index, 'CAT-001', EXAMPLE_SHA_B).synced, []);
+});
+
+test('append-only history merges by revision and does not become a permanent conflict', () => {
+  const reportedTarget = 'http://terralla.com';
+  const history = [
+    row({ target: reportedTarget, revision: 1, eventId: 'approval', approval: { state: 'approved', evidence: 'example-approval-evidence' }, sync: { state: 'pending', evidence: '' } }),
+    row({ target: reportedTarget, revision: 2, eventId: 'sync', approval: null, sync: { state: 'verified', evidence: 'example-readback' } }),
+    row({ target: reportedTarget, revision: 3, eventId: 'withdraw', approval: { state: 'revoked', evidence: 'example-revoked' }, sync: { state: 'revoked', evidence: 'example-revoked' } }),
+    row({ target: reportedTarget, revision: 4, eventId: 'republish', approval: { state: 'approved', evidence: 'example-approval-evidence' }, sync: { state: 'verified', evidence: 'example-readback' } })
+  ];
+  const steps = [1, 2, 3, 4].map(count => fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: history.slice(0, count)
+  }));
+  assert.deepEqual(fns.badgesForImage(steps[0].index, 'CAT-001', EXAMPLE_SHA_A), {
+    approved: [reportedTarget], synced: [], revoked: [], conflict: []
+  });
+  assert.deepEqual(fns.badgesForImage(steps[1].index, 'CAT-001', EXAMPLE_SHA_A).synced, [reportedTarget]);
+  assert.deepEqual(fns.badgesForImage(steps[1].index, 'CAT-001', EXAMPLE_SHA_A).conflict, []);
+  assert.deepEqual(fns.badgesForImage(steps[2].index, 'CAT-001', EXAMPLE_SHA_A).approved, []);
+  assert.deepEqual(fns.badgesForImage(steps[2].index, 'CAT-001', EXAMPLE_SHA_A).synced, []);
+  assert.deepEqual(fns.badgesForImage(steps[2].index, 'CAT-001', EXAMPLE_SHA_A).revoked, [reportedTarget]);
+  const republished = fns.badgesForImage(steps[3].index, 'CAT-001', EXAMPLE_SHA_A);
+  assert.deepEqual(republished.approved, [reportedTarget]);
+  assert.deepEqual(republished.synced, [reportedTarget]);
+  assert.deepEqual(republished.conflict, []);
+  const unordered = fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [
+      { sku: 'CAT-001', sha256: EXAMPLE_SHA_A, target: reportedTarget, sync: { state: 'pending', evidence: '' } },
+      { sku: 'CAT-001', sha256: EXAMPLE_SHA_A, target: reportedTarget, sync: { state: 'verified', evidence: 'example-readback' } }
+    ]
+  });
+  assert.deepEqual(fns.badgesForImage(unordered.index, 'CAT-001', EXAMPLE_SHA_A).conflict, []);
+  assert.deepEqual(fns.badgesForImage(unordered.index, 'CAT-001', EXAMPLE_SHA_A).synced, [reportedTarget]);
+  const otherTarget = fns.badgesForImage(fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [
+      ...history,
+      { sku: 'CAT-001', sha256: EXAMPLE_SHA_A, target: 'fixture-other', sync: { state: 'pending', evidence: '' } }
+    ]
+  }).index, 'CAT-001', EXAMPLE_SHA_A);
+  assert.deepEqual(otherTarget.synced, [reportedTarget]);
+  assert.equal(otherTarget.approved.includes('fixture-other'), false);
+});
+
+test('same version conflicts, duplicate events, and malformed versions fail closed', () => {
+  const sameVersion = fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [
+      row({ revision: 2, eventId: 'a', sync: { state: 'verified', evidence: 'one' } }),
+      row({ revision: 2, eventId: 'b', sync: { state: 'verified', evidence: 'two' } })
+    ]
+  });
+  assert.deepEqual(fns.badgesForImage(sameVersion.index, 'CAT-001', EXAMPLE_SHA_A).conflict, ['example-target']);
+  assert.deepEqual(fns.badgesForImage(sameVersion.index, 'CAT-001', EXAMPLE_SHA_A).synced, []);
+  const duplicate = fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [
+      row({ revision: 1, eventId: 'same', sync: { state: 'verified', evidence: 'example-readback' } }),
+      row({ revision: 1, eventId: 'same', sync: { state: 'verified', evidence: 'example-readback' } })
+    ]
+  });
+  assert.deepEqual(fns.badgesForImage(duplicate.index, 'CAT-001', EXAMPLE_SHA_A).synced, ['example-target']);
+  assert.deepEqual(fns.badgesForImage(duplicate.index, 'CAT-001', EXAMPLE_SHA_A).conflict, []);
+  const changedEvent = fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [
+      row({ revision: 1, eventId: 'same', sync: { state: 'verified', evidence: 'one' } }),
+      row({ revision: 2, eventId: 'same', sync: { state: 'verified', evidence: 'two' } })
+    ]
+  });
+  assert.deepEqual(fns.badgesForImage(changedEvent.index, 'CAT-001', EXAMPLE_SHA_A).synced, []);
+  assert.deepEqual(fns.badgesForImage(changedEvent.index, 'CAT-001', EXAMPLE_SHA_A).conflict, ['example-target']);
+  const malformed = fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [
+      row({ revision: 1, sync: { state: 'verified', evidence: 'example-readback' } }),
+      row({ revision: 1.5, sync: { state: 'pending', evidence: '' } })
+    ]
+  });
+  assert.deepEqual(fns.badgesForImage(malformed.index, 'CAT-001', EXAMPLE_SHA_A).synced, []);
+  assert.deepEqual(fns.badgesForImage(malformed.index, 'CAT-001', EXAMPLE_SHA_A).conflict, ['example-target']);
+  const future = fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [row({ schema: 'terrella.image-availability.v2', revision: 3, sync: { state: 'verified', evidence: 'example-readback' } })]
+  });
+  assert.deepEqual(fns.badgesForImage(future.index, 'CAT-001', EXAMPLE_SHA_A).synced, []);
+  assert.equal(JSON.stringify(ledger).includes('terralla.com'), false);
 });
 
 test('simulation keeps picks, approval, and actual publish state apart', () => {

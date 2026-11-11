@@ -376,33 +376,96 @@ function parseSide(side, states){
   if (!states.includes(side.state)) return { ok: false };
   return { ok: true, value: { state: side.state, evidence: cleanEvidence(side.evidence) } };
 }
+function parseOrder(row){
+  let revision = null;
+  let eventId = null;
+  if (Object.prototype.hasOwnProperty.call(row, 'revision')) {
+    const value = row.revision;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || !Number.isSafeInteger(value)) return { ok: false };
+    revision = value;
+  }
+  if (Object.prototype.hasOwnProperty.call(row, 'eventId')) {
+    eventId = cleanToken(row.eventId, 120);
+    if (!eventId) return { ok: false };
+  }
+  return { ok: true, revision, eventId };
+}
 function parseAvailabilityRow(row){
   if (!row || typeof row !== 'object' || Array.isArray(row)) return null;
   const sku = cleanSku(row.sku);
   const sha256 = cleanSha(row.sha256);
   const target = cleanTarget(row.target);
   if (!sku || !sha256 || !target) return null;
+  if (row.schema != null && row.schema !== 'terrella.image-availability.v1') return { sku, sha256, target, invalid: true };
+  const order = parseOrder(row);
+  if (!order.ok) return { sku, sha256, target, invalid: true };
   const approval = parseSide(row.approval, ['approved', 'revoked', 'pending']);
   const sync = parseSide(row.sync, ['verified', 'failed', 'pending', 'revoked']);
-  if (!approval.ok || !sync.ok) return null;
-  return { sku, sha256, target, approval: approval.value, sync: sync.value };
+  if (!approval.ok || !sync.ok) return { sku, sha256, target, invalid: true };
+  return { sku, sha256, target, approval: approval.value, sync: sync.value, revision: order.revision, eventId: order.eventId, invalid: false };
 }
 function sameAvailabilityOutcome(a, b){
   return JSON.stringify(a.approval) === JSON.stringify(b.approval) && JSON.stringify(a.sync) === JSON.stringify(b.sync);
+}
+function overlayAvailability(base, next){
+  return {
+    sku: base.sku,
+    sha256: base.sha256,
+    target: base.target,
+    approval: next.approval || base.approval,
+    sync: next.sync || base.sync,
+    revision: next.revision,
+    eventId: next.eventId,
+    invalid: false
+  };
+}
+function mergeAvailabilityGroup(rows){
+  if (rows.some(row => row.invalid)) return { conflict: true, row: null };
+  const seenEvents = new Map();
+  for (const row of rows) {
+    if (!row.eventId) continue;
+    const prev = seenEvents.get(row.eventId);
+    if (!prev) seenEvents.set(row.eventId, row);
+    else if (prev.revision !== row.revision || !sameAvailabilityOutcome(prev, row)) return { conflict: true, row: null };
+  }
+  const unique = [];
+  for (const row of rows) {
+    if (row.eventId && unique.some(item => item.eventId === row.eventId && sameAvailabilityOutcome(item, row) && item.revision === row.revision)) continue;
+    unique.push(row);
+  }
+  const numbered = unique.filter(row => row.revision !== null);
+  const plain = unique.filter(row => row.revision === null);
+  if (numbered.length && plain.length) return { conflict: true, row: null };
+  const sequence = numbered.length ? [...numbered].sort((a, b) => a.revision - b.revision) : plain;
+  if (numbered.length) {
+    for (let i = 1; i < sequence.length; i++) {
+      if (sequence[i].revision === sequence[i - 1].revision && !sameAvailabilityOutcome(sequence[i], sequence[i - 1])) return { conflict: true, row: null };
+    }
+  }
+  let current = null;
+  let lastRevision = null;
+  for (const row of sequence) {
+    if (lastRevision !== null && row.revision === lastRevision) continue;
+    current = current ? overlayAvailability(current, row) : row;
+    lastRevision = row.revision;
+  }
+  return { conflict: false, row: current };
 }
 function parseAvailabilityDocument(data){
   if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false, index: new Map(), reason: 'shape' };
   if (data.example === true) return { ok: false, index: new Map(), reason: 'example' };
   if (data.schema !== 'terrella.image-availability.v1' || !Array.isArray(data.records)) return { ok: false, index: new Map(), reason: 'shape' };
-  const index = new Map();
+  const groups = new Map();
   for (const row of data.records) {
     const parsed = parseAvailabilityRow(row);
     if (!parsed) continue;
     const key = `${parsed.sku}\n${parsed.sha256}\n${parsed.target}`;
-    const prev = index.get(key);
-    if (!prev) index.set(key, { row: parsed, conflict: false });
-    else if (prev.conflict || !sameAvailabilityOutcome(prev.row, parsed)) index.set(key, { row: parsed, conflict: true });
+    const list = groups.get(key) || [];
+    list.push(parsed);
+    groups.set(key, list);
   }
+  const index = new Map();
+  groups.forEach((list, key) => index.set(key, mergeAvailabilityGroup(list)));
   return { ok: true, index, reason: '' };
 }
 function badgesForImage(index, sku, sha){
