@@ -428,10 +428,7 @@ function durableBadgeHtml(sku, sha){
   const bits = [];
   for (const target of view.approved) bits.push(`<span class="durable-badge approval">已放行 · ${esc(target)}</span>`);
   for (const target of view.synced) bits.push(`<span class="durable-badge sync">已同步 · ${esc(target)}</span>`);
-  for (const target of view.revoked) {
-    if (view.approved.includes(target) || view.synced.includes(target)) continue;
-    bits.push(`<span class="durable-badge revoked">已撤回 · ${esc(target)}</span>`);
-  }
+  for (const target of view.revoked) bits.push(`<span class="durable-badge revoked">已撤回 · ${esc(target)}</span>`);
   for (const target of view.conflict) bits.push(`<span class="durable-badge revoked">记录冲突 · ${esc(target)}</span>`);
   return bits.length ? `<div class="durable-status">${bits.join('')}</div>` : '';
 }

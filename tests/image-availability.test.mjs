@@ -94,6 +94,28 @@ test('revoked, failed, and conflicting records do not show success', () => {
   });
   assert.deepEqual(fns.badgesForImage(parsed.index, 'CAT-001', EXAMPLE_SHA_A).approved, []);
   assert.deepEqual(fns.badgesForImage(parsed.index, 'CAT-001', EXAMPLE_SHA_A).revoked, ['example-target']);
+  const mixed = fns.parseAvailabilityDocument({
+    schema: 'terrella.image-availability.v1',
+    records: [
+      row({ sync: { state: 'verified', evidence: 'example-sync-evidence' }, approval: { state: 'revoked', evidence: 'example-revoked' } }),
+      row({ sha256: EXAMPLE_SHA_B, approval: { state: 'approved', evidence: 'example-approval-evidence' }, sync: { state: 'revoked', evidence: 'example-revoked' } })
+    ]
+  });
+  const render = new Function('esc', `${html.slice(start, end)}
+    return function(index, sku, sha){
+      availabilityPhase = 'ready';
+      availabilityIndex = index;
+      return durableBadgeHtml(sku, sha);
+    };
+  `)(value => String(value));
+  const revokedApproval = render(mixed.index, 'CAT-001', EXAMPLE_SHA_A);
+  const revokedSync = render(mixed.index, 'CAT-001', EXAMPLE_SHA_B);
+  assert.match(revokedApproval, /已撤回 · example-target/);
+  assert.match(revokedApproval, /已同步 · example-target/);
+  assert.doesNotMatch(revokedApproval, /已放行/);
+  assert.match(revokedSync, /已撤回 · example-target/);
+  assert.match(revokedSync, /已放行 · example-target/);
+  assert.doesNotMatch(revokedSync, /已同步/);
   const failed = fns.badgesForImage(parsed.index, 'CAT-001', OTHER_SHA);
   assert.deepEqual(failed.approved, ['example-target']);
   assert.deepEqual(failed.synced, []);
