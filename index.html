@@ -143,6 +143,7 @@
     overflow:hidden; color:#64748b;
   }
   article > .media-stack { flex:1 1 auto; min-width:0; }
+  #preview-status { max-width:1200px; margin:8px auto 0; padding:0 20px; color:#9a3412; font-size:.85rem; line-height:1.45; }
 
 </style>
 </head>
@@ -156,10 +157,11 @@
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <div class="copy-bar">
   <button type="button" id="copy-release">复制放行清单</button>
-  <p id="copy-status">勾选只属于这次打开的页面，刷新会消失，也不会上架或下架。复制后可贴回 Slack，还没有写入仓库。</p>
+  <p id="copy-status">复制清单仍是剪贴板草稿。CAT-001 的内部预览勾选会写入共享记录，刷新后还在；其他勾选只留在这次打开的页面。都不是上架或下架。</p>
   <button type="button" id="publish-unavailable" disabled title="没有已授权的管理人写入边界，也没有已确认的目标网站">上架/下架不可用</button>
   <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
 </div>
+<p id="preview-status" role="status">正在读取内部预览勾选。保存只进入非公开预览，不是正式商城。</p>
 <p id="availability-status" role="status">正在读取仓库里的放行与同步记录。</p>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
 <p id="load-status" role="status" aria-live="polite" hidden></p>
@@ -500,6 +502,12 @@ function durableBadgeHtml(sku, sha){
 const releasePicks = new Map();
 let copyEpoch = 0;
 let copyBusy = false;
+const INTERNAL_PREVIEW_PRODUCT_ID = '426bf18c-8649-4aa5-939c-f0b33eca95f8';
+const INTERNAL_PREVIEW_SKU = 'CAT-001';
+const previewSelected = new Set();
+let previewSaveChain = Promise.resolve();
+let previewToggleSerial = 0;
+const previewToggleLatest = new Map();
 function stripGallery(items, aria, extraClass='', product){
   if (!items.length) return '';
   return `<div class="gallery${items.length === 1 ? ' single' : ''}${extraClass ? ' '+extraClass : ''}" aria-label="${esc(aria)}">${items.map((a,i) => {
@@ -507,10 +515,12 @@ function stripGallery(items, aria, extraClass='', product){
     const ai = a.kind === 'ai' && /^[a-f0-9]{64}$/.test(String(a.outputSha256 || '').toLowerCase());
     const sha = String(a.outputSha256 || '').toLowerCase();
     const key = ai ? `${product.sku}\n${sha}` : '';
-    const checked = key && releasePicks.has(key) ? ' checked' : '';
+    const previewId = product && product.sku === INTERNAL_PREVIEW_SKU ? INTERNAL_PREVIEW_PRODUCT_ID : '';
+    const checked = key && (releasePicks.has(key) || (previewId && previewSelected.has(sha))) ? ' checked' : '';
     const code = id ? `<div class="short-id"><code>${esc(id)}</code></div>` : '';
     const durable = product ? durableBadgeHtml(product.sku, sha) : '';
-    const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${checked}> 本次勾选，不上架</label>` : '';
+    const pickLabel = previewId ? '内部预览勾选，不上架' : '本次勾选，不上架';
+    const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${previewId ? ` data-product-id="${esc(previewId)}"` : ''}${checked}> ${pickLabel}</label>` : '';
     return `<figure class="gallery-item"><img src="${esc(a.path)}" alt="${esc(a.label || '图')} ${i+1}" loading="lazy" decoding="async"><span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${durable}${pick}</figcaption></figure>`;
   }).join('')}</div>`;
 }
@@ -605,25 +615,106 @@ function render(){
 filters.addEventListener('click',e=>{const btn=e.target.closest('button[data-cat]');if(!btn||!categories().includes(btn.dataset.cat))return;active=btn.dataset.cat;activeSub='全部';renderFilters();render();});
 subfilters.addEventListener('click',e=>{const btn=e.target.closest('button[data-sub]');if(!btn)return;const v=btn.dataset.sub;if(!subSeriesOptions().includes(v))return;activeSub=v;renderFilters();render();});
 app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG')return;img.hidden=true;const f=img.parentElement?.querySelector('.image-failure');if(f)f.hidden=false;},true);
+function setPreviewStatus(text){
+  const node = document.getElementById('preview-status');
+  if (node) node.textContent = text;
+}
+function rememberPick(box){
+  const key = `${box.dataset.sku}\n${box.dataset.sha}`;
+  releasePicks.set(key, {
+    short_id: box.dataset.short,
+    sku: box.dataset.sku,
+    sha256: box.dataset.sha,
+    version: box.dataset.version,
+    path: box.dataset.path,
+    productId: box.dataset.productId || ''
+  });
+  return key;
+}
+async function loadInternalPreview(){
+  try {
+    const response = await fetch('/api/internal-preview?productId=' + encodeURIComponent(INTERNAL_PREVIEW_PRODUCT_ID), { cache: 'no-store' });
+    if (!response.ok) throw new Error('http');
+    const data = await response.json();
+    if (!data.ok || data.productId !== INTERNAL_PREVIEW_PRODUCT_ID || !Array.isArray(data.selected)) throw new Error('shape');
+    previewSelected.clear();
+    for (const sha of data.selected) {
+      if (/^[a-f0-9]{64}$/.test(sha)) previewSelected.add(sha);
+    }
+    render();
+    for (const box of document.querySelectorAll(`input[data-product-id="${INTERNAL_PREVIEW_PRODUCT_ID}"]`)) {
+      if (previewSelected.has(box.dataset.sha)) rememberPick(box);
+    }
+    setPreviewStatus(previewSelected.size
+      ? `已读回内部预览 ${previewSelected.size} 张。刷新后仍在。这不是正式商城，也没有写入上架记录。`
+      : '内部预览还没有勾选。保存后刷新和其他浏览器会看到同一份。这不是正式商城。');
+  } catch (err) {
+    setPreviewStatus('内部预览没有读到。这次不能当成已保存。正式商城记录也不会因此变成已同步。');
+  }
+}
+async function savePreviewToggle(box, key, payload, selected, previous, serial){
+  const fail = message => {
+    if (previewToggleLatest.get(key) !== serial) return;
+    if (previous) releasePicks.set(key, previous);
+    else releasePicks.delete(key);
+    if (previous) previewSelected.add(payload.sha256);
+    else previewSelected.delete(payload.sha256);
+    box.checked = Boolean(previous);
+    setPreviewStatus(message);
+  };
+  try {
+    const response = await fetch('/api/internal-preview', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || data.ok !== true || data.saved !== true || !Array.isArray(data.selected)) {
+      throw new Error((data && data.reason) || 'http');
+    }
+    if (previewToggleLatest.get(key) !== serial) return;
+    const echoed = new Set(data.selected);
+    if (echoed.has(payload.sha256) !== selected) throw new Error('readback');
+    if (selected) {
+      previewSelected.add(payload.sha256);
+      rememberPick(box);
+    } else {
+      previewSelected.delete(payload.sha256);
+      releasePicks.delete(key);
+    }
+    box.checked = selected;
+    setPreviewStatus(selected
+      ? `已保存到内部预览，共 ${data.selected.length} 张。刷新或其他浏览器会读到同一份。Bunny 原图仍在。没有写入正式商城。`
+      : `已从内部预览移除这张图，还剩 ${data.selected.length} 张。Bunny 原图和产品都还在。没有写入正式商城。`);
+  } catch (err) {
+    fail('内部预览没有保存成功。勾选已退回。正式商城没有被写入。');
+  }
+}
 app.addEventListener('change', e => {
   const box = e.target.closest('input[data-release]');
   if (!box) return;
   const key = `${box.dataset.sku}\n${box.dataset.sha}`;
-  if (box.checked) {
-    releasePicks.set(key, {
-      short_id: box.dataset.short,
-      sku: box.dataset.sku,
-      sha256: box.dataset.sha,
-      version: box.dataset.version,
-      path: box.dataset.path
-    });
-  } else {
+  const productId = box.dataset.productId || '';
+  const previous = releasePicks.get(key) || null;
+  if (box.checked) rememberPick(box);
+  else {
     releasePicks.delete(key);
+    if (productId) previewSelected.delete(box.dataset.sha);
   }
   hideManualList();
   copyEpoch++;
   const status = document.getElementById('copy-status');
-  if (status) status.textContent = `已勾选 ${releasePicks.size} 张。只在这一页，取消勾选也不会从网站撤下。`;
+  if (!productId) {
+    if (status) status.textContent = `已勾选 ${releasePicks.size} 张。只在这一页，取消勾选也不会从网站撤下。`;
+    return;
+  }
+  const selected = box.checked;
+  if (selected) previewSelected.add(box.dataset.sha);
+  const serial = ++previewToggleSerial;
+  previewToggleLatest.set(key, serial);
+  const payload = { productId, sha256: box.dataset.sha, selected };
+  setPreviewStatus(selected ? '正在把这张图保存到内部预览。这不是上架。' : '正在从内部预览移除这张图。Bunny 原图不会删除。');
+  previewSaveChain = previewSaveChain.then(() => savePreviewToggle(box, key, payload, selected, previous, serial)).catch(() => {});
 });
 function hideManualList(){
   const list = document.getElementById('copy-fallback');
@@ -758,6 +849,7 @@ async function loadAvailability(){
 renderFilters();render();
 loadProducts().then(({data,state})=>{PRODUCTS=data;if(!categories().includes(active))active='全部';renderFilters();render();loadStatus.textContent=state==='fallback'?'当前使用已保存的产品资料，原图文件夹仍可打开。':'';loadStatus.hidden=state==='live';});
 loadAvailability();
+loadInternalPreview();
 
 </script>
 </body>

@@ -4,11 +4,22 @@
 
 ## 现在仓库里实际有什么
 
-- 公开页面是 `index.html`。勾选存在内存里的 `releasePicks`，复制到剪贴板，刷新就没了。
+- 公开页面是 `index.html`。除 CAT-001 内部预览以外，勾选仍在内存里的 `releasePicks`，复制到剪贴板，刷新就没了。CAT-001 的勾选写入 `internal-preview.json`。
 - 图是否出现在展示页，由页面内嵌的 `publicCopyApproved`、`contentVerified`、`byteVerified`、`assignedSku` 决定。这只说明展示页可以显示这张图，不是目标网站已经上架。
 - 持久证据文件是 `image-availability.json`。当前 `records` 为空。没有记录就不是已放行，也不是已同步。
 - 本仓库没有目标网站的写入接口，没有管理人登录，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。
 - 原图在 Bunny / Drive。下架若将来发生，也只针对目标画廊里的那一张图，不删除原件，不删除整个产品。
+
+## 内部预览（这一步已接上，不是正式商城）
+
+CAT-001（产品编号 `426bf18c-8649-4aa5-939c-f0b33eca95f8`，SKU CAT-001，货号 TR260002，handle `eastern-heritage-tr260002`）的勾选按完整 SHA-256 写入 `internal-preview.json`。状态保持暂停、非公开。
+
+- 展示页和 `cat-001-internal-preview.html` 都通过 `/api/internal-preview` 读写同一份文件。刷新和另一个浏览器读回的是这份文件，不是 localStorage。
+- 预览页标明「内部预览 · 非公开 · 不是正式商城」，图片区只显示仍被勾选的图。
+- 取消勾选只从这份文件去掉该 SHA-256。Bunny 地址还在页面数据里，商品记录还在。
+- `image-availability.json` 仍是正式放行和同步账本。这一步不往里面写。正式商城要等这份预览被接受之后另做。
+
+在仓库目录运行 `node scripts/serve-with-internal-preview.mjs`，打开 `http://127.0.0.1:8788/` 勾选，再打开 `http://127.0.0.1:8788/cat-001-internal-preview.html`。这是本机内部预览，不是部署。
 
 ## 页面现在怎么读
 

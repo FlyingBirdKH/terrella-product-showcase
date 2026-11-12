@@ -28,15 +28,16 @@
 <header>
   <p class="banner" role="status">内部预览 · 非公开 · 不是正式商城</p>
   <h1>CAT-001 已选图片的内部预览</h1>
-  <p class="muted">商品 ID <code id="product-id"></code>。勾选按完整 SHA-256 记入内部预览。取消勾选只从这份预览移除，不删除 Bunny 原件，不删除商品，也不改正式站。</p>
+  <p class="muted">商品 ID <code id="product-id"></code>，SKU CAT-001，货号 TR260002，handle eastern-heritage-tr260002。状态保持暂停、非公开。勾选按完整 SHA-256 记入内部预览。取消勾选只从这份预览移除，不删除 Bunny 原件，不删除商品，也不改正式站。</p>
   <p><button type="button" id="publish-unavailable" disabled>正式上架/下架不可用</button></p>
   <p id="save-status" role="status">正在读取内部预览。</p>
 </header>
 <main>
-  <h2>可选图片</h2>
-  <ol id="frames"></ol>
+  <h2>勾选</h2>
+  <ol id="frames" aria-label="内部预览勾选"></ol>
   <h2>当前内部预览</h2>
-  <ol id="chosen"></ol>
+  <p class="muted">这里只显示已保存的图片。</p>
+  <ol id="chosen" aria-label="已保存的内部预览"></ol>
 </main>
 <footer class="muted">这不是 https://www.terralla.com 的商品页。正式发布仍须单独授权。</footer>
 <script>
@@ -54,11 +55,11 @@ function esc(value) {
   return String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 function paint() {
-  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><figure><img alt="内部预览 ${esc(item.shortId)}" src="${esc(item.path)}"><figcaption><div>${item.order}. <code>${esc(item.shortId)}</code></div><div>SHA-256 <code>${esc(item.sha256)}</code></div><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''}> 放入内部预览</label></figcaption></figure></li>`).join('');
+  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''}> ${item.order}. <code>${esc(item.shortId)}</code></label><div>SHA-256 <code>${esc(item.sha256)}</code></div></li>`).join('');
   const chosen = IMAGES.filter((item) => selected.has(item.sha256));
   document.getElementById('chosen').innerHTML = chosen.length
-    ? chosen.map((item) => `<li><code>${esc(item.shortId)}</code> <code>${esc(item.sha256)}</code></li>`).join('')
-    : '<li>当前没有选入内部预览的图片。</li>';
+    ? chosen.map((item) => `<li><figure><img alt="内部预览 ${esc(item.shortId)}" src="${esc(item.path)}"><figcaption><div><code>${esc(item.shortId)}</code></div><div>SHA-256 <code>${esc(item.sha256)}</code></div><div><a href="${esc(item.path)}" target="_blank" rel="noopener noreferrer">打开 Bunny 原图</a></div></figcaption></figure></li>`).join('')
+    : '<li>当前没有选入内部预览的图片。商品仍在，状态保持暂停、非公开。Bunny 原件没有被删除。</li>';
 }
 async function load() {
   const response = await fetch(`/api/internal-preview?productId=${PRODUCT_ID}`, { cache: 'no-store' });

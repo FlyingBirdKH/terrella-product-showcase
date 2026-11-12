@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -74,10 +75,32 @@ test('two browser contexts share the preview server store', async () => {
     const page = await (await fetch('http://127.0.0.1:8799/cat-001-internal-preview.html')).text();
     assert.match(page, /内部预览 · 非公开 · 不是正式商城/);
     assert.match(page, /正式上架\/下架不可用/);
+    assert.match(page, /这里只显示已保存的图片/);
+    assert.match(page, /暂停、非公开/);
+    assert.equal(page.includes('已同步'), false);
     await post(false);
     const after = await (await fetch('http://127.0.0.1:8799/api/internal-preview')).json();
     assert.deepEqual(after.selected, []);
   } finally {
     child.kill();
+  }
+});
+
+test('showcase checkboxes use the same product id and preview endpoint', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const preview = readFileSync(new URL('../cat-001-internal-preview.html', import.meta.url), 'utf8');
+  assert.match(html, /const INTERNAL_PREVIEW_PRODUCT_ID = '426bf18c-8649-4aa5-939c-f0b33eca95f8'/);
+  assert.match(html, /\/api\/internal-preview/);
+  assert.match(html, /内部预览勾选，不上架/);
+  assert.match(html, /id="publish-unavailable" disabled/);
+  for (const sha of INTERNAL_PREVIEW_SHA256) assert.equal(preview.includes(sha), true);
+  for (const file of [
+    'ai-CAT-001-recovered-01-ff469683.png',
+    'ai-CAT-001-recovered-02-af3760c6.png',
+    'ai-CAT-001-recovered-03-2f891916.png',
+    'ai-CAT-001-recovered-04-91cd1d7d.png'
+  ]) {
+    assert.equal(html.includes(file), true);
+    assert.equal(preview.includes(file), true);
   }
 });
