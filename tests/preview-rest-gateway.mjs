@@ -8,6 +8,12 @@ const PROFILES = {
     app_metadata: { terrella_brand_admin: 'terralla', provider: 'email' },
     user_metadata: { name: 'Brand' }
   },
+  'test.brand-reader': {
+    sub: OTHER_USER,
+    role: 'authenticated',
+    app_metadata: { terrella_brand_reader: 'terralla', provider: 'email' },
+    user_metadata: { terrella_brand_admin: 'terralla' }
+  },
   'test.no-brand': {
     sub: OTHER_USER,
     role: 'authenticated',
@@ -39,6 +45,7 @@ const PROFILES = {
 
 const PASSWORDS = new Map([
   ['brand@example.test', 'test.brand-admin'],
+  ['reader@example.test', 'test.brand-reader'],
   ['plain@example.test', 'test.no-brand'],
   ['supplier@example.test', 'test.supplier']
 ]);
@@ -55,7 +62,7 @@ function failureFor(profile, stderr) {
     return { status: 400, message: reason };
   }
   if (reason === 'sub') return { status: 401, message: 'sub' };
-  if (reason === 'brand-admin-missing') return { status: 403, message: 'brand-admin-missing' };
+  if (reason === 'brand-admin-missing' || reason === 'brand-access-missing') return { status: 403, message: reason };
   if (reason === 'role' || reason === 'permission' || profile.role !== 'authenticated') {
     return { status: 403, message: profile.role === 'anon' ? 'anonymous' : 'role' };
   }

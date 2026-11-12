@@ -36,7 +36,7 @@ async function preview({ method = 'GET', url = `/api/internal-preview?productId=
   const req = {
     method,
     url,
-    headers: cookie ? { cookie } : {},
+    headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body)
   };
   const res = response();
@@ -48,7 +48,7 @@ async function session(body, { cookie = '', method = 'POST' } = {}) {
   const req = {
     method,
     url: '/api/internal-preview-session',
-    headers: { 'x-forwarded-proto': 'https', cookie },
+    headers: { 'x-forwarded-proto': 'https', 'content-type': 'application/json', cookie },
     body: body === undefined ? undefined : JSON.stringify(body)
   };
   const res = response();
@@ -113,7 +113,7 @@ test('login without the brand claim, a forged user_metadata claim, and a supplie
     const signed = await session({ email, password: 'test-password-only' });
     assert.equal(signed.json.signedIn, true, email);
     assert.equal(signed.json.brandAdmin, false, email);
-    assert.equal(signed.json.reason, 'brand-admin-missing');
+    assert.equal(signed.json.reason, 'brand-access-missing');
     assert.equal(signed.json.saved, false);
     const write = await preview({
       method: 'POST',
@@ -121,9 +121,25 @@ test('login without the brand claim, a forged user_metadata claim, and a supplie
       body: { eventId: `evt-${email.slice(0, 5)}-00000001`, productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 }
     });
     assert.equal(write.statusCode, 403);
-    assert.equal(write.json.reason, 'brand-admin-missing');
+    assert.equal(write.json.reason, 'brand-access-missing');
     assert.equal(write.json.saved, false);
   }
+  const reader = await session({ email: 'reader@example.test', password: 'test-password-only' });
+  assert.equal(reader.json.signedIn, true);
+  assert.equal(reader.json.brandAdmin, false);
+  assert.equal(reader.json.brandReader, true);
+  assert.equal(reader.json.reason, 'brand-reader');
+  const readerRead = await preview({ cookie: cookieHeader(reader) });
+  assert.equal(readerRead.statusCode, 200);
+  assert.equal(readerRead.json.saved, false);
+  const readerWrite = await preview({
+    method: 'POST',
+    cookie: cookieHeader(reader),
+    body: { eventId: 'evt-reader-http-00001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 }
+  });
+  assert.equal(readerWrite.statusCode, 403);
+  assert.equal(readerWrite.json.reason, 'brand-admin-missing');
+  assert.equal(readerWrite.json.saved, false);
   const signup = await session({ action: 'signup', email: 'new@example.test', password: 'test-password-only' });
   assert.equal(signup.statusCode, 405);
   assert.equal(signup.json.signedIn, false);

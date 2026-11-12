@@ -35,6 +35,7 @@
     <label>已有账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
     <label>密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
     <button type="submit">登录内部预览</button>
+    <button type="button" id="preview-logout">退出</button>
   </form>
   <p class="muted">不注册、不发邀请、不改账号声明。会话放在 HttpOnly cookie。不要把 JWT 贴到 Slack。没有品牌声明时可以登录，但不能保存预览。</p>
   <p id="save-status" role="status">正在读取共享内部预览。没有读到之前，不能当成已保存。</p>
@@ -48,7 +49,7 @@
 </main>
 <footer class="muted">这不是 https://www.terralla.com 的商品页。正式发布仍须单独授权。</footer>
 <script type="module">
-import { failureText, newEventId, readStatus, writeStatus } from './internal-preview-client.mjs';
+import { failureText, newEventId, previewFetch, readStatus, resetPreviewSession, writeStatus } from './internal-preview-client.mjs';
 
 const PRODUCT_ID = '426bf18c-8649-4aa5-939c-f0b33eca95f8';
 const IMAGES = [
@@ -62,6 +63,7 @@ document.getElementById('product-id').textContent = PRODUCT_ID;
 let selected = new Set();
 let revisions = {};
 let readable = false;
+let canWrite = false;
 function esc(value) {
   return String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -69,7 +71,7 @@ function headers() {
   return { 'content-type': 'application/json' };
 }
 function paint() {
-  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''} ${readable ? '' : 'disabled'}> ${item.order}. <code>${esc(item.shortId)}</code></label><div>SHA-256 <code>${esc(item.sha256)}</code></div></li>`).join('');
+  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''} ${canWrite ? '' : 'disabled'}> ${item.order}. <code>${esc(item.shortId)}</code></label><div>SHA-256 <code>${esc(item.sha256)}</code></div></li>`).join('');
   const chosen = IMAGES.filter((item) => selected.has(item.sha256));
   document.getElementById('chosen').innerHTML = chosen.length
     ? chosen.map((item) => `<li><figure><img alt="内部预览 ${esc(item.shortId)}" src="${esc(item.path)}"><figcaption><div><code>${esc(item.shortId)}</code></div><div>SHA-256 <code>${esc(item.sha256)}</code></div><div><a href="${esc(item.path)}" target="_blank" rel="noopener noreferrer">打开 Bunny 原图</a></div></figcaption></figure></li>`).join('')
@@ -77,13 +79,14 @@ function paint() {
 }
 function failClosed(reason) {
   readable = false;
+  canWrite = false;
   selected = new Set();
   revisions = {};
   status.textContent = failureText(reason);
   paint();
 }
 async function load() {
-  const response = await fetch(`/api/internal-preview?productId=${PRODUCT_ID}`, { cache: 'no-store', credentials: 'same-origin', headers: headers() });
+  const response = await previewFetch(`/api/internal-preview?productId=${PRODUCT_ID}`, { cache: 'no-store' });
   const data = await response.json().catch(() => null);
   const interpreted = readStatus(data);
   if (!response.ok || !interpreted.ok || data.productId !== PRODUCT_ID) {
@@ -114,26 +117,42 @@ document.getElementById('preview-sign-in').addEventListener('submit', async (eve
       failClosed(data && data.reason);
       return;
     }
-    if (data.brandAdmin !== true) {
-      failClosed('brand-admin-missing');
+    if (data.brandAdmin !== true && data.brandReader !== true) {
+      failClosed(data.reason || 'brand-access-missing');
       return;
     }
+    canWrite = data.brandAdmin === true;
+    resetPreviewSession();
     await load();
+    if (!canWrite) status.textContent = failureText('brand-reader');
   } catch {
     failClosed('store-not-writable');
   }
 });
+document.getElementById('preview-logout').addEventListener('click', async () => {
+  document.getElementById('preview-password').value = '';
+  try {
+    await fetch('/api/internal-preview-session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' })
+    });
+  } catch {}
+  resetPreviewSession();
+  failClosed('anonymous');
+  status.textContent = '已退出。共享预览没有被改写。';
+});
 document.getElementById('frames').addEventListener('change', async (event) => {
   const box = event.target.closest('input[data-sha]');
-  if (!box || !readable) return;
+  if (!box || !canWrite) return;
   const sha256 = box.dataset.sha;
   const want = box.checked;
   const baseRevision = Number.isInteger(revisions[sha256]) ? revisions[sha256] : 0;
   status.textContent = want ? '正在写入共享内部预览。还没有保存。' : '正在从共享内部预览解绑这张图。还没有保存。Bunny 原图不会删除。';
   try {
-    const response = await fetch('/api/internal-preview', {
+    const response = await previewFetch('/api/internal-preview', {
       method: 'POST',
-      credentials: 'same-origin',
       headers: headers(),
       body: JSON.stringify({ productId: PRODUCT_ID, sha256, selected: want, eventId: newEventId(), baseRevision })
     });

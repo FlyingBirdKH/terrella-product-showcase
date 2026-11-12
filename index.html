@@ -166,6 +166,7 @@
   <label>已有账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
   <label>密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
   <button type="submit">登录内部预览</button>
+  <button type="button" id="preview-logout">退出</button>
   <span>只登录已经存在的 Supabase Auth 账号。不注册、不发邀请、不改账号声明。会话放在 HttpOnly cookie，不要把 JWT 贴到 Slack。</span>
 </form>
 <p id="availability-status" role="status">正在读取仓库里的放行与同步记录。</p>
@@ -745,7 +746,7 @@ async function loadInternalPreview(){
   let client;
   try {
     client = await previewClientReady;
-    const response = await fetch('/api/internal-preview?productId=' + encodeURIComponent(INTERNAL_PREVIEW_PRODUCT_ID), { cache: 'no-store', credentials: 'same-origin' });
+    const response = await client.previewFetch('/api/internal-preview?productId=' + encodeURIComponent(INTERNAL_PREVIEW_PRODUCT_ID), { cache: 'no-store' });
     const data = await response.json().catch(() => null);
     const interpreted = client.readStatus(data);
     if (!response.ok || !interpreted.ok || !data || data.productId !== INTERNAL_PREVIEW_PRODUCT_ID) {
@@ -789,7 +790,7 @@ async function savePreviewToggle(box, key, payload, selected, previous, serial){
     client = await previewClientReady;
     const baseRevision = Number.isInteger(previewRevisions[payload.sha256]) ? previewRevisions[payload.sha256] : 0;
     const body = { ...payload, eventId: client.newEventId(), baseRevision };
-    const response = await fetch('/api/internal-preview', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    const response = await client.previewFetch('/api/internal-preview', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
     const data = await response.json().catch(() => null);
     if (previewToggleLatest.get(key) !== serial) return;
     if (response.status === 409 || (data && (data.reason === 'revision_conflict' || data.reason === 'idempotency_conflict'))) {
@@ -991,18 +992,36 @@ document.getElementById('preview-sign-in').addEventListener('submit', async (eve
       setPreviewStatus(client.failureText(data && data.reason));
       return;
     }
-    if (data.brandAdmin !== true) {
+    if (data.brandAdmin !== true && data.brandReader !== true) {
       clearPreviewSelection();
       render();
-      setPreviewStatus(client.failureText('brand-admin-missing'));
+      setPreviewStatus(client.failureText(data.reason || 'brand-access-missing'));
       return;
     }
+    client.resetPreviewSession();
     await loadInternalPreview();
+    if (data.brandAdmin !== true) setPreviewStatus(client.failureText('brand-reader'));
   } catch (err) {
     clearPreviewSelection();
     render();
     setPreviewStatus(client.failureText('store-not-writable'));
   }
+});
+document.getElementById('preview-logout').addEventListener('click', async () => {
+  const client = await previewClientReady;
+  document.getElementById('preview-password').value = '';
+  try {
+    await fetch('/api/internal-preview-session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' })
+    });
+  } catch (err) {}
+  client.resetPreviewSession();
+  clearPreviewSelection();
+  render();
+  setPreviewStatus('已退出。共享预览没有被改写。');
 });
 
 </script>

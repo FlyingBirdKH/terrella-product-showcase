@@ -41,8 +41,8 @@ create table if not exists internal_preview.events (
 alter table internal_preview.events enable row level security;
 revoke all on internal_preview.events from public, anon, authenticated, service_role;
 
-create or replace function internal_preview.require_actor()
-returns uuid
+create or replace function internal_preview.actor_context()
+returns jsonb
 language plpgsql
 stable
 security definer
@@ -53,7 +53,9 @@ declare
   uid uuid := auth.uid();
   jwt_sub text := claims ->> 'sub';
   jwt_role text := claims ->> 'role';
-  brand text := claims -> 'app_metadata' ->> 'terrella_brand_admin';
+  admin_claim text := claims -> 'app_metadata' ->> 'terrella_brand_admin';
+  reader_claim text := claims -> 'app_metadata' ->> 'terrella_brand_reader';
+  level text;
 begin
   if uid is null or jwt_sub is null or jwt_sub = '' or jwt_sub is distinct from uid::text then
     raise exception 'sub' using errcode = '42501';
@@ -61,14 +63,18 @@ begin
   if jwt_role is distinct from 'authenticated' then
     raise exception 'role' using errcode = '42501';
   end if;
-  if brand is distinct from 'terralla' then
-    raise exception 'brand-admin-missing' using errcode = '42501';
+  if admin_claim = 'terralla' then
+    level := 'admin';
+  elsif reader_claim = 'terralla' then
+    level := 'reader';
+  else
+    raise exception 'brand-access-missing' using errcode = '42501';
   end if;
-  return uid;
+  return jsonb_build_object('uid', uid, 'level', level);
 end;
 $$;
 
-revoke all on function internal_preview.require_actor() from public, anon, authenticated, service_role;
+revoke all on function internal_preview.actor_context() from public, anon, authenticated, service_role;
 
 create or replace function internal_preview.build_state(p_product_id uuid, p_saved boolean, p_idempotent boolean)
 returns jsonb
@@ -109,10 +115,14 @@ security definer
 set search_path = pg_temp
 as $$
 declare
-  uid uuid := internal_preview.require_actor();
+  ctx jsonb := internal_preview.actor_context();
+  uid uuid := (ctx ->> 'uid')::uuid;
   existing internal_preview.events%rowtype;
   current_revision bigint;
 begin
+  if ctx ->> 'level' is distinct from 'admin' then
+    raise exception 'brand-admin-missing' using errcode = '42501';
+  end if;
   if p_product_id is distinct from '426bf18c-8649-4aa5-939c-f0b33eca95f8'::uuid then
     raise exception 'product' using errcode = '22023';
   end if;
@@ -175,7 +185,9 @@ security definer
 set search_path = pg_temp
 as $$
 begin
-  perform internal_preview.require_actor();
+  if (internal_preview.actor_context() ->> 'level') not in ('admin', 'reader') then
+    raise exception 'brand-access-missing' using errcode = '42501';
+  end if;
   if p_product_id is distinct from '426bf18c-8649-4aa5-939c-f0b33eca95f8'::uuid then
     raise exception 'product' using errcode = '22023';
   end if;

@@ -7,14 +7,22 @@
 - 公开页面是 `index.html`。除 CAT-001 内部预览以外，勾选仍在内存里的 `releasePicks`，复制到剪贴板，刷新就没了。CAT-001 的勾选只在共享 Supabase 记录读回成功后才算保存。`internal-preview.json` 不是真源，接口不会写它。
 - 图是否出现在展示页，由页面内嵌的 `publicCopyApproved`、`contentVerified`、`byteVerified`、`assignedSku` 决定。这只说明展示页可以显示这张图，不是目标网站已经上架。
 - 持久证据文件是 `image-availability.json`。当前 `records` 为空。没有记录就不是已放行，也不是已同步。
-- 本仓库没有目标网站的写入接口，没有管理人登录，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。
+- 本仓库没有目标网站的写入接口，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。内部预览有单独的已有账号登录，不代表正式商城可以上架。
 - 原图在 Bunny / Drive。下架若将来发生，也只针对目标画廊里的那一张图，不删除原件，不删除整个产品。
 
 ## 内部预览（共享记录，不是正式商城）
 
 `384a994e` 把 EXECUTE 授给 `kevin_admin`、`terralla_admin`、`terralla_team`。crm-core 的 `pg_roles` 只有 `anon`、`authenticated`、`authenticator`、`service_role`，那次 GRANT 不能实施。Supabase Auth 的 JWT `role` 也只是这几个标准值，PostgREST 用它做 `SET ROLE`，不能再当成自定义数据库角色。那个方案已从迁移里去掉。
 
-现在的设计按 Supabase 的 JWT 字段说明：用户令牌的 `role` 是 `authenticated`，`sub` 是用户 UUID。品牌权限只认服务端才能写的 `app_metadata.terrella_brand_admin = terralla`。`user_metadata` 用户自己可以改，不参与判断。supplier 的 `admin` / `sourcing_manager` 也不参与判断。
+现在的设计按 [Supabase JWT 字段](https://supabase.com/docs/guides/auth/jwt-fields) 和 [密码登录](https://supabase.com/docs/guides/auth/passwords)：用户令牌的 `role` 只能是 `authenticated`，`sub` 是用户 UUID。写入只认 `app_metadata.terrella_brand_admin = terralla`。读取同时接受这个写入声明，或分开的 `app_metadata.terrella_brand_reader = terralla`。`user_metadata` 不参与判断。supplier 的 `admin` / `sourcing_manager` 也不参与判断。这些声明要由操作者在 Supabase 控制台改已有用户；本仓库不改 metadata。
+
+登录请求是 `POST /auth/v1/token?grant_type=password`。访问令牌 cookie 的 Max-Age 用 Auth 返回的 `expires_in`（通常 3600 秒）。刷新 cookie 不照抄这个数，绝对会话最长 12 小时，刷新只使用剩余时间，不会把会话重新延长。页面遇到 401 会自动刷新一次并重试原请求，失败就停，不循环，也不把令牌写进页面。退出会清掉访问、刷新和到期 cookie。
+
+同源检查按 Fetch Metadata：浏览器请求必须带 `Sec-Fetch-Site: same-origin`、`Content-Type: application/json`，并且 `Origin` 和 Host 一致。浏览器请求缺 `Origin` 会拒绝。没有 Fetch Metadata、也没有 `Origin` 的服务端 JSON 请求可以继续。跨站、表单内容类型都会拒绝。
+
+本地 `tests/preview-rest-gateway.mjs` 是假的 Auth 和 PostgREST，只用于回归。它不是 crm-core，也不能代替真实 Supabase 登录。
+
+验收一个已部署的 SHA 时，先确认该部署的 Git SHA 就是要验的提交，再确认服务端已有 `SUPABASE_URL` 和 `SUPABASE_ANON_KEY`，以及测试账号的 `app_metadata` 已分别有 admin 或 reader 声明。用两个浏览器登录：admin 写入一张图，reader 只能读回，不能改。退出后 cookie 清除。没有真实会话和已确认的 Vercel 项目时，不能把这一步报成线上可用。
 
 登录用已有账号的密码授权，对应官方 `POST /auth/v1/token?grant_type=password`，请求头只带 anon key。成功后访问令牌和刷新令牌放在 `HttpOnly`、`SameSite=Lax` 的 cookie，HTTPS 上再加 `Secure`。JSON 响应不返回令牌。页面不把 JWT 放进 `sessionStorage`，也不提供粘贴框。没有注册、邀请或修改 `auth` 用户元数据的接口。
 

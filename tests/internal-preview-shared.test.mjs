@@ -81,9 +81,9 @@ test('local postgres, not production: forgery, missing sub, wrong brand, anon, a
     claims: { role: 'service_role', sub: BRAND_USER, app_metadata: { terrella_brand_admin: 'terralla' } },
     eventId: 'evt-service-00000001'
   });
-  assert.equal(sqlReason(forged.stderr), 'brand-admin-missing');
-  assert.equal(sqlReason(supplier.stderr), 'brand-admin-missing');
-  assert.equal(sqlReason(wrongBrand.stderr), 'brand-admin-missing');
+  assert.equal(sqlReason(forged.stderr), 'brand-access-missing');
+  assert.equal(sqlReason(supplier.stderr), 'brand-access-missing');
+  assert.equal(sqlReason(wrongBrand.stderr), 'brand-access-missing');
   assert.equal(sqlReason(missingSub.stderr), 'sub');
   assert.equal(sqlReason(mismatched.stderr), 'sub');
   assert.equal(anon.ok, false);
@@ -93,6 +93,26 @@ test('local postgres, not production: forgery, missing sub, wrong brand, anon, a
   assert.match(table.stderr, /permission denied/i);
   assert.equal(await count('select count(*) from internal_preview.events'), '0');
   assert.equal(await count('select status from public.terralla_skus'), 'paused');
+});
+
+test('local postgres, not production: a brand reader can read and cannot write', async () => {
+  await psql(db, 'truncate internal_preview.events');
+  assert.equal((await applySql(db, { eventId: 'evt-reader-setup-0001', selected: true, base: 0 })).ok, true);
+  const reader = brandClaims({
+    sub: OTHER_USER,
+    app_metadata: { terrella_brand_reader: 'terralla' },
+    user_metadata: { terrella_brand_admin: 'terralla' }
+  });
+  const seen = await readSql(db, { claims: reader });
+  assert.equal(seen.ok, true, seen.stderr);
+  assert.deepEqual(lastJson(seen.stdout).selected, [FIRST_SHA]);
+  const write = await applySql(db, { claims: reader, eventId: 'evt-reader-write-0001', sha: FIRST_SHA, selected: false, base: 1 });
+  assert.equal(sqlReason(write.stderr), 'brand-admin-missing');
+  const forgedReader = await readSql(db, {
+    claims: { sub: OTHER_USER, role: 'authenticated', app_metadata: { provider: 'email' }, user_metadata: { terrella_brand_reader: 'terralla' } }
+  });
+  assert.equal(sqlReason(forgedReader.stderr), 'brand-access-missing');
+  assert.equal(await count('select count(*) from internal_preview.events'), '1');
 });
 
 test('local postgres, not production: short sha and a different product id are rejected', async () => {
