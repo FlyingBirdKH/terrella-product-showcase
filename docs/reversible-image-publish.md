@@ -4,22 +4,53 @@
 
 ## 现在仓库里实际有什么
 
-- 公开页面是 `index.html`。除 CAT-001 内部预览以外，勾选仍在内存里的 `releasePicks`，复制到剪贴板，刷新就没了。CAT-001 的勾选写入 `internal-preview.json`。
+- 公开页面是 `index.html`。除 CAT-001 内部预览以外，勾选仍在内存里的 `releasePicks`，复制到剪贴板，刷新就没了。CAT-001 的勾选只在共享 Supabase 记录读回成功后才算保存。`internal-preview.json` 不是真源，接口不会写它。
 - 图是否出现在展示页，由页面内嵌的 `publicCopyApproved`、`contentVerified`、`byteVerified`、`assignedSku` 决定。这只说明展示页可以显示这张图，不是目标网站已经上架。
 - 持久证据文件是 `image-availability.json`。当前 `records` 为空。没有记录就不是已放行，也不是已同步。
 - 本仓库没有目标网站的写入接口，没有管理人登录，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。
 - 原图在 Bunny / Drive。下架若将来发生，也只针对目标画廊里的那一张图，不删除原件，不删除整个产品。
 
-## 内部预览（这一步已接上，不是正式商城）
+## 内部预览（共享记录，不是正式商城）
 
-CAT-001（产品编号 `426bf18c-8649-4aa5-939c-f0b33eca95f8`，SKU CAT-001，货号 TR260002，handle `eastern-heritage-tr260002`）的勾选按完整 SHA-256 写入 `internal-preview.json`。状态保持暂停、非公开。
+CAT-001（产品编号 `426bf18c-8649-4aa5-939c-f0b33eca95f8`，SKU CAT-001，货号 TR260002，handle `eastern-heritage-tr260002`，brand `terralla`）的勾选按完整 SHA-256 写入 crm-core schema `internal_preview`。状态保持暂停、非公开。这一步没有连接生产库，也没有改商品状态。
 
-- 展示页和 `cat-001-internal-preview.html` 都通过 `/api/internal-preview` 读写同一份文件。刷新和另一个浏览器读回的是这份文件，不是 localStorage。
-- 预览页标明「内部预览 · 非公开 · 不是正式商城」，图片区只显示仍被勾选的图。
-- 取消勾选只从这份文件去掉该 SHA-256。Bunny 地址还在页面数据里，商品记录还在。
-- `image-availability.json` 仍是正式放行和同步账本。这一步不往里面写。正式商城要等这份预览被接受之后另做。
+鉴权契约，沿用 Terrella 商品表已有的 JWT role，不新建登录，不读 `auth.users`，不创建管理员：
 
-在仓库目录运行 `node scripts/serve-with-internal-preview.mjs`，打开 `http://127.0.0.1:8788/` 勾选，再打开 `http://127.0.0.1:8788/cat-001-internal-preview.html`。这是本机内部预览，不是部署。
+- 写入：JWT `role` 是 `kevin_admin` 或 `terralla_admin`，并且这一行的 `brand_id` 固定为 `terralla`。
+- 只读：`terralla_team` 可以读，不能写。
+- 拒绝：`anon`、普通 `authenticated`、`service_role`，以及 supplier `product_images` 用的 `current_app_role()` / `is_internal_editor()` 下的 `admin`、`sourcing_manager`。本迁移不调用这两个函数，也不放宽它们。
+- 尚未核到有用户会话带 `kevin_admin` 或 `terralla_admin`。没有该会话时接口拒绝，页面不显示已保存。
+
+匿名读取正式商品的条件保持原样：`deleted_at` 为空，且 `status` 属于 `shortlisted`、`ready_for_shopify`、`live`。本迁移不扩大这个白名单，也不把 `paused` 加进去。
+
+- 展示页和 `cat-001-internal-preview.html` 都通过 `/api/internal-preview` 读写同一张事件表。成功文案只在响应同时带 `saved`、`durable` 和 `store: supabase` 时出现。读失败会清空勾选，不会显示「已读回」。
+- 浏览器不保存图片选择，也不持有 service role。本仓库不发行 JWT。
+- 匿名请求、角色不符、短 SHA、其他 productId 都会拒绝。同一 `eventId` 且内容相同是幂等的；内容不同或 `baseRevision` 过期返回冲突，页面重新读取，不覆盖。
+- 取消勾选追加一条 `selected: false` 的事件，只解除内部预览关联。Bunny 地址还在页面数据里，商品记录还在。
+- `image-availability.json` 仍是正式放行和同步账本。这一步不往里面写。
+
+服务端配置只需要这两个名字，值由原部署者填写。本环境看不到该 Vercel 项目的环境变量：
+
+- `SUPABASE_URL`：crm-core 的 API 地址，只放服务端。
+- `SUPABASE_ANON_KEY`：只放服务端。
+
+不要配置 `SUPABASE_SERVICE_ROLE_KEY`，尤其不要放进浏览器。没有这两个变量，或 JWT role 不对时，接口返回失败，`saved` 为 false。
+
+迁移文件：`supabase/migrations/20261112160000_internal_preview_shared.sql`。回滚文件：`supabase/rollbacks/20261112160000_internal_preview_shared_down.sql`。回滚只删除 `internal_preview` 和两个公开函数，不改 `terralla_skus`、商品状态或 Bunny。本仓库不执行生产迁移。crm-core 上的 `kevin_admin`、`terralla_admin`、`terralla_team` 角色需要已经存在；迁移不会创建登录用户。
+
+本机没有上述两个变量时，`node scripts/serve-with-internal-preview.mjs` 只会打开失败关闭的页面。这不是部署，也不是正式商城。
+
+## 后续 13 张正式同步（尚未执行，不能把预览当商城）
+
+图片版本已批准的数量是 CAT-001 四张、CAT-003 五张、CAT-006 四张。当前共享预览只接受 CAT-001 那四条完整 SHA 和已确认的商品 ID `426bf18c-8649-4aa5-939c-f0b33eca95f8`。按 sku、handle、external_id 精确查询，CAT-003/TR260004 与 CAT-006/TR260007 都是空的。完全不同的编码还没有排除，所以禁止猜测 ID，禁止自动建行，也禁止改用 CAT-013/TR2605002。
+
+正式同步仍要另一次独立终验和 Kevin 的 GO。到那时才做这些事，而且不在这一次里做：
+
+1. 只用确认过的 crm-core 商品 ID，按完整 SHA 逐张写入目标画廊字段。
+2. 写入后读回同一张图仍在画廊里，才把证据追加到 `image-availability.json`。没有读回就保持未同步。
+3. 撤回只从目标画廊去掉这一张图的关联。不删除 Bunny 原件，不删除商品，不修改 `status`，也不把 `paused` 改成公开。
+4. 每一张使用新的事件号和上一代 revision。重复事件号且内容相同则幂等；revision 冲突则放弃这次写入并重新读回。
+5. 不合并 main，不改常用生产别名，不合 storefront PR 36。
 
 ## 页面现在怎么读
 
