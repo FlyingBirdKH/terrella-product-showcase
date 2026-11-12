@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CAT-001 内部预览 · 非正式商城</title>
+<style>
+  :root { --bg:#f7f1e8; --ink:#1c1917; --muted:#78716c; --card:#fffdf8; --line:#e7e0d4; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Iowan Old Style", Palatino, "Songti SC", serif; background:var(--bg); color:var(--ink); }
+  header, main, footer { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  h1 { margin: 0 0 8px; font-size: clamp(1.4rem, 3vw, 2rem); }
+  .banner { margin: 0 0 12px; padding: 10px 12px; border: 2px solid #9a3412; background: #fff7ed; color: #9a3412; font-weight: 700; }
+  p { margin: 0 0 10px; line-height: 1.5; }
+  .muted { color: var(--muted); }
+  button[disabled] { opacity: .55; cursor: not-allowed; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  li { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  figure { margin: 0; }
+  img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #f1ebe1; display: block; }
+  figcaption { padding: 10px 12px 12px; font-size: .82rem; line-height: 1.45; }
+  code { background: #efe7da; padding: 1px 6px; border-radius: 4px; word-break: break-all; }
+  #chosen li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  #save-status { font-weight: 700; }
+</style>
+</head>
+<body>
+<header>
+  <p class="banner" role="status">内部预览 · 非公开 · 不是正式商城</p>
+  <h1>CAT-001 已选图片的内部预览</h1>
+  <p class="muted">商品 ID <code id="product-id"></code>。勾选按完整 SHA-256 记入内部预览。取消勾选只从这份预览移除，不删除 Bunny 原件，不删除商品，也不改正式站。</p>
+  <p><button type="button" id="publish-unavailable" disabled>正式上架/下架不可用</button></p>
+  <p id="save-status" role="status">正在读取内部预览。</p>
+</header>
+<main>
+  <h2>可选图片</h2>
+  <ol id="frames"></ol>
+  <h2>当前内部预览</h2>
+  <ol id="chosen"></ol>
+</main>
+<footer class="muted">这不是 https://www.terralla.com 的商品页。正式发布仍须单独授权。</footer>
+<script>
+const PRODUCT_ID = '426bf18c-8649-4aa5-939c-f0b33eca95f8';
+const IMAGES = [
+  { order: 1, shortId: '001·ff4696', sha256: 'ff4696836d2ac0320db1bf247cd8e89e3760795c696caf0bbf61ffeb3033f342', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-01-ff469683.png' },
+  { order: 2, shortId: '001·af3760', sha256: 'af3760c6b82472fcc1999dec44079feb5089613ccc6e247b4a9c94acfc7746c4', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-02-af3760c6.png' },
+  { order: 3, shortId: '001·2f8919', sha256: '2f89191684cdab6756eafe1e4c116d801a36451cd6bc1f3be3c647f19929f44d', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-03-2f891916.png' },
+  { order: 4, shortId: '001·91cd1d', sha256: '91cd1d7d67d7bacfba741d14c26dc340789a0836412518af4241fe0bb4a3fa0c', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-04-91cd1d7d.png' }
+];
+const status = document.getElementById('save-status');
+document.getElementById('product-id').textContent = PRODUCT_ID;
+let selected = new Set();
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function paint() {
+  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><figure><img alt="内部预览 ${esc(item.shortId)}" src="${esc(item.path)}"><figcaption><div>${item.order}. <code>${esc(item.shortId)}</code></div><div>SHA-256 <code>${esc(item.sha256)}</code></div><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''}> 放入内部预览</label></figcaption></figure></li>`).join('');
+  const chosen = IMAGES.filter((item) => selected.has(item.sha256));
+  document.getElementById('chosen').innerHTML = chosen.length
+    ? chosen.map((item) => `<li><code>${esc(item.shortId)}</code> <code>${esc(item.sha256)}</code></li>`).join('')
+    : '<li>当前没有选入内部预览的图片。</li>';
+}
+async function load() {
+  const response = await fetch(`/api/internal-preview?productId=${PRODUCT_ID}`, { cache: 'no-store' });
+  if (!response.ok) throw new Error('read');
+  const data = await response.json();
+  if (!data.ok || data.productId !== PRODUCT_ID) throw new Error('shape');
+  selected = new Set(data.selected || []);
+  status.textContent = '已从共享内部预览记录读取。这不是正式商城。';
+  paint();
+}
+document.getElementById('frames').addEventListener('change', async (event) => {
+  const box = event.target.closest('input[data-sha]');
+  if (!box) return;
+  const sha256 = box.dataset.sha;
+  const want = box.checked;
+  status.textContent = '正在写入内部预览记录。';
+  try {
+    const response = await fetch('/api/internal-preview', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ productId: PRODUCT_ID, sha256, selected: want })
+    });
+    const data = await response.json();
+    if (!response.ok || !data.ok || !data.saved) throw new Error(data.reason || 'save');
+    selected = new Set(data.selected || []);
+    status.textContent = want ? '已记入内部预览。尚未同步正式商城。' : '已从内部预览移除。Bunny 原件和正式站未改。';
+    paint();
+  } catch (error) {
+    box.checked = !want;
+    status.textContent = '没有写入内部预览，勾选已恢复。这不是正式站保存。';
+  }
+});
+paint();
+load().catch(() => {
+  status.textContent = '内部预览记录没有读到。不会把未保存的勾选当成已选。';
+});
+</script>
+</body>
+</html>
