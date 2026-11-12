@@ -157,11 +157,17 @@
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <div class="copy-bar">
   <button type="button" id="copy-release">复制放行清单</button>
-  <p id="copy-status">复制清单仍是剪贴板草稿。CAT-001 只有在现有 kevin_admin 或 terralla_admin 会话写入共享记录并读回后才算保存；其他勾选只留在这次打开的页面。都不是上架或下架。</p>
+  <p id="copy-status">复制清单仍是剪贴板草稿。CAT-001 只有在已登录且带有服务端 terralla 品牌声明时写入共享记录并读回后才算保存；其他勾选只留在这次打开的页面。都不是上架或下架。</p>
   <button type="button" id="publish-unavailable" disabled title="没有已授权的管理人写入边界，也没有已确认的目标网站">上架/下架不可用</button>
   <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
 </div>
-<p id="preview-status" role="status">正在读取共享内部预览。没有现有的 kevin_admin 或 terralla_admin 会话时不能保存。本页不创建用户。</p>
+<p id="preview-status" role="status">正在读取共享内部预览。没有读到之前，不能当成已保存。</p>
+<form id="preview-sign-in" style="max-width:1200px;margin:8px auto 0;padding:0 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:end;">
+  <label>已有账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
+  <label>密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
+  <button type="submit">登录内部预览</button>
+  <span>只登录已经存在的 Supabase Auth 账号。不注册、不发邀请、不改账号声明。会话放在 HttpOnly cookie，不要把 JWT 贴到 Slack。</span>
+</form>
 <p id="availability-status" role="status">正在读取仓库里的放行与同步记录。</p>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
 <p id="load-status" role="status" aria-live="polite" hidden></p>
@@ -739,10 +745,7 @@ async function loadInternalPreview(){
   let client;
   try {
     client = await previewClientReady;
-    const headers = { 'content-type': 'application/json' };
-    const token = client.accessToken();
-    if (token) headers.authorization = 'Bearer ' + token;
-    const response = await fetch('/api/internal-preview?productId=' + encodeURIComponent(INTERNAL_PREVIEW_PRODUCT_ID), { cache: 'no-store', headers });
+    const response = await fetch('/api/internal-preview?productId=' + encodeURIComponent(INTERNAL_PREVIEW_PRODUCT_ID), { cache: 'no-store', credentials: 'same-origin' });
     const data = await response.json().catch(() => null);
     const interpreted = client.readStatus(data);
     if (!response.ok || !interpreted.ok || !data || data.productId !== INTERNAL_PREVIEW_PRODUCT_ID) {
@@ -786,10 +789,7 @@ async function savePreviewToggle(box, key, payload, selected, previous, serial){
     client = await previewClientReady;
     const baseRevision = Number.isInteger(previewRevisions[payload.sha256]) ? previewRevisions[payload.sha256] : 0;
     const body = { ...payload, eventId: client.newEventId(), baseRevision };
-    const headers = { 'content-type': 'application/json' };
-    const token = client.accessToken();
-    if (token) headers.authorization = 'Bearer ' + token;
-    const response = await fetch('/api/internal-preview', { method: 'POST', headers, body: JSON.stringify(body) });
+    const response = await fetch('/api/internal-preview', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
     const data = await response.json().catch(() => null);
     if (previewToggleLatest.get(key) !== serial) return;
     if (response.status === 409 || (data && (data.reason === 'revision_conflict' || data.reason === 'idempotency_conflict'))) {
@@ -970,6 +970,40 @@ renderFilters();render();
 loadProducts().then(({data,state})=>{PRODUCTS=data;if(!categories().includes(active))active='全部';renderFilters();render();loadStatus.textContent=state==='fallback'?'当前使用已保存的产品资料，原图文件夹仍可打开。':'';loadStatus.hidden=state==='live';});
 loadAvailability();
 loadInternalPreview();
+document.getElementById('preview-sign-in').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const client = await previewClientReady;
+  const email = document.getElementById('preview-email').value;
+  const password = document.getElementById('preview-password').value;
+  document.getElementById('preview-password').value = '';
+  setPreviewStatus('正在登录已有账号。图片还没有保存。');
+  try {
+    const response = await fetch('/api/internal-preview-session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || data.signedIn !== true) {
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText(data && data.reason));
+      return;
+    }
+    if (data.brandAdmin !== true) {
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText('brand-admin-missing'));
+      return;
+    }
+    await loadInternalPreview();
+  } catch (err) {
+    clearPreviewSelection();
+    render();
+    setPreviewStatus(client.failureText('store-not-writable'));
+  }
+});
 
 </script>
 </body>

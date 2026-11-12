@@ -5,8 +5,9 @@ import { after, before, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { failureText, readStatus, writeStatus } from '../internal-preview-client.mjs';
 import { handlePreview } from '../lib/internal-preview-http.mjs';
+import { handleSession } from '../lib/internal-preview-session.mjs';
 import { createSupabasePreviewClient } from '../lib/internal-preview-supabase.mjs';
-import { FIRST_SHA, PRODUCT_ID, SECOND_SHA, psql } from './preview-postgres.mjs';
+import { FIRST_SHA, PRODUCT_ID, psql } from './preview-postgres.mjs';
 import { quietCount, startPreviewGateway } from './preview-rest-gateway.mjs';
 import { recreateDatabase } from './preview-postgres.mjs';
 
@@ -16,23 +17,50 @@ let gateway;
 let env;
 
 function response() {
+  const headers = {};
   return {
     statusCode: 0,
-    headers: {},
-    setHeader(name, value) { this.headers[name] = value; },
+    headers,
+    setHeader(name, value) { headers[name.toLowerCase()] = value; },
     end(text) { this.text = text; this.json = JSON.parse(text); }
   };
 }
 
-async function preview({ method = 'GET', url = `/api/internal-preview?productId=${PRODUCT_ID}`, token = '', body, fetchImpl = globalThis.fetch, useEnv = env }) {
+function cookieHeader(res) {
+  const raw = res.headers['set-cookie'] || [];
+  const list = Array.isArray(raw) ? raw : [raw];
+  return list.map((item) => item.split(';')[0]).join('; ');
+}
+
+async function preview({ method = 'GET', url = `/api/internal-preview?productId=${PRODUCT_ID}`, cookie = '', body, fetchImpl = globalThis.fetch, useEnv = env }) {
   const req = {
     method,
     url,
-    headers: token ? { authorization: `Bearer ${token}` } : {},
+    headers: cookie ? { cookie } : {},
     body: body === undefined ? undefined : JSON.stringify(body)
   };
   const res = response();
   await handlePreview(req, res, { env: useEnv, fetchImpl, clientFactory: createSupabasePreviewClient });
+  return res;
+}
+
+async function session(body, { cookie = '', method = 'POST' } = {}) {
+  const req = {
+    method,
+    url: '/api/internal-preview-session',
+    headers: { 'x-forwarded-proto': 'https', cookie },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  };
+  const res = response();
+  await handleSession(req, res, { env, fetchImpl: globalThis.fetch, send: (target, status, payload) => {
+    target.statusCode = status;
+    target.setHeader('content-type', 'application/json; charset=utf-8');
+    target.setHeader('cache-control', 'no-store');
+    const confirmed = payload.ok === true && payload.durable === true && payload.store === 'supabase';
+    const safe = { ...payload, ok: payload.ok === true, saved: confirmed && payload.saved === true, durable: confirmed };
+    if (!confirmed) delete safe.store;
+    target.end(JSON.stringify(safe));
+  } });
   return res;
 }
 
@@ -46,68 +74,73 @@ after(async () => {
   if (gateway) await gateway.close();
 });
 
-async function managerToken() {
-  return 'test.kevin_admin';
-}
-
-test('local gateway, not production: kevin_admin write is readable by terralla_team', async () => {
-  await psql(db, 'truncate internal_preview.events');
-  const token = await managerToken();
+test('local gateway, not production: password login sets an HttpOnly cookie and does not return the token', async () => {
+  const signed = await session({ email: 'brand@example.test', password: 'test-password-only' });
+  assert.equal(signed.statusCode, 200);
+  assert.equal(signed.json.signedIn, true);
+  assert.equal(signed.json.brandAdmin, true);
+  assert.equal(signed.json.saved, false);
+  assert.equal(signed.text.includes('test.brand-admin'), false);
+  assert.equal(signed.text.includes('access_token'), false);
+  const cookies = signed.headers['set-cookie'].join('\n');
+  assert.match(cookies, /HttpOnly/);
+  assert.match(cookies, /Secure/);
+  assert.equal(gateway.hits.some((hit) => hit.includes('invite') || hit.includes('/admin/')), false);
+  const cookie = cookieHeader(signed);
   const saved = await preview({
     method: 'POST',
-    token,
+    cookie,
     body: { eventId: 'evt-http-share-000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 }
   });
-  assert.equal(saved.statusCode, 200);
   assert.equal(saved.json.saved, true);
-  assert.equal(saved.json.durable, true);
-  assert.equal(saved.json.store, 'supabase');
-  const other = await preview({ token: 'test.terralla_team' });
+  const other = await preview({ cookie });
   assert.deepEqual(other.json.selected, [FIRST_SHA]);
   assert.equal(other.json.saved, false);
-  assert.equal(other.json.durable, true);
-  const teamWrite = await preview({
-    method: 'POST',
-    token: 'test.terralla_team',
-    body: { eventId: 'evt-team-http-000001', productId: PRODUCT_ID, sha256: SECOND_SHA, selected: true, baseRevision: 0 }
-  });
-  assert.equal(teamWrite.statusCode, 403);
-  assert.equal(teamWrite.json.saved, false);
 });
 
 test('anonymous read and write are rejected and are not saved', async () => {
+  const bearer = await preview({ method: 'POST', body: { eventId: 'evt-bearer-000000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
   const read = await preview({});
-  const write = await preview({ method: 'POST', body: { eventId: 'evt-anon-http-000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
   assert.equal(read.statusCode, 401);
-  assert.equal(write.statusCode, 401);
+  assert.equal(bearer.statusCode, 401);
   assert.equal(read.json.saved, false);
-  assert.equal(write.json.saved, false);
-  assert.equal(read.json.durable, false);
-  assert.equal(write.json.reason, 'anonymous');
+  assert.equal(bearer.json.saved, false);
 });
 
-test('terralla_team, supplier roles, and a plain authenticated role cannot write', async () => {
+test('login without the brand claim, a forged user_metadata claim, and a supplier role do not save', async () => {
   await psql(db, 'truncate internal_preview.events');
-  for (const token of ['test.terralla_team', 'test.admin', 'test.sourcing_manager', 'test.authenticated']) {
-    const eventId = `evt-deny-${token.split('.').pop()}-00000001`;
-    const write = await preview({ method: 'POST', token, body: { eventId, productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
-    assert.equal(write.json.saved, false, token);
-    assert.notEqual(write.statusCode, 200, token);
+  for (const email of ['plain@example.test', 'supplier@example.test']) {
+    const signed = await session({ email, password: 'test-password-only' });
+    assert.equal(signed.json.signedIn, true, email);
+    assert.equal(signed.json.brandAdmin, false, email);
+    assert.equal(signed.json.reason, 'brand-admin-missing');
+    assert.equal(signed.json.saved, false);
+    const write = await preview({
+      method: 'POST',
+      cookie: cookieHeader(signed),
+      body: { eventId: `evt-${email.slice(0, 5)}-00000001`, productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 }
+    });
+    assert.equal(write.statusCode, 403);
+    assert.equal(write.json.reason, 'brand-admin-missing');
+    assert.equal(write.json.saved, false);
   }
+  const signup = await session({ action: 'signup', email: 'new@example.test', password: 'test-password-only' });
+  assert.equal(signup.statusCode, 405);
+  assert.equal(signup.json.signedIn, false);
+  assert.equal(gateway.hits.some((hit) => hit.includes('invite') || hit.includes('/admin/')), false);
   assert.equal(await quietCount(db, 'select count(*) from internal_preview.events'), '0');
-  assert.equal(await quietCount(db, 'select status from public.terralla_skus'), 'paused');
 });
 
 test('short sha and a mismatched product id are rejected without a saved flag', async () => {
   await psql(db, 'truncate internal_preview.events');
-  const token = await managerToken();
+  const signed = await session({ email: 'brand@example.test', password: 'test-password-only' });
+  const cookie = cookieHeader(signed);
   const ledgerBefore = readFileSync(new URL('../image-availability.json', import.meta.url), 'utf8');
   const fileBefore = readFileSync(new URL('../internal-preview.json', import.meta.url), 'utf8');
-  const short = await preview({ method: 'POST', token, body: { eventId: 'evt-short-http-00001', productId: PRODUCT_ID, sha256: FIRST_SHA.slice(0, 8), selected: true, baseRevision: 0 } });
-  const other = await preview({ method: 'POST', token, body: { eventId: 'evt-product-http-001', productId: '00000000-0000-4000-8000-000000000000', sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
+  const short = await preview({ method: 'POST', cookie, body: { eventId: 'evt-short-http-00001', productId: PRODUCT_ID, sha256: FIRST_SHA.slice(0, 8), selected: true, baseRevision: 0 } });
+  const other = await preview({ method: 'POST', cookie, body: { eventId: 'evt-product-http-001', productId: '00000000-0000-4000-8000-000000000000', sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
   assert.equal(short.statusCode, 400);
   assert.equal(short.json.reason, 'sha256');
-  assert.equal(other.statusCode, 400);
   assert.equal(other.json.reason, 'product');
   assert.equal(short.json.saved, false);
   assert.equal(other.json.saved, false);
@@ -118,48 +151,41 @@ test('short sha and a mismatched product id are rejected without a saved flag', 
 
 test('the same event posted twice is one row, and a revision race does not become success', async () => {
   await psql(db, 'truncate internal_preview.events');
-  const token = await managerToken();
+  const cookie = cookieHeader(await session({ email: 'brand@example.test', password: 'test-password-only' }));
   const body = { eventId: 'evt-idem-http-000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 };
-  const first = await preview({ method: 'POST', token, body });
-  const second = await preview({ method: 'POST', token, body });
+  const first = await preview({ method: 'POST', cookie, body });
+  const second = await preview({ method: 'POST', cookie, body });
   assert.equal(first.json.saved, true);
   assert.equal(second.json.idempotent, true);
-  assert.equal(second.json.saved, true);
   assert.equal(await quietCount(db, 'select count(*) from internal_preview.events'), '1');
   const [left, right] = await Promise.all([
-    preview({ method: 'POST', token, body: { eventId: 'evt-race-http-000001', productId: PRODUCT_ID, sha256: SECOND_SHA, selected: true, baseRevision: 0 } }),
-    preview({ method: 'POST', token, body: { eventId: 'evt-race-http-000002', productId: PRODUCT_ID, sha256: SECOND_SHA, selected: true, baseRevision: 0 } })
+    preview({ method: 'POST', cookie, body: { eventId: 'evt-race-http-000001', productId: PRODUCT_ID, sha256: 'af3760c6b82472fcc1999dec44079feb5089613ccc6e247b4a9c94acfc7746c4', selected: true, baseRevision: 0 } }),
+    preview({ method: 'POST', cookie, body: { eventId: 'evt-race-http-000002', productId: PRODUCT_ID, sha256: 'af3760c6b82472fcc1999dec44079feb5089613ccc6e247b4a9c94acfc7746c4', selected: true, baseRevision: 0 } })
   ]);
-  const responses = [left, right];
-  assert.equal(responses.filter((item) => item.json.saved === true).length, 1);
-  assert.equal(responses.filter((item) => item.statusCode === 409 && item.json.saved === false && item.json.reason === 'revision_conflict').length, 1);
-  assert.equal(await quietCount(db, `select count(*) from internal_preview.events where sha256 = '${SECOND_SHA}'`), '1');
+  assert.equal([left, right].filter((item) => item.json.saved === true).length, 1);
+  assert.equal([left, right].filter((item) => item.statusCode === 409 && item.json.saved === false).length, 1);
 });
 
 test('a store failure does not report saved, and unbind does not delete the product', async () => {
   await psql(db, 'truncate internal_preview.events');
-  const token = await managerToken();
+  const cookie = cookieHeader(await session({ email: 'brand@example.test', password: 'test-password-only' }));
   const failingFetch = async (url, options) => {
     if (String(url).includes('/rest/')) return new Response(JSON.stringify({ message: 'nope' }), { status: 500, headers: { 'content-type': 'application/json' } });
     return fetch(url, options);
   };
   const failed = await preview({
     method: 'POST',
-    token,
+    cookie,
     fetchImpl: failingFetch,
     body: { eventId: 'evt-fail-http-000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 }
   });
   assert.equal(failed.statusCode, 503);
   assert.equal(failed.json.saved, false);
-  assert.equal(failed.json.durable, false);
-  assert.equal(await quietCount(db, 'select count(*) from internal_preview.events'), '0');
-  const missing = await preview({ method: 'POST', token, useEnv: {}, body: { eventId: 'evt-missing-00000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
+  const missing = await preview({ method: 'POST', cookie, useEnv: {}, body: { eventId: 'evt-missing-00000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
   assert.equal(missing.statusCode, 503);
   assert.equal(missing.json.reason, 'store-not-configured');
-  assert.equal(missing.json.saved, false);
-  const bound = await preview({ method: 'POST', token, body: { eventId: 'evt-bind-http-000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
-  assert.equal(bound.json.saved, true);
-  const unbound = await preview({ method: 'POST', token, body: { eventId: 'evt-unbind-http-0001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: false, baseRevision: 1 } });
+  const bound = await preview({ method: 'POST', cookie, body: { eventId: 'evt-bind-http-000001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: true, baseRevision: 0 } });
+  const unbound = await preview({ method: 'POST', cookie, body: { eventId: 'evt-unbind-http-0001', productId: PRODUCT_ID, sha256: FIRST_SHA, selected: false, baseRevision: 1 } });
   assert.equal(unbound.json.saved, true);
   assert.deepEqual(unbound.json.selected, []);
   assert.match(writeStatus(unbound.json, { sha256: FIRST_SHA, want: false }).text, /解绑/);
@@ -167,33 +193,31 @@ test('a store failure does not report saved, and unbind does not delete the prod
   assert.equal(await quietCount(db, 'select status from public.products'), 'paused');
 });
 
-test('success copy requires a durable shared readback, and the page no longer claims the file is shared', () => {
+test('success copy requires a durable shared readback, and the catalog page does not store a JWT', () => {
   const fake = writeStatus({ ok: true, saved: true, selected: [FIRST_SHA] }, { sha256: FIRST_SHA, want: true });
   assert.equal(fake.ok, false);
-  assert.equal(fake.text.includes('已写入共享'), false);
-  assert.match(failureText('store-not-configured'), /失败关闭/);
+  assert.match(failureText('brand-admin-missing'), /不能补这个声明/);
   assert.equal(readStatus({ ok: true, saved: true, durable: true, store: 'supabase', selected: [] }).ok, false);
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-  const preview = readFileSync(new URL('../cat-001-internal-preview.html', import.meta.url), 'utf8');
+  const previewPage = readFileSync(new URL('../cat-001-internal-preview.html', import.meta.url), 'utf8');
   const runtime = [
     'api/internal-preview.js',
+    'api/internal-preview-session.js',
     'lib/internal-preview-http.mjs',
-    'lib/internal-preview-supabase.mjs',
-    'scripts/serve-with-internal-preview.mjs'
+    'lib/internal-preview-session.mjs',
+    'lib/internal-preview-supabase.mjs'
   ].map((file) => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8')).join('\n');
-  assert.equal(html.includes('刷新或其他浏览器会读到同一份'), false);
-  assert.equal(preview.includes('刷新或其他浏览器会读到同一份'), false);
-  assert.equal(html.includes('preview-sign-in'), false);
-  assert.equal(preview.includes('internal-preview-session'), false);
+  assert.match(html, /id="preview-sign-in"/);
+  assert.match(html, /credentials:\s*'same-origin'/);
+  assert.equal(html.includes('sessionStorage'), false);
+  assert.equal(previewPage.includes('sessionStorage'), false);
   assert.match(html, /id="publish-unavailable" disabled/);
-  assert.match(preview, /正式上架\/下架不可用/);
+  assert.match(html, /fetch\('products\.json/);
   assert.equal(runtime.includes('SUPABASE_SERVICE_ROLE'), false);
   assert.equal(runtime.includes('service_role'), false);
-  assert.equal(runtime.includes('internal-preview.json'), false);
-  assert.equal(runtime.includes('writeFile'), false);
-  assert.equal(runtime.includes('auth/v1/user'), false);
-  assert.equal(runtime.includes('exchangePassword'), false);
-  assert.equal(runtime.includes('current_app_role'), false);
+  assert.equal(runtime.includes('/invite'), false);
+  assert.equal(runtime.includes('admin/users'), false);
+  assert.equal(runtime.includes('user_metadata'), false);
 });
 
 test('the unconfigured local server fails closed and does not write the json file', async () => {

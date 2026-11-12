@@ -12,33 +12,30 @@
 
 ## 内部预览（共享记录，不是正式商城）
 
-CAT-001（产品编号 `426bf18c-8649-4aa5-939c-f0b33eca95f8`，SKU CAT-001，货号 TR260002，handle `eastern-heritage-tr260002`，brand `terralla`）的勾选按完整 SHA-256 写入 crm-core schema `internal_preview`。状态保持暂停、非公开。这一步没有连接生产库，也没有改商品状态。
+`384a994e` 把 EXECUTE 授给 `kevin_admin`、`terralla_admin`、`terralla_team`。crm-core 的 `pg_roles` 只有 `anon`、`authenticated`、`authenticator`、`service_role`，那次 GRANT 不能实施。Supabase Auth 的 JWT `role` 也只是这几个标准值，PostgREST 用它做 `SET ROLE`，不能再当成自定义数据库角色。那个方案已从迁移里去掉。
 
-鉴权契约，沿用 Terrella 商品表已有的 JWT role，不新建登录，不读 `auth.users`，不创建管理员：
+现在的设计按 Supabase 的 JWT 字段说明：用户令牌的 `role` 是 `authenticated`，`sub` 是用户 UUID。品牌权限只认服务端才能写的 `app_metadata.terrella_brand_admin = terralla`。`user_metadata` 用户自己可以改，不参与判断。supplier 的 `admin` / `sourcing_manager` 也不参与判断。
 
-- 写入：JWT `role` 是 `kevin_admin` 或 `terralla_admin`，并且这一行的 `brand_id` 固定为 `terralla`。
-- 只读：`terralla_team` 可以读，不能写。
-- 拒绝：`anon`、普通 `authenticated`、`service_role`，以及 supplier `product_images` 用的 `current_app_role()` / `is_internal_editor()` 下的 `admin`、`sourcing_manager`。本迁移不调用这两个函数，也不放宽它们。
-- 尚未核到有用户会话带 `kevin_admin` 或 `terralla_admin`。没有该会话时接口拒绝，页面不显示已保存。
+登录用已有账号的密码授权，对应官方 `POST /auth/v1/token?grant_type=password`，请求头只带 anon key。成功后访问令牌和刷新令牌放在 `HttpOnly`、`SameSite=Lax` 的 cookie，HTTPS 上再加 `Secure`。JSON 响应不返回令牌。页面不把 JWT 放进 `sessionStorage`，也不提供粘贴框。没有注册、邀请或修改 `auth` 用户元数据的接口。
 
-匿名读取正式商品的条件保持原样：`deleted_at` 为空，且 `status` 属于 `shortlisted`、`ready_for_shopify`、`live`。本迁移不扩大这个白名单，也不把 `paused` 加进去。
+公开产品册仍直接读 `products.json`，不要求登录。内部预览接口单独失败关闭。
 
-- 展示页和 `cat-001-internal-preview.html` 都通过 `/api/internal-preview` 读写同一张事件表。成功文案只在响应同时带 `saved`、`durable` 和 `store: supabase` 时出现。读失败会清空勾选，不会显示「已读回」。
-- 浏览器不保存图片选择，也不持有 service role。本仓库不发行 JWT。
-- 匿名请求、角色不符、短 SHA、其他 productId 都会拒绝。同一 `eventId` 且内容相同是幂等的；内容不同或 `baseRevision` 过期返回冲突，页面重新读取，不覆盖。
-- 取消勾选追加一条 `selected: false` 的事件，只解除内部预览关联。Bunny 地址还在页面数据里，商品记录还在。
+CAT-001（产品编号 `426bf18c-8649-4aa5-939c-f0b33eca95f8`，SKU CAT-001，货号 TR260002，handle `eastern-heritage-tr260002`，brand `terralla`）的勾选按完整 SHA-256 写入 crm-core schema `internal_preview`。`actor` 是 `auth.uid()`。状态保持暂停、非公开。这一步没有连接生产库，也没有改商品状态。
+
+- 表开启 RLS 且不授权给 `anon`、`authenticated`、`service_role` 直接读写。写入只经过 private schema 里的 security definer 函数；公开函数是 security invoker，只把 EXECUTE 授给已有的 `authenticated`。
+- 缺 `sub`、`sub` 和 `auth.uid()` 不一致、`role` 不是 `authenticated`、或 `app_metadata.terrella_brand_admin` 不是 `terralla`，都拒绝。只在 `user_metadata` 里放同样的声明也拒绝。
+- 登录成功但没有该声明时，页面说明账号已登录、预览没有保存。不能把这说成预览可用。
+- 成功文案只在响应同时带 `saved`、`durable` 和 `store: supabase` 时出现。
+- 取消勾选追加一条 `selected: false`。Bunny 原件和商品记录还在。
 - `image-availability.json` 仍是正式放行和同步账本。这一步不往里面写。
 
-服务端配置只需要这两个名字，值由原部署者填写。本环境看不到该 Vercel 项目的环境变量：
+匿名读取正式商品的条件保持原样：`deleted_at` 为空，且 `status` 属于 `shortlisted`、`ready_for_shopify`、`live`。本迁移不改这条。
 
-- `SUPABASE_URL`：crm-core 的 API 地址，只放服务端。
-- `SUPABASE_ANON_KEY`：只放服务端。
+服务端配置只需要这两个名字：`SUPABASE_URL`（crm-core）、`SUPABASE_ANON_KEY`。不要配置 `SUPABASE_SERVICE_ROLE_KEY`。
 
-不要配置 `SUPABASE_SERVICE_ROLE_KEY`，尤其不要放进浏览器。没有这两个变量，或 JWT role 不对时，接口返回失败，`saved` 为 false。
+还缺一个非秘密前置：某个已经存在的 Auth 用户，其 `app_metadata.terrella_brand_admin` 被设为 `terralla`。本仓库不写这个声明。没有它时，标准登录可以完成，预览写入仍然失败关闭。这个环境没有真实会话，也看不到 Vercel 项目，不能报线上可用。
 
-迁移文件：`supabase/migrations/20261112160000_internal_preview_shared.sql`。回滚文件：`supabase/rollbacks/20261112160000_internal_preview_shared_down.sql`。回滚只删除 `internal_preview` 和两个公开函数，不改 `terralla_skus`、商品状态或 Bunny。本仓库不执行生产迁移。crm-core 上的 `kevin_admin`、`terralla_admin`、`terralla_team` 角色需要已经存在；迁移不会创建登录用户。
-
-本机没有上述两个变量时，`node scripts/serve-with-internal-preview.mjs` 只会打开失败关闭的页面。这不是部署，也不是正式商城。
+迁移：`supabase/migrations/20261112160000_internal_preview_shared.sql`。回滚：`supabase/rollbacks/20261112160000_internal_preview_shared_down.sql`。回滚只删除这次创建的函数、事件表和 schema。本仓库不执行生产迁移。
 
 ## 后续 13 张正式同步（尚未执行，不能把预览当商城）
 

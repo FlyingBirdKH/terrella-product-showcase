@@ -1,21 +1,19 @@
 -- crm-core internal preview ledger. Apply manually. This file does not run itself.
--- It adds a selection table keyed by product id, full SHA-256, revision, and event id.
--- crm-core public has no such table. This does not alter terralla_skus.
--- It does not read auth.users, does not create users, and does not create admin roles.
--- It does not call current_app_role() or is_internal_editor(). Those belong to supplier product_images.
--- It does not change anonymous product reads. That predicate stays deleted_at is null
--- and status in shortlisted, ready_for_shopify, live.
--- It does not insert CAT-003, CAT-006, or any other product row.
--- CAT-001 brand_id is terralla. Every preview row is forced to that brand.
--- Write requires JWT role kevin_admin or terralla_admin.
--- terralla_team may read and may not write.
--- Do not add schema internal_preview to exposed Data API schemas.
--- Do not grant these functions to the service role or put that key in a browser.
+-- crm-core has only the standard roles anon, authenticated, authenticator, and service_role.
+-- Do not create login roles. PostgREST uses the JWT role claim for SET ROLE, and Supabase
+-- Auth puts role=authenticated on a user token. kevin_admin, terralla_admin, and terralla_team
+-- are not database roles and are not granted here.
+-- Authorization is auth.uid() plus the server-trusted JWT claim
+-- app_metadata.terrella_brand_admin = 'terralla'. user_metadata is ignored.
+-- This file does not update auth users, does not read auth.users, and does not change
+-- anonymous product visibility or terralla_skus.
+-- Direct table access stays denied. Only the security definer functions write, after the claim check.
+-- Do not grant these functions to service_role, and do not put that key in a browser.
 
 create schema if not exists internal_preview;
 
-revoke all on schema internal_preview from public, anon, authenticated;
-grant usage on schema internal_preview to kevin_admin, terralla_admin, terralla_team;
+revoke all on schema internal_preview from public, anon, service_role;
+grant usage on schema internal_preview to authenticated;
 
 create table if not exists internal_preview.events (
   event_id text primary key,
@@ -24,14 +22,13 @@ create table if not exists internal_preview.events (
   selected boolean not null,
   base_revision bigint not null,
   revision bigint not null,
-  actor text not null,
+  actor uuid not null,
   brand_id text not null default 'terralla',
   created_at timestamptz not null default now(),
   constraint internal_preview_events_sha_shape check (sha256 ~ '^[a-f0-9]{64}$'),
   constraint internal_preview_events_revision_step check (base_revision >= 0 and revision = base_revision + 1),
   constraint internal_preview_events_product check (product_id = '426bf18c-8649-4aa5-939c-f0b33eca95f8'::uuid),
   constraint internal_preview_events_brand check (brand_id = 'terralla'),
-  constraint internal_preview_events_actor check (actor in ('kevin_admin', 'terralla_admin')),
   constraint internal_preview_events_sha_allow check (sha256 in (
     'ff4696836d2ac0320db1bf247cd8e89e3760795c696caf0bbf61ffeb3033f342',
     'af3760c6b82472fcc1999dec44079feb5089613ccc6e247b4a9c94acfc7746c4',
@@ -42,24 +39,36 @@ create table if not exists internal_preview.events (
 );
 
 alter table internal_preview.events enable row level security;
-revoke all on internal_preview.events from public, anon, authenticated, kevin_admin, terralla_admin, terralla_team;
+revoke all on internal_preview.events from public, anon, authenticated, service_role;
 
-create or replace function internal_preview.jwt_role()
-returns text
-language sql
+create or replace function internal_preview.require_actor()
+returns uuid
+language plpgsql
 stable
+security definer
 set search_path = pg_temp
 as $$
-  select coalesce(
-    nullif(current_setting('request.jwt.claim.role', true), ''),
-    case
-      when coalesce(current_setting('request.jwt.claims', true), '') = '' then null
-      else current_setting('request.jwt.claims', true)::jsonb ->> 'role'
-    end
-  );
+declare
+  claims jsonb := auth.jwt();
+  uid uuid := auth.uid();
+  jwt_sub text := claims ->> 'sub';
+  jwt_role text := claims ->> 'role';
+  brand text := claims -> 'app_metadata' ->> 'terrella_brand_admin';
+begin
+  if uid is null or jwt_sub is null or jwt_sub = '' or jwt_sub is distinct from uid::text then
+    raise exception 'sub' using errcode = '42501';
+  end if;
+  if jwt_role is distinct from 'authenticated' then
+    raise exception 'role' using errcode = '42501';
+  end if;
+  if brand is distinct from 'terralla' then
+    raise exception 'brand-admin-missing' using errcode = '42501';
+  end if;
+  return uid;
+end;
 $$;
 
-revoke all on function internal_preview.jwt_role() from public, anon, authenticated, kevin_admin, terralla_admin, terralla_team;
+revoke all on function internal_preview.require_actor() from public, anon, authenticated, service_role;
 
 create or replace function internal_preview.build_state(p_product_id uuid, p_saved boolean, p_idempotent boolean)
 returns jsonb
@@ -86,6 +95,8 @@ as $$
   );
 $$;
 
+revoke all on function internal_preview.build_state(uuid, boolean, boolean) from public, anon, authenticated, service_role;
+
 create or replace function internal_preview.apply_event(
   p_event_id text,
   p_product_id uuid,
@@ -98,16 +109,10 @@ security definer
 set search_path = pg_temp
 as $$
 declare
-  jwt text := internal_preview.jwt_role();
+  uid uuid := internal_preview.require_actor();
   existing internal_preview.events%rowtype;
   current_revision bigint;
 begin
-  if jwt is null or jwt = 'anon' then
-    raise exception 'anonymous' using errcode = '42501';
-  end if;
-  if jwt not in ('kevin_admin', 'terralla_admin') then
-    raise exception 'manager' using errcode = '42501';
-  end if;
   if p_product_id is distinct from '426bf18c-8649-4aa5-939c-f0b33eca95f8'::uuid then
     raise exception 'product' using errcode = '22023';
   end if;
@@ -137,7 +142,7 @@ begin
       and existing.sha256 = p_sha256
       and existing.selected = p_selected
       and existing.base_revision = p_base_revision
-      and existing.actor = jwt
+      and existing.actor = uid
       and existing.brand_id = 'terralla' then
       return internal_preview.build_state(p_product_id, true, true);
     end if;
@@ -155,7 +160,7 @@ begin
   insert into internal_preview.events (
     event_id, product_id, sha256, selected, base_revision, revision, actor, brand_id
   ) values (
-    p_event_id, p_product_id, p_sha256, p_selected, p_base_revision, p_base_revision + 1, jwt, 'terralla'
+    p_event_id, p_product_id, p_sha256, p_selected, p_base_revision, p_base_revision + 1, uid, 'terralla'
   );
 
   return internal_preview.build_state(p_product_id, true, false);
@@ -169,15 +174,8 @@ stable
 security definer
 set search_path = pg_temp
 as $$
-declare
-  jwt text := internal_preview.jwt_role();
 begin
-  if jwt is null or jwt = 'anon' then
-    raise exception 'anonymous' using errcode = '42501';
-  end if;
-  if jwt not in ('kevin_admin', 'terralla_admin', 'terralla_team') then
-    raise exception 'manager' using errcode = '42501';
-  end if;
+  perform internal_preview.require_actor();
   if p_product_id is distinct from '426bf18c-8649-4aa5-939c-f0b33eca95f8'::uuid then
     raise exception 'product' using errcode = '22023';
   end if;
@@ -185,11 +183,10 @@ begin
 end;
 $$;
 
-revoke all on function internal_preview.build_state(uuid, boolean, boolean) from public, anon, authenticated, kevin_admin, terralla_admin, terralla_team;
-revoke all on function internal_preview.apply_event(text, uuid, text, boolean, bigint) from public, anon, authenticated, terralla_team;
-revoke all on function internal_preview.read_state(uuid) from public, anon, authenticated;
-grant execute on function internal_preview.apply_event(text, uuid, text, boolean, bigint) to kevin_admin, terralla_admin;
-grant execute on function internal_preview.read_state(uuid) to kevin_admin, terralla_admin, terralla_team;
+revoke all on function internal_preview.apply_event(text, uuid, text, boolean, bigint) from public, anon, service_role;
+revoke all on function internal_preview.read_state(uuid) from public, anon, service_role;
+grant execute on function internal_preview.apply_event(text, uuid, text, boolean, bigint) to authenticated;
+grant execute on function internal_preview.read_state(uuid) to authenticated;
 
 create or replace function public.internal_preview_apply_event(
   event_id text,
@@ -215,24 +212,7 @@ as $$
   select internal_preview.read_state(product_id);
 $$;
 
-revoke all on function public.internal_preview_apply_event(text, uuid, text, boolean, bigint) from public, anon, authenticated, terralla_team;
-revoke all on function public.internal_preview_read(uuid) from public, anon, authenticated;
-grant execute on function public.internal_preview_apply_event(text, uuid, text, boolean, bigint) to kevin_admin, terralla_admin;
-grant execute on function public.internal_preview_read(uuid) to kevin_admin, terralla_admin, terralla_team;
-
-do $$
-declare
-  role_name text;
-begin
-  foreach role_name in array array['service_role', 'admin', 'sourcing_manager']
-  loop
-    if exists (select 1 from pg_roles where rolname = role_name) then
-      execute format('revoke all on function public.internal_preview_apply_event(text, uuid, text, boolean, bigint) from %I', role_name);
-      execute format('revoke all on function public.internal_preview_read(uuid) from %I', role_name);
-      execute format('revoke all on function internal_preview.apply_event(text, uuid, text, boolean, bigint) from %I', role_name);
-      execute format('revoke all on function internal_preview.read_state(uuid) from %I', role_name);
-      execute format('revoke all on schema internal_preview from %I', role_name);
-    end if;
-  end loop;
-end;
-$$;
+revoke all on function public.internal_preview_apply_event(text, uuid, text, boolean, bigint) from public, anon, service_role;
+revoke all on function public.internal_preview_read(uuid) from public, anon, service_role;
+grant execute on function public.internal_preview_apply_event(text, uuid, text, boolean, bigint) to authenticated;
+grant execute on function public.internal_preview_read(uuid) to authenticated;
