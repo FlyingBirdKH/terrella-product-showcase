@@ -500,6 +500,109 @@ function durableBadgeHtml(sku, sha){
   return bits.length ? `<div class="durable-status">${bits.join('')}</div>` : '';
 }
 const releasePicks = new Map();
+let releaseCopy = { sku: '', items: [] };
+// release-copy-list:start
+function emptyReleaseCopy() {
+  return { sku: '', items: [] };
+}
+function releaseIdentity(item) {
+  return `${item.sku}\n${String(item.sha256 || '').toLowerCase()}`;
+}
+function normalizeReleaseItem(item) {
+  return {
+    short_id: item.short_id || '',
+    sku: item.sku,
+    sha256: String(item.sha256 || '').toLowerCase(),
+    version: item.version || '',
+    path: item.path || '',
+    productId: item.productId || ''
+  };
+}
+function dedupeReleaseItems(sku, items) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of items || []) {
+    if (!raw || raw.sku !== sku) continue;
+    const sha = String(raw.sha256 || '').toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(sha)) continue;
+    const item = normalizeReleaseItem(raw);
+    const key = releaseIdentity(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+function focusReleaseProduct(state, sku, items) {
+  // One product per copy. A different sku replaces the previous list instead of appending.
+  const next = dedupeReleaseItems(sku, items);
+  return { sku: next.length ? sku : '', items: next };
+}
+function selectReleaseImage(state, item) {
+  const current = state || emptyReleaseCopy();
+  if (!item || !item.sku) return current;
+  if (current.sku && current.sku !== item.sku) return current;
+  return focusReleaseProduct(current, item.sku, current.items.concat([item]));
+}
+function unselectReleaseImage(state, sku, sha256) {
+  const current = state || emptyReleaseCopy();
+  if (current.sku && sku !== current.sku) return current;
+  const sha = String(sha256 || '').toLowerCase();
+  const items = (current.items || []).filter(item => !(item.sku === sku && item.sha256 === sha));
+  return { sku: items.length ? current.sku : '', items };
+}
+function itemsForReleaseExport(state) {
+  if (!state || !state.sku) return [];
+  return dedupeReleaseItems(state.sku, state.items);
+}
+function adoptReleasePicks(state, sku, items) {
+  const current = state || emptyReleaseCopy();
+  if (!sku || (current.sku && current.sku !== sku)) return current;
+  if (current.sku === sku && current.items.length) return current;
+  return focusReleaseProduct(current, sku, items);
+}
+function releaseListText(items) {
+  const lines = ['放行清单草稿（只是复制，尚未写入仓库，也不是上架或下架指令）', '目标：未确认', `张数：${items.length}`, ''];
+  for (const item of items) {
+    lines.push(`- short_id: ${item.short_id}`);
+    lines.push(`  sku: ${item.sku}`);
+    lines.push(`  version: ${item.version || '见文件名'}`);
+    lines.push(`  sha256: ${item.sha256}`);
+    lines.push(`  path: ${item.path}`);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+// release-copy-list:end
+function mirrorReleasePicks() {
+  releasePicks.clear();
+  for (const item of releaseCopy.items) releasePicks.set(releaseIdentity(item), item);
+}
+function releaseItemFromBox(box) {
+  return {
+    short_id: box.dataset.short,
+    sku: box.dataset.sku,
+    sha256: box.dataset.sha,
+    version: box.dataset.version,
+    path: box.dataset.path,
+    productId: box.dataset.productId || ''
+  };
+}
+function checkedReleaseItems(sku) {
+  const items = [];
+  for (const node of document.querySelectorAll('input[data-release]')) {
+    if (node.dataset.sku !== sku || !node.checked) continue;
+    items.push(releaseItemFromBox(node));
+  }
+  return items;
+}
+function clearOtherTemporaryChecks(sku) {
+  for (const node of document.querySelectorAll('input[data-release]')) {
+    if (node.dataset.sku === sku || !node.checked) continue;
+    if (node.dataset.productId && previewSelected.has(node.dataset.sha)) continue;
+    node.checked = false;
+  }
+}
 let copyEpoch = 0;
 let copyBusy = false;
 const INTERNAL_PREVIEW_PRODUCT_ID = '426bf18c-8649-4aa5-939c-f0b33eca95f8';
@@ -620,16 +723,11 @@ function setPreviewStatus(text){
   if (node) node.textContent = text;
 }
 function rememberPick(box){
-  const key = `${box.dataset.sku}\n${box.dataset.sha}`;
-  releasePicks.set(key, {
-    short_id: box.dataset.short,
-    sku: box.dataset.sku,
-    sha256: box.dataset.sha,
-    version: box.dataset.version,
-    path: box.dataset.path,
-    productId: box.dataset.productId || ''
-  });
-  return key;
+  const item = releaseItemFromBox(box);
+  if (releaseCopy.sku && item.sku !== releaseCopy.sku) return releaseIdentity(item);
+  releaseCopy = selectReleaseImage(releaseCopy, item);
+  mirrorReleasePicks();
+  return releaseIdentity(item);
 }
 async function loadInternalPreview(){
   try {
@@ -642,9 +740,12 @@ async function loadInternalPreview(){
       if (/^[a-f0-9]{64}$/.test(sha)) previewSelected.add(sha);
     }
     render();
+    const seeded = [];
     for (const box of document.querySelectorAll(`input[data-product-id="${INTERNAL_PREVIEW_PRODUCT_ID}"]`)) {
-      if (previewSelected.has(box.dataset.sha)) rememberPick(box);
+      if (previewSelected.has(box.dataset.sha)) seeded.push(releaseItemFromBox(box));
     }
+    releaseCopy = adoptReleasePicks(releaseCopy, INTERNAL_PREVIEW_SKU, seeded);
+    mirrorReleasePicks();
     setPreviewStatus(previewSelected.size
       ? `已读回内部预览 ${previewSelected.size} 张。刷新后仍在。这不是正式商城，也没有写入上架记录。`
       : '内部预览还没有勾选。保存后刷新和其他浏览器会看到同一份。这不是正式商城。');
@@ -655,8 +756,11 @@ async function loadInternalPreview(){
 async function savePreviewToggle(box, key, payload, selected, previous, serial){
   const fail = message => {
     if (previewToggleLatest.get(key) !== serial) return;
-    if (previous) releasePicks.set(key, previous);
-    else releasePicks.delete(key);
+    const sku = previous ? previous.sku : box.dataset.sku;
+    if (!releaseCopy.sku || releaseCopy.sku === sku) {
+      releaseCopy = previous ? selectReleaseImage(releaseCopy, previous) : unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+      mirrorReleasePicks();
+    }
     if (previous) previewSelected.add(payload.sha256);
     else previewSelected.delete(payload.sha256);
     box.checked = Boolean(previous);
@@ -677,10 +781,11 @@ async function savePreviewToggle(box, key, payload, selected, previous, serial){
     if (echoed.has(payload.sha256) !== selected) throw new Error('readback');
     if (selected) {
       previewSelected.add(payload.sha256);
-      rememberPick(box);
+      if (box.checked && (!releaseCopy.sku || releaseCopy.sku === box.dataset.sku)) rememberPick(box);
     } else {
       previewSelected.delete(payload.sha256);
-      releasePicks.delete(key);
+      releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+      mirrorReleasePicks();
     }
     box.checked = selected;
     setPreviewStatus(selected
@@ -695,17 +800,21 @@ app.addEventListener('change', e => {
   if (!box) return;
   const key = `${box.dataset.sku}\n${box.dataset.sha}`;
   const productId = box.dataset.productId || '';
-  const previous = releasePicks.get(key) || null;
-  if (box.checked) rememberPick(box);
-  else {
-    releasePicks.delete(key);
+  const previous = releaseCopy.items.find(item => item.sku === box.dataset.sku && item.sha256 === box.dataset.sha) || null;
+  if (box.checked) {
+    releaseCopy = focusReleaseProduct(releaseCopy, box.dataset.sku, checkedReleaseItems(box.dataset.sku));
+    mirrorReleasePicks();
+    clearOtherTemporaryChecks(box.dataset.sku);
+  } else {
+    releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, box.dataset.sha);
+    mirrorReleasePicks();
     if (productId) previewSelected.delete(box.dataset.sha);
   }
   hideManualList();
   copyEpoch++;
   const status = document.getElementById('copy-status');
   if (!productId) {
-    if (status) status.textContent = `已勾选 ${releasePicks.size} 张。只在这一页，取消勾选也不会从网站撤下。`;
+    if (status) status.textContent = `已勾选 ${itemsForReleaseExport(releaseCopy).length} 张。只在这一页，取消勾选也不会从网站撤下。`;
     return;
   }
   const selected = box.checked;
@@ -753,22 +862,13 @@ document.getElementById('copy-release').addEventListener('click', async () => {
   if (copyBusy || button.disabled) return;
   const requestEpoch = ++copyEpoch;
   const status = document.getElementById('copy-status');
-  const items = [...releasePicks.values()];
+  const items = itemsForReleaseExport(releaseCopy);
   if (!items.length) {
     hideManualList();
     status.textContent = '还没有勾选。勾选只用于复制清单，不会上架或下架。';
     return;
   }
-  const lines = ['放行清单草稿（只是复制，尚未写入仓库，也不是上架或下架指令）', '目标：未确认', `张数：${items.length}`, ''];
-  for (const item of items) {
-    lines.push(`- short_id: ${item.short_id}`);
-    lines.push(`  sku: ${item.sku}`);
-    lines.push(`  version: ${item.version || '见文件名'}`);
-    lines.push(`  sha256: ${item.sha256}`);
-    lines.push(`  path: ${item.path}`);
-    lines.push('');
-  }
-  const text = lines.join('\n');
+  const text = releaseListText(items);
   copyBusy = true;
   button.disabled = true;
   let outcome = 'failed';
