@@ -749,7 +749,7 @@ async function loadInternalPreview(){
   let client;
   try {
     client = await previewClientReady;
-    const session = await fetch('/api/internal-preview-session', { credentials: 'same-origin', cache: 'no-store' });
+    const session = await fetch('/api/internal-preview/session', { credentials: 'same-origin', cache: 'no-store' });
     const sessionData = await session.json().catch(() => null);
     if (!session.ok || !sessionData || sessionData.signedIn !== true) {
       previewGateOpen = false;
@@ -1003,7 +1003,7 @@ document.getElementById('preview-sign-in').addEventListener('submit', async (eve
   input.value = '';
   setPreviewStatus('正在核对预览访问口令。图片还没有保存。');
   try {
-    const response = await fetch('/api/internal-preview-session', {
+    const response = await fetch('/api/internal-preview/session', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'content-type': 'application/json' },
@@ -1029,7 +1029,7 @@ document.getElementById('preview-logout').addEventListener('click', async () => 
   const input = document.getElementById('preview-secret');
   if (input) input.value = '';
   try {
-    await fetch('/api/internal-preview-session', {
+    await fetch('/api/internal-preview/session', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'content-type': 'application/json' },

@@ -20,7 +20,7 @@ function response() {
 async function session(body, headers = {}) {
   const req = {
     method: 'POST',
-    url: '/api/internal-preview-session',
+    url: '/api/internal-preview/session',
     headers: { 'content-type': 'application/json', ...headers },
     body: JSON.stringify(body)
   };

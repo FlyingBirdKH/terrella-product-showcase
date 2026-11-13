@@ -37,7 +37,7 @@ CAT-001 / TR260002 的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。C
 - `TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY`
 - `TERRELLA_PREVIEW_ACCESS_SECRET`
 
-前两个名字已经只存在于预览环境。第三个口令还没有配置。缺这个口令时，读取和写入都返回 `access-not-configured`，不会调用数据库。口令由服务器比对，成功后发一个 12 小时、HttpOnly、`SameSite=Lax` 的 cookie。cookie 不是口令本身。浏览器写入还要 `Content-Type: application/json`，并且 `Sec-Fetch-Site: same-origin`、`Origin` 和 Host 一致。
+前两个名字已经只存在于预览环境。第三个口令还没有配置。缺这个口令时，读取和写入都返回 `access-not-configured`，不会调用数据库。口令由服务器比对，成功后发一个 12 小时、HttpOnly、`SameSite=Lax` 的 cookie，`Path` 只到 `/api/internal-preview`，不放到 `/` 或 `/api`。登录、退出和刷新后的登录状态走 `/api/internal-preview/session`。按 RFC 6265，`/api/internal-preview-session` 不会带上这枚 cookie，因为前缀后面是 `-` 不是 `/`。cookie 不是口令本身。浏览器写入还要 `Content-Type: application/json`，并且 `Sec-Fetch-Site: same-origin`、`Origin` 和 Host 一致。
 
 项目的 `ssoProtection` 现在是 null。不能把预览地址当成已经受部署保护。命令行有 `--sso` 和 `--password`，当前方案是否允许还没有确认，所以本仓库不调用它们，也不假设它们已经生效。接受这个预览之前，由父流程打开只针对预览的部署保护。生产访问控制保持原样。
 

@@ -52,7 +52,7 @@ function memory() {
 async function session(body, { cookie = '', headers = {}, useEnv = env } = {}) {
   const req = {
     method: 'POST',
-    url: '/api/internal-preview-session',
+    url: '/api/internal-preview/session',
     headers: { 'content-type': 'application/json', ...headers, ...(cookie ? { cookie } : {}) },
     body: JSON.stringify(body)
   };
@@ -213,7 +213,7 @@ test('the catalog page does not embed the service role or a second selection sch
   const client = readFileSync(new URL('../internal-preview-client.mjs', import.meta.url), 'utf8');
   const runtime = [
     'api/internal-preview.js',
-    'api/internal-preview-session.js',
+    'api/internal-preview/session.js',
     'lib/internal-preview-http.mjs',
     'lib/internal-preview-session.mjs',
     'lib/internal-preview-supabase.mjs',

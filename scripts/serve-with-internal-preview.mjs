@@ -23,9 +23,9 @@ async function buffer(req) {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1');
-  if (url.pathname === '/api/internal-preview' || url.pathname === '/api/internal-preview-session') {
+  if (url.pathname === '/api/internal-preview' || url.pathname === '/api/internal-preview/session') {
     await buffer(req);
-    if (url.pathname === '/api/internal-preview-session') {
+    if (url.pathname === '/api/internal-preview/session') {
       await handleSession(req, res, { env: process.env, send: sendJson });
     } else {
       await handlePreview(req, res, { env: process.env, fetchImpl: globalThis.fetch, clientFactory: createProductDbClient });
