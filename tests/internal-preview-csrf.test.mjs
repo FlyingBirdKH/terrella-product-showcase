@@ -1,184 +1,116 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
-import { after, before, test } from 'node:test';
-import { fileURLToPath } from 'node:url';
-import { previewFetch, resetPreviewSession } from '../internal-preview-client.mjs';
-import { SESSION_MAX_AGE } from '../lib/internal-preview-session.mjs';
-import { recreateDatabase } from './preview-postgres.mjs';
-import { startPreviewGateway } from './preview-rest-gateway.mjs';
+import test from 'node:test';
+import { handlePreview } from '../lib/internal-preview-http.mjs';
+import { GATE_COOKIE, handleSession } from '../lib/internal-preview-session.mjs';
+import { createProductDbClient } from '../lib/internal-preview-supabase.mjs';
 
-const root = fileURLToPath(new URL('..', import.meta.url));
-const db = 'preview_contract_csrf';
-let gateway;
-let server;
-let base;
+const ACCESS = 'test-preview-access-secret';
+const env = { TERRELLA_PREVIEW_ACCESS_SECRET: ACCESS };
 
-function cookiePairs(response) {
-  return response.headers.getSetCookie().map((item) => item.split(';')[0]).join('; ');
+function response() {
+  const headers = {};
+  return {
+    statusCode: 0,
+    headers,
+    setHeader(name, value) { headers[name.toLowerCase()] = value; },
+    end(text) { this.text = text; this.json = text ? JSON.parse(text) : null; }
+  };
 }
 
-function maxAge(response, name) {
-  const row = response.headers.getSetCookie().find((item) => item.startsWith(`${name}=`));
-  const match = row && row.match(/Max-Age=(\d+)/);
-  return match ? Number(match[1]) : null;
-}
-
-async function startServer() {
-  server = spawn(process.execPath, ['scripts/serve-with-internal-preview.mjs'], {
-    cwd: root,
-    env: { PATH: process.env.PATH, PORT: '0', SUPABASE_URL: gateway.url, SUPABASE_ANON_KEY: 'test-anon-key' },
-    stdio: ['ignore', 'pipe', 'pipe']
-  });
-  base = await new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('server did not start')), 5000);
-    server.stdout.on('data', (chunk) => {
-      const match = String(chunk).match(/http:\/\/127\.0\.0\.1:\d+/);
-      if (match) {
-        clearTimeout(timer);
-        resolve(match[0]);
-      }
-    });
-  });
-}
-
-before(async () => {
-  await recreateDatabase(db);
-  gateway = await startPreviewGateway(db);
-  await startServer();
-});
-
-after(async () => {
-  if (server) server.kill();
-  if (gateway) await gateway.close();
-});
-
-test('real local server, not the gateway alone: same-origin login sets distinct cookie lifetimes', async () => {
-  const origin = new URL(base).origin;
-  const response = await fetch(`${base}/api/internal-preview-session`, {
+async function session(body, headers = {}) {
+  const req = {
     method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      origin,
-      'sec-fetch-site': 'same-origin',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-dest': 'empty',
-      'x-forwarded-proto': 'https'
-    },
-    body: JSON.stringify({ email: 'brand@example.test', password: 'test-password-only' })
+    url: '/api/internal-preview-session',
+    headers: { 'content-type': 'application/json', ...headers },
+    body: JSON.stringify(body)
+  };
+  const res = response();
+  await handleSession(req, res, {
+    env,
+    send(target, status, payload) {
+      target.statusCode = status;
+      target.setHeader('content-type', 'application/json; charset=utf-8');
+      const safe = { ...payload };
+      delete safe.secret;
+      target.end(JSON.stringify(safe));
+    }
   });
-  const body = await response.json();
-  assert.equal(response.status, 200);
-  assert.equal(body.signedIn, true);
-  assert.equal(body.brandAdmin, true);
-  assert.equal(JSON.stringify(body).includes('test.brand-admin'), false);
-  const cookies = response.headers.getSetCookie().join('\n');
-  assert.match(cookies, /HttpOnly/);
-  assert.match(cookies, /Secure/);
-  assert.equal(maxAge(response, 'terrella_preview_at'), 3600);
-  assert.equal(maxAge(response, 'terrella_preview_rt'), SESSION_MAX_AGE);
-  assert.notEqual(maxAge(response, 'terrella_preview_rt'), 3600);
+  return res;
+}
+
+test('login sets an HttpOnly cookie that is not the access secret', async () => {
+  const signed = await session({ secret: ACCESS });
+  assert.equal(signed.statusCode, 200);
+  assert.equal(signed.json.signedIn, true);
+  assert.equal(signed.text.includes(ACCESS), false);
+  const cookie = signed.headers['set-cookie'];
+  assert.match(cookie, /HttpOnly/);
+  assert.match(cookie, new RegExp(`^${GATE_COOKIE}=`));
+  assert.equal(cookie.includes(ACCESS), false);
+  const wrong = await session({ secret: 'wrong-secret' });
+  assert.equal(wrong.statusCode, 401);
+  assert.equal(wrong.json.signedIn, false);
+  assert.equal(wrong.headers['set-cookie'], undefined);
 });
 
-test('real local server rejects cross-site login, logout, and refresh, and a browser missing Origin', async () => {
-  const origin = new URL(base).origin;
-  const beforeHits = gateway.hits.length;
-  const cross = {
-    'content-type': 'application/json',
+test('cross-site, form, and browser requests without Origin do not open the gate', async () => {
+  const cross = await session({ secret: ACCESS }, {
     origin: 'https://evil.example',
+    host: 'preview.example',
     'sec-fetch-site': 'cross-site',
     'sec-fetch-mode': 'cors',
     'sec-fetch-dest': 'empty'
-  };
-  for (const body of [
-    { email: 'brand@example.test', password: 'test-password-only' },
-    { action: 'logout' },
-    { action: 'refresh' }
-  ]) {
-    const response = await fetch(`${base}/api/internal-preview-session`, { method: 'POST', headers: cross, body: JSON.stringify(body) });
-    assert.equal(response.status, 403);
-    assert.equal((await response.json()).reason, 'csrf');
-  }
-  const missingOrigin = await fetch(`${base}/api/internal-preview-session`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'sec-fetch-site': 'same-origin',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-dest': 'empty'
-    },
-    body: JSON.stringify({ email: 'brand@example.test', password: 'test-password-only' })
   });
-  assert.equal(missingOrigin.status, 403);
-  const form = await fetch(`${base}/api/internal-preview-session`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    body: 'email=brand@example.test&password=test-password-only'
+  const form = await session({ secret: ACCESS }, { 'content-type': 'application/x-www-form-urlencoded', host: 'preview.example' });
+  const browser = await session({ secret: ACCESS }, {
+    host: 'preview.example',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-dest': 'empty'
   });
-  assert.equal(form.status, 403);
-  assert.equal(gateway.hits.length, beforeHits);
-  const serverSide = await fetch(`${base}/api/internal-preview-session`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-forwarded-proto': 'https' },
-    body: JSON.stringify({ email: 'brand@example.test', password: 'test-password-only' })
-  });
-  assert.equal(serverSide.status, 200);
-  assert.equal((await serverSide.json()).signedIn, true);
+  assert.equal(cross.statusCode, 403);
+  assert.equal(form.statusCode, 403);
+  assert.equal(browser.statusCode, 403);
+  assert.equal(cross.json.signedIn, false);
 });
 
-test('real local server refresh keeps the original deadline and logout clears the cookies', async () => {
-  const login = await fetch(`${base}/api/internal-preview-session`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-forwarded-proto': 'https' },
-    body: JSON.stringify({ email: 'brand@example.test', password: 'test-password-only' })
+test('a same-origin browser login works, and a cross-site write never reaches the database', async () => {
+  const signed = await session({ secret: ACCESS }, {
+    host: 'preview.example',
+    origin: 'https://preview.example',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-dest': 'empty'
   });
-  const until = Math.floor(Date.now() / 1000) + 20;
-  const pairs = cookiePairs(login).split('; ').filter((item) => !item.startsWith('terrella_preview_until='));
-  pairs.push(`terrella_preview_until=${until}`);
-  const refreshed = await fetch(`${base}/api/internal-preview-session`, {
+  assert.equal(signed.json.signedIn, true);
+  let called = false;
+  const req = {
     method: 'POST',
+    url: '/api/internal-preview',
     headers: {
       'content-type': 'application/json',
-      'x-forwarded-proto': 'https',
-      cookie: pairs.join('; ')
+      origin: 'https://evil.example',
+      host: 'preview.example',
+      'sec-fetch-site': 'cross-site',
+      cookie: signed.headers['set-cookie'].split(';')[0]
     },
-    body: JSON.stringify({ action: 'refresh' })
+    body: JSON.stringify({ sku: 'CAT-001', sha256: 'ff4696836d2ac0320db1bf247cd8e89e3760795c696caf0bbf61ffeb3033f342', selected: true })
+  };
+  const res = response();
+  await handlePreview(req, res, {
+    env: { ...env, TERRELLA_PRODUCT_DB_URL: 'https://product-db.test', TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY: 'test-service-role-not-a-secret' },
+    fetchImpl: async () => { called = true; throw new Error('should-not-fetch'); },
+    clientFactory: createProductDbClient
   });
-  assert.equal(refreshed.status, 200);
-  assert.equal(JSON.stringify(await refreshed.clone().json()).includes('test.brand-admin'), false);
-  const refreshAge = maxAge(refreshed, 'terrella_preview_rt');
-  assert.ok(refreshAge > 0 && refreshAge <= 20);
-  assert.notEqual(refreshAge, 3600);
-  const loggedOut = await fetch(`${base}/api/internal-preview-session`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-forwarded-proto': 'https',
-      cookie: cookiePairs(refreshed)
-    },
-    body: JSON.stringify({ action: 'logout' })
-  });
-  assert.equal((await loggedOut.json()).signedIn, false);
-  assert.equal(maxAge(loggedOut, 'terrella_preview_at'), 0);
-  assert.equal(maxAge(loggedOut, 'terrella_preview_rt'), 0);
-  assert.equal(maxAge(loggedOut, 'terrella_preview_until'), 0);
+  assert.equal(res.statusCode, 403);
+  assert.equal(res.json.saved, false);
+  assert.equal(called, false);
 });
 
-test('the page refresh helper retries once and does not loop', async () => {
-  resetPreviewSession();
-  const seen = [];
-  const original = globalThis.fetch;
-  globalThis.fetch = async (url) => {
-    seen.push(String(url));
-    if (String(url).includes('internal-preview-session')) return new Response('{}', { status: 200 });
-    return new Response('{}', { status: 401 });
-  };
-  try {
-    await previewFetch('/api/internal-preview?productId=x');
-    await previewFetch('/api/internal-preview?productId=x');
-    assert.equal(seen.filter((item) => item.includes('internal-preview-session')).length, 1);
-    assert.equal(seen.filter((item) => item.includes('/api/internal-preview?')).length, 3);
-  } finally {
-    globalThis.fetch = original;
-    resetPreviewSession();
-  }
+test('refresh and signup actions are not an auth-user API', async () => {
+  const refresh = await session({ action: 'refresh', secret: ACCESS });
+  const signup = await session({ action: 'signup', secret: ACCESS });
+  assert.equal(refresh.statusCode, 405);
+  assert.equal(signup.statusCode, 405);
+  assert.equal(refresh.json.signedIn, false);
 });

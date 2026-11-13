@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createSupabasePreviewClient } from '../lib/internal-preview-supabase.mjs';
+import { createProductDbClient } from '../lib/internal-preview-supabase.mjs';
 import { handlePreview, send as sendJson } from '../lib/internal-preview-http.mjs';
 import { handleSession } from '../lib/internal-preview-session.mjs';
 
@@ -26,9 +26,9 @@ const server = createServer(async (req, res) => {
   if (url.pathname === '/api/internal-preview' || url.pathname === '/api/internal-preview-session') {
     await buffer(req);
     if (url.pathname === '/api/internal-preview-session') {
-      await handleSession(req, res, { env: process.env, fetchImpl: globalThis.fetch, send: sendJson });
+      await handleSession(req, res, { env: process.env, send: sendJson });
     } else {
-      await handlePreview(req, res, { env: process.env, fetchImpl: globalThis.fetch, clientFactory: createSupabasePreviewClient });
+      await handlePreview(req, res, { env: process.env, fetchImpl: globalThis.fetch, clientFactory: createProductDbClient });
     }
     return;
   }
