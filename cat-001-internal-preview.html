@@ -13,6 +13,7 @@
   .banner { margin: 0 0 12px; padding: 10px 12px; border: 2px solid #9a3412; background: #fff7ed; color: #9a3412; font-weight: 700; }
   p { margin: 0 0 10px; line-height: 1.5; }
   .muted { color: var(--muted); }
+  form { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; margin: 12px 0; }
   button[disabled] { opacity: .55; cursor: not-allowed; }
   ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
   li { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -28,23 +29,29 @@
 <header>
   <p class="banner" role="status">内部预览 · 非公开 · 不是正式商城</p>
   <h1>CAT-001 已选图片的内部预览</h1>
-  <p class="muted">商品 ID <code id="product-id"></code>，SKU CAT-001，货号 TR260002。勾选写入 terrella-product-db 的 product_image_selections。公开产品册不需要登录。这一步不写 crm-core，不删除 Bunny 原图，也不改商品行。</p>
+  <p class="muted">商品 ID <code id="product-id"></code>，SKU CAT-001，货号 TR260002。这是 terrella-product-db 里 public.products 的 id，status 为 candidate。本页不改商品行，也不改状态。公开产品册不需要登录。内部预览写入要求已有 Supabase Auth 会话，并且服务端 app_metadata.terrella_brand_admin 为 terralla。</p>
   <p><button type="button" id="publish-unavailable" disabled>正式上架/下架不可用</button></p>
-  <p id="save-status" role="status">正在读取 terrella-product-db 的勾选。没有读到之前，不能当成已保存。</p>
+  <form id="preview-sign-in">
+    <label>已有账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
+    <label>密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
+    <button type="submit">登录内部预览</button>
+    <button type="button" id="preview-logout">退出</button>
+  </form>
+  <p class="muted">不注册、不发邀请、不改账号声明。会话放在 HttpOnly cookie。不要把 JWT 贴到 Slack。没有品牌声明时可以登录，但不能保存预览。</p>
+  <p id="save-status" role="status">正在读取共享内部预览。没有读到之前，不能当成已保存。</p>
 </header>
 <main>
   <h2>勾选</h2>
   <ol id="frames" aria-label="内部预览勾选"></ol>
   <h2>当前内部预览</h2>
-  <p class="muted">这里只显示 terrella-product-db 里已读回的图片。</p>
+  <p class="muted">这里只显示共享记录里已读回的图片。</p>
   <ol id="chosen" aria-label="已保存的内部预览"></ol>
 </main>
-<footer class="muted">这不是 https://www.terralla.com 的商品页。正式发布仍须单独授权。这一页不合并、不部署。</footer>
+<footer class="muted">这不是 https://www.terralla.com 的商品页。正式发布仍须单独授权。</footer>
 <script type="module">
-import { failureText, previewFetch, readStatus, writeStatus } from './internal-preview-client.mjs';
+import { failureText, newEventId, previewFetch, readStatus, resetPreviewSession, writeStatus } from './internal-preview-client.mjs';
 
 const PRODUCT_ID = '0f057213-b8af-4982-9e44-582a2a1d3469';
-const SKU = 'CAT-001';
 const IMAGES = [
   { order: 1, shortId: '001·ff4696', sha256: 'ff4696836d2ac0320db1bf247cd8e89e3760795c696caf0bbf61ffeb3033f342', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-01-ff469683.png' },
   { order: 2, shortId: '001·af3760', sha256: 'af3760c6b82472fcc1999dec44079feb5089613ccc6e247b4a9c94acfc7746c4', path: 'https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-02-af3760c6.png' },
@@ -54,25 +61,32 @@ const IMAGES = [
 const status = document.getElementById('save-status');
 document.getElementById('product-id').textContent = PRODUCT_ID;
 let selected = new Set();
+let revisions = {};
 let readable = false;
+let canWrite = false;
 function esc(value) {
   return String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+function headers() {
+  return { 'content-type': 'application/json' };
+}
 function paint() {
-  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''} ${readable ? '' : 'disabled'}> ${item.order}. <code>${esc(item.shortId)}</code></label><div>SHA-256 <code>${esc(item.sha256)}</code></div></li>`).join('');
+  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''} ${canWrite ? '' : 'disabled'}> ${item.order}. <code>${esc(item.shortId)}</code></label><div>SHA-256 <code>${esc(item.sha256)}</code></div></li>`).join('');
   const chosen = IMAGES.filter((item) => selected.has(item.sha256));
   document.getElementById('chosen').innerHTML = chosen.length
     ? chosen.map((item) => `<li><figure><img alt="内部预览 ${esc(item.shortId)}" src="${esc(item.path)}"><figcaption><div><code>${esc(item.shortId)}</code></div><div>SHA-256 <code>${esc(item.sha256)}</code></div><div><a href="${esc(item.path)}" target="_blank" rel="noopener noreferrer">打开 Bunny 原图</a></div></figcaption></figure></li>`).join('')
-    : '<li>当前没有读回的内部预览图片。商品行还在。Bunny 原件没有被删除。</li>';
+    : '<li>当前没有读回的内部预览图片。商品仍在，status 仍是 candidate。Bunny 原件没有被删除。</li>';
 }
 function failClosed(reason) {
   readable = false;
+  canWrite = false;
   selected = new Set();
+  revisions = {};
   status.textContent = failureText(reason);
   paint();
 }
 async function load() {
-  const response = await previewFetch(`/api/internal-preview?productId=${PRODUCT_ID}&sku=${SKU}`, { cache: 'no-store' });
+  const response = await previewFetch(`/api/internal-preview?productId=${PRODUCT_ID}`, { cache: 'no-store' });
   const data = await response.json().catch(() => null);
   const interpreted = readStatus(data);
   if (!response.ok || !interpreted.ok || data.productId !== PRODUCT_ID) {
@@ -81,25 +95,77 @@ async function load() {
   }
   readable = true;
   selected = new Set(data.selected);
+  revisions = data.revisions || {};
   status.textContent = interpreted.text;
   paint();
 }
+document.getElementById('preview-sign-in').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const email = document.getElementById('preview-email').value;
+  const password = document.getElementById('preview-password').value;
+  document.getElementById('preview-password').value = '';
+  status.textContent = '正在登录已有账号。图片还没有保存。';
+  try {
+    const response = await fetch('/api/internal-preview-session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || data.signedIn !== true) {
+      failClosed(data && data.reason);
+      return;
+    }
+    if (data.brandAdmin !== true && data.brandReader !== true) {
+      failClosed(data.reason || 'brand-access-missing');
+      return;
+    }
+    canWrite = data.brandAdmin === true;
+    resetPreviewSession();
+    await load();
+    if (!canWrite) status.textContent = failureText('brand-reader');
+  } catch {
+    failClosed('store-not-writable');
+  }
+});
+document.getElementById('preview-logout').addEventListener('click', async () => {
+  document.getElementById('preview-password').value = '';
+  try {
+    await fetch('/api/internal-preview-session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' })
+    });
+  } catch {}
+  resetPreviewSession();
+  failClosed('anonymous');
+  status.textContent = '已退出。共享预览没有被改写。';
+});
 document.getElementById('frames').addEventListener('change', async (event) => {
   const box = event.target.closest('input[data-sha]');
-  if (!box || !readable) return;
+  if (!box || !canWrite) return;
   const sha256 = box.dataset.sha;
   const want = box.checked;
-  status.textContent = want ? '正在写入 terrella-product-db。还没有保存。' : '正在去掉这张图的勾选。还没有保存。Bunny 原图不会删除。';
+  const baseRevision = Number.isInteger(revisions[sha256]) ? revisions[sha256] : 0;
+  status.textContent = want ? '正在写入共享内部预览。还没有保存。' : '正在从共享内部预览解绑这张图。还没有保存。Bunny 原图不会删除。';
   try {
     const response = await previewFetch('/api/internal-preview', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ productId: PRODUCT_ID, sku: SKU, sha256, selected: want })
+      headers: headers(),
+      body: JSON.stringify({ productId: PRODUCT_ID, sha256, selected: want, eventId: newEventId(), baseRevision })
     });
     const data = await response.json().catch(() => null);
+    if (response.status === 409) {
+      await load();
+      status.textContent = failureText('revision_conflict');
+      return;
+    }
     const interpreted = writeStatus(data, { sha256, want });
-    if (!response.ok || !interpreted.ok || data.productId !== PRODUCT_ID) throw new Error(data && data.reason);
+    if (!response.ok || !interpreted.ok) throw new Error(data && data.reason);
     selected = new Set(data.selected);
+    revisions = data.revisions || {};
     status.textContent = interpreted.text;
     paint();
   } catch (error) {
