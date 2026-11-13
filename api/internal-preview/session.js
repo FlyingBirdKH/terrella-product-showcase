@@ -2,5 +2,5 @@ import { handleSession as sessionHandler } from '../../lib/internal-preview-sess
 import { send as sendJson } from '../../lib/internal-preview-http.mjs';
 
 export default function handler(req, res) {
-  return sessionHandler(req, res, { env: process.env, send: sendJson });
+  return sessionHandler(req, res, { env: process.env, send: sendJson, fetchImpl: globalThis.fetch });
 }

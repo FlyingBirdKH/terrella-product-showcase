@@ -7,7 +7,7 @@
 - 公开页面是 `index.html`，打开目录不需要登录。持久勾选只有一条真源：terrella-product-db 的 `public.product_image_selections`。`internal_preview` 事件表不是这条路径，不要创建，也不要再接。`internal-preview.json` 也不是真源。
 - 图是否出现在展示页，由页面内嵌的 `publicCopyApproved`、`contentVerified`、`byteVerified`、`assignedSku` 决定。这只说明展示页可以显示这张图，不是目标网站已经上架。
 - 持久证据文件是 `image-availability.json`。当前 `records` 为空。没有记录就不是已放行，也不是已同步。
-- 本仓库没有目标网站的写入接口，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。预览访问口令只保护勾选写入，不代表正式商城可以上架。
+- 本仓库没有目标网站的写入接口，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。具名账号只保护勾选写入，不代表正式商城可以上架。
 - 原图在 Bunny / Drive。下架若将来发生，也只针对目标画廊里的那一张图，不删除原件，不删除整个产品。
 
 ## 勾选真源（只有 product_image_selections）
@@ -19,9 +19,11 @@
 下面两条都不要再接，它们和这张表是互相排斥的第二套方案：
 
 - crm-core，以及正式商城商品 ID `426bf18c-8649-4aa5-939c-f0b33eca95f8`。
-- `internal_preview` 事件表、匿名密钥、`app_metadata` 声明。`987ffbc` 走的是这条，不再作为真源。仓库里不再保留那份迁移。
+- `internal_preview` 事件表。`987ffbc` 的那张事件表不再作为真源。
 
-CAT-001 / TR260002 的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。CAT-001 仍只接受原来的四条完整 SHA-256。其他 SKU 只有在 `products.sku` 或 `products.id` 已经有行时才写入。找不到就拒绝，不猜测 ID，不插入商品，不改 `products.status`，不写 `product_assets`。
+CAT-001 / TR260002 的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。允许名单只认这个 id、SKU `CAT-001` 或货号 `TR260002`，以及原来的四条完整 SHA-256。商品名称不能当作键。其他商品即使在 `products` 里有行，也拒绝。CAT-003 五张和 CAT-006 四张的回收图哈希出现在 2026-11-12 的清单草稿里，但这份草稿没有这两款在 terrella-product-db 的商品 UUID，所以没有放进允许名单。找不到就拒绝，不猜测 ID，不插入商品，不改 `products.status`，不写 `product_assets`。
+
+写入要带上一次读到的 `expectedSelected`。和当前行不一致时返回 `409`，`saved` 为 false，并带上读回的 `selected`。数据库报错时同样先读回；读回也失败则只有 `readback`，不宣称已保存。
 
 勾选插入这一对。取消勾选只删除这一对。不删除 Bunny 文件，不删除商品行。成功文案只在响应同时带 `saved`、`durable` 和 `store: terrella-product-db` 时出现。刷新和另一个浏览器看到的是同一张表里的行，不是 `localStorage`。
 
@@ -29,15 +31,18 @@ CAT-001 / TR260002 的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。C
 
 ## 访问保护（应用层失败关闭；部署保护目前没有打开）
 
-服务角色密钥不能对未授权请求使用。选择接口先核对 HttpOnly cookie，通过之后才用服务器上的数据库密钥。页面上的标志、CORS 和伪造请求头都不能代替这道门。
+浏览器不持有服务角色密钥，服务器也不再用它访问勾选表。页面上的标志、CORS 和伪造请求头都不能代替登录。
 
-预览环境需要这三个名字，都只放在预览，不放进生产，也不写进仓库：
+预览环境需要这两个名字，都只放在预览，不放进生产，也不写进仓库：
 
 - `TERRELLA_PRODUCT_DB_URL`
-- `TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY`
-- `TERRELLA_PREVIEW_ACCESS_SECRET`
+- `TERRELLA_PRODUCT_DB_ANON_KEY`
 
-前两个名字已经只存在于预览环境。第三个口令还没有配置。缺这个口令时，读取和写入都返回 `access-not-configured`，不会调用数据库。口令由服务器比对，成功后发一个 12 小时、HttpOnly、`SameSite=Lax` 的 cookie，`Path` 只到 `/api/internal-preview`，不放到 `/` 或 `/api`。登录、退出和刷新后的登录状态走 `/api/internal-preview/session`。按 RFC 6265，`/api/internal-preview-session` 不会带上这枚 cookie，因为前缀后面是 `-` 不是 `/`。cookie 不是口令本身。浏览器写入还要 `Content-Type: application/json`，并且 `Sec-Fetch-Site: same-origin`、`Origin` 和 Host 一致。
+缺任何一个时，读取和写入都返回 `access-not-configured`，不会调用数据库。登录把邮箱和密码交给服务器，服务器用匿名密钥向 Auth 换取该用户自己的 access token。Cookie 里只放这枚 token，12 小时上限、HttpOnly、`SameSite=Lax`，`Path` 只到 `/api/internal-preview`，不放到 `/` 或 `/api`。登录、退出和刷新后的登录状态走 `/api/internal-preview/session`。按 RFC 6265，`/api/internal-preview-session` 不会带上这枚 cookie，因为前缀后面是 `-` 不是 `/`。没有共享预览口令。
+
+每次请求都向 Auth 核对这个 token。`sub` 必须等于 Auth 用户 id。写入只认 `app_metadata.terrella_brand_admin = terralla`。读取还接受 `app_metadata.terrella_brand_reader = terralla`。其他 metadata 不参与判断。停用该用户后，下一次请求不再通过。
+
+`supabase/migrations/20261113193000_selection_claim_rls.sql` 把同样的限制写成 `product_image_selections` 的 RLS。本仓库不执行它，也不在线上库创建用户或改 claims。Kevin 之后需要：在 terrella-product-db 创建或邀请具名用户、写入对应 claim，并自行应用这份迁移。在此之前，线上 RLS 仍会拒绝 authenticated 访问。
 
 项目的 `ssoProtection` 现在是 null。不能把预览地址当成已经受部署保护。命令行有 `--sso` 和 `--password`，当前方案是否允许还没有确认，所以本仓库不调用它们，也不假设它们已经生效。接受这个预览之前，由父流程打开只针对预览的部署保护。生产访问控制保持原样。
 
@@ -45,7 +50,7 @@ CAT-001 / TR260002 的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。C
 
 ## 后续正式同步（尚未执行，不能把勾选当商城）
 
-图片版本已批准的数量是 CAT-001 四张、CAT-003 五张、CAT-006 四张。勾选可以按已有的 `products.sku` / `products.id` 写入。没有查到的 SKU 保持拒绝。禁止猜测 ID，禁止自动建行，也禁止改用 CAT-013/TR2605002。
+图片版本已核对的数量仍是 CAT-001 四张、CAT-003 五张、CAT-006 四张。当前勾选允许名单只有已钉死 UUID 的 CAT-001。CAT-003 / CAT-006 在确认 terrella-product-db 商品 UUID 之前保持拒绝。禁止猜测 ID，禁止自动建行，也禁止改用 CAT-013/TR2605002。
 
 正式同步仍要另一次独立终验和 Kevin 的 GO。到那时才做这些事，而且不在这一次里做：
 

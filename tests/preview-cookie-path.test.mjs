@@ -1,12 +1,16 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { after, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { COOKIE_PATH } from '../lib/internal-preview-session.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ACCESS = 'test-preview-access-secret';
+const ANON = 'test-anon-key-not-a-secret';
+const EMAIL = 'admin@example.test';
+const PASSWORD = 'test-password-not-a-secret';
+const USER_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const SESSION_PATH = '/api/internal-preview/session';
 const DATA_PATH = '/api/internal-preview';
 const HYPHEN_PATH = '/api/internal-preview-session';
@@ -54,12 +58,78 @@ class CookieJar {
 }
 
 let server;
+let fixture;
 let base;
 
+function userToken() {
+  const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url');
+  const payload = Buffer.from(JSON.stringify({ sub: USER_ID, role: 'authenticated' })).toString('base64url');
+  return `${header}.${payload}.sig`;
+}
+
 async function start() {
+  const token = userToken();
+  const tokens = new Set();
+  fixture = createServer((req, res) => {
+    const chunks = [];
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => {
+      const url = new URL(req.url, 'http://127.0.0.1');
+      if (req.headers.apikey !== ANON) {
+        res.writeHead(401);
+        res.end('{}');
+        return;
+      }
+      const raw = Buffer.concat(chunks).toString('utf8');
+      if (url.pathname === '/auth/v1/token') {
+        const body = JSON.parse(raw || '{}');
+        if (body.email !== EMAIL || body.password !== PASSWORD) {
+          res.writeHead(400);
+          res.end('{}');
+          return;
+        }
+        tokens.add(token);
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ access_token: token, expires_in: 3600 }));
+        return;
+      }
+      const bearer = String(req.headers.authorization || '').replace(/^Bearer /, '');
+      if (url.pathname === '/auth/v1/logout') {
+        tokens.delete(bearer);
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+      if (url.pathname === '/auth/v1/user') {
+        if (!tokens.has(bearer)) {
+          res.writeHead(401);
+          res.end('{}');
+          return;
+        }
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ id: USER_ID, app_metadata: { terrella_brand_admin: 'terralla' } }));
+        return;
+      }
+      if (url.pathname === '/rest/v1/product_image_selections') {
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end('[]');
+        return;
+      }
+      res.writeHead(404);
+      res.end('{}');
+    });
+  });
+  const origin = await new Promise((resolve) => {
+    fixture.listen(0, '127.0.0.1', () => resolve(`http://127.0.0.1:${fixture.address().port}`));
+  });
   server = spawn(process.execPath, ['scripts/serve-with-internal-preview.mjs'], {
     cwd: root,
-    env: { PATH: process.env.PATH, PORT: '0', TERRELLA_PREVIEW_ACCESS_SECRET: ACCESS },
+    env: {
+      PATH: process.env.PATH,
+      PORT: '0',
+      TERRELLA_PRODUCT_DB_URL: origin,
+      TERRELLA_PRODUCT_DB_ANON_KEY: ANON
+    },
     stdio: ['ignore', 'pipe', 'pipe']
   });
   base = await new Promise((resolve, reject) => {
@@ -94,6 +164,7 @@ async function request(pathname, { method = 'GET', json, jar } = {}) {
 
 after(() => {
   if (server) server.kill();
+  if (fixture) fixture.close();
 });
 
 test('a browser cookie jar follows RFC 6265 and the homepage session route receives it', async () => {
@@ -106,7 +177,7 @@ test('a browser cookie jar follows RFC 6265 and the homepage session route recei
   assert.equal(html.includes(SESSION_PATH), true);
 
   const jar = new CookieJar();
-  const login = await request(SESSION_PATH, { method: 'POST', json: { secret: ACCESS }, jar });
+  const login = await request(SESSION_PATH, { method: 'POST', json: { email: EMAIL, password: PASSWORD }, jar });
   assert.equal(login.status, 200);
   assert.equal(login.body.signedIn, true);
   assert.equal(login.sentCookie, '');
@@ -125,8 +196,8 @@ test('a browser cookie jar follows RFC 6265 and the homepage session route recei
 
   const data = await request(`${DATA_PATH}?productId=0f057213-b8af-4982-9e44-582a2a1d3469`, { jar });
   assert.notEqual(data.sentCookie, '');
-  assert.equal(data.status, 503);
-  assert.equal(data.body.reason, 'store-not-configured');
+  assert.equal(data.status, 200);
+  assert.deepEqual(data.body.selected, []);
   assert.equal(data.body.saved, false);
 
   const loggedOut = await request(SESSION_PATH, { method: 'POST', json: { action: 'logout' }, jar });

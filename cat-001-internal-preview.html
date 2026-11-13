@@ -29,14 +29,15 @@
 <header>
   <p class="banner" role="status">内部预览 · 非公开 · 不是正式商城</p>
   <h1>CAT-001 已选图片的内部预览</h1>
-  <p class="muted">商品 ID <code id="product-id"></code>，SKU CAT-001，货号 TR260002。勾选只写入 terrella-product-db 的 product_image_selections。没有预览访问口令时写入关闭。公开产品册不需要登录。</p>
+  <p class="muted">商品 ID <code id="product-id"></code>，SKU CAT-001，货号 TR260002。勾选只写入 terrella-product-db 的 product_image_selections。没有具名账号时写入关闭。公开产品册不需要登录。</p>
   <p><button type="button" id="publish-unavailable" disabled>正式上架/下架不可用</button></p>
   <form id="preview-sign-in">
-    <label>预览访问口令 <input id="preview-secret" type="password" autocomplete="off"></label>
+    <label>账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
+    <label>账号密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
     <button type="submit">打开勾选写入</button>
     <button type="button" id="preview-logout">退出</button>
   </form>
-  <p id="save-status" role="status">勾选写入默认关闭。没有口令时不能当成已保存。</p>
+  <p id="save-status" role="status">勾选写入默认关闭。没有具名账号时不能当成已保存。</p>
 </header>
 <main>
   <h2>勾选</h2>
@@ -92,16 +93,18 @@ async function load() {
 }
 document.getElementById('preview-sign-in').addEventListener('submit', async (event) => {
   event.preventDefault();
-  const input = document.getElementById('preview-secret');
-  const secret = input.value;
-  input.value = '';
-  status.textContent = '正在核对预览访问口令。图片还没有保存。';
+  const emailInput = document.getElementById('preview-email');
+  const passwordInput = document.getElementById('preview-password');
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  passwordInput.value = '';
+  status.textContent = '正在核对具名账号。图片还没有保存。';
   try {
     const response = await fetch('/api/internal-preview/session', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ secret })
+      body: JSON.stringify({ email, password })
     });
     const data = await response.json().catch(() => null);
     if (!response.ok || !data || data.signedIn !== true) {
@@ -114,7 +117,7 @@ document.getElementById('preview-sign-in').addEventListener('submit', async (eve
   }
 });
 document.getElementById('preview-logout').addEventListener('click', async () => {
-  const input = document.getElementById('preview-secret');
+  const input = document.getElementById('preview-password');
   if (input) input.value = '';
   try {
     await fetch('/api/internal-preview/session', {
@@ -132,15 +135,22 @@ document.getElementById('frames').addEventListener('change', async (event) => {
   if (!box || !readable) return;
   const sha256 = box.dataset.sha;
   const want = box.checked;
+  const expectedSelected = selected.has(sha256);
   status.textContent = want ? '正在写入 terrella-product-db。还没有保存。' : '正在去掉这张图的勾选。还没有保存。Bunny 原图不会删除。';
   try {
     const response = await previewFetch('/api/internal-preview', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ productId: PRODUCT_ID, sku: SKU, sha256, selected: want })
+      body: JSON.stringify({ productId: PRODUCT_ID, sku: SKU, sha256, selected: want, expectedSelected })
     });
     const data = await response.json().catch(() => null);
     const interpreted = writeStatus(data, { sha256, want });
+    if (interpreted.readback && data && Array.isArray(data.selected) && data.productId === PRODUCT_ID) {
+      selected = new Set(data.selected);
+      status.textContent = interpreted.text;
+      paint();
+      return;
+    }
     if (!response.ok || !interpreted.ok || !data || data.productId !== PRODUCT_ID) throw new Error(data && data.reason);
     selected = new Set(data.selected);
     status.textContent = interpreted.text;

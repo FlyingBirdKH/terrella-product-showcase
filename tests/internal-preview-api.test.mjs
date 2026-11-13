@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { failureText, readStatus, writeStatus } from '../internal-preview-client.mjs';
-import { handlePreview } from '../lib/internal-preview-http.mjs';
+import { handlePreview, send } from '../lib/internal-preview-http.mjs';
 import { handleSession } from '../lib/internal-preview-session.mjs';
 import { FORMAL_STORE_PRODUCT_ID, INTERNAL_PREVIEW_PRODUCT_ID, INTERNAL_PREVIEW_SHA256 } from '../lib/internal-preview-store.mjs';
 import { createProductDbClient } from '../lib/internal-preview-supabase.mjs';
@@ -16,12 +16,40 @@ const OTHER_ID = '11111111-1111-4111-8111-111111111111';
 const FIRST_SHA = INTERNAL_PREVIEW_SHA256[0];
 const SECOND_SHA = INTERNAL_PREVIEW_SHA256[1];
 const OTHER_SHA = 'cd'.repeat(32);
-const ACCESS = 'test-preview-access-secret';
+const ANON = 'test-anon-key-not-a-secret';
 const SERVICE_KEY = 'test-service-role-not-a-secret';
+const ADMIN = {
+  id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+  email: 'admin@example.test',
+  password: 'test-password-not-a-secret',
+  app_metadata: { terrella_brand_admin: 'terralla' },
+  user_metadata: { terrella_brand_admin: 'ignored' }
+};
+const READER = {
+  id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+  email: 'reader@example.test',
+  password: 'test-reader-password-not-a-secret',
+  app_metadata: { terrella_brand_reader: 'terralla' },
+  user_metadata: { terrella_brand_admin: 'terralla' }
+};
+const METADATA_ONLY = {
+  id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+  email: 'meta@example.test',
+  password: 'test-meta-password-not-a-secret',
+  app_metadata: {},
+  user_metadata: { terrella_brand_admin: 'terralla' }
+};
+const MISMATCH = {
+  id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+  reportedId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+  email: 'mismatch@example.test',
+  password: 'test-mismatch-password-not-a-secret',
+  app_metadata: { terrella_brand_admin: 'terralla' }
+};
 const env = {
   TERRELLA_PRODUCT_DB_URL: 'https://product-db.test',
-  TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY: SERVICE_KEY,
-  TERRELLA_PREVIEW_ACCESS_SECRET: ACCESS
+  TERRELLA_PRODUCT_DB_ANON_KEY: ANON,
+  TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY: SERVICE_KEY
 };
 
 function response() {
@@ -45,11 +73,13 @@ function memory() {
       { id: PRODUCT_ID, sku: 'CAT-001' },
       { id: OTHER_ID, sku: 'CAT-003' }
     ],
-    serviceRoleKey: SERVICE_KEY
+    anonKey: ANON,
+    serviceRoleKey: SERVICE_KEY,
+    users: [ADMIN, READER, METADATA_ONLY, MISMATCH]
   });
 }
 
-async function session(body, { cookie = '', headers = {}, useEnv = env } = {}) {
+async function session(body, { cookie = '', headers = {}, useEnv = env, fetchImpl } = {}) {
   const req = {
     method: 'POST',
     url: '/api/internal-preview/session',
@@ -57,15 +87,7 @@ async function session(body, { cookie = '', headers = {}, useEnv = env } = {}) {
     body: JSON.stringify(body)
   };
   const res = response();
-  await handleSession(req, res, { env: useEnv, send: (target, status, payload) => {
-    target.statusCode = status;
-    target.setHeader('content-type', 'application/json; charset=utf-8');
-    const confirmed = payload.ok === true && payload.durable === true && payload.store === 'terrella-product-db';
-    const safe = { ...payload, ok: payload.ok === true, saved: confirmed && payload.saved === true, durable: confirmed };
-    delete safe.secret;
-    if (!confirmed) delete safe.store;
-    target.end(JSON.stringify(safe));
-  } });
+  await handleSession(req, res, { env: useEnv, send, fetchImpl });
   return res;
 }
 
@@ -81,14 +103,16 @@ async function preview({ method = 'GET', url = `/api/internal-preview?productId=
   return res;
 }
 
-async function login(useEnv = env) {
-  const signed = await session({ secret: ACCESS }, { useEnv });
+async function login(db, user = ADMIN) {
+  const signed = await session({ email: user.email, password: user.password }, { fetchImpl: db.fetchImpl });
   assert.equal(signed.statusCode, 200);
   assert.equal(signed.json.signedIn, true);
+  assert.equal(signed.text.includes(user.password), false);
+  assert.equal(signed.text.includes('access_token'), false);
   return cookieHeader(signed);
 }
 
-test('database env alone does not open a public write, and anon-key env is ignored', async () => {
+test('database env alone does not open a public write, and a service-role env is ignored', async () => {
   let called = false;
   const fetchImpl = async () => { called = true; throw new Error('should-not-fetch'); };
   const dbOnly = await preview({
@@ -96,13 +120,13 @@ test('database env alone does not open a public write, and anon-key env is ignor
     useEnv: { TERRELLA_PRODUCT_DB_URL: env.TERRELLA_PRODUCT_DB_URL, TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY: SERVICE_KEY },
     fetchImpl,
     headers: { 'x-preview-admin': 'true' },
-    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true }
+    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false }
   });
   const anon = await preview({
     method: 'POST',
     useEnv: { SUPABASE_URL: 'https://crm.example', SUPABASE_ANON_KEY: 'anon', SUPABASE_SERVICE_ROLE_KEY: 'service' },
     fetchImpl,
-    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true }
+    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false }
   });
   assert.equal(dbOnly.statusCode, 503);
   assert.equal(dbOnly.json.reason, 'access-not-configured');
@@ -112,13 +136,13 @@ test('database env alone does not open a public write, and anon-key env is ignor
   assert.equal(called, false);
 });
 
-test('a spoofed client flag and a missing cookie do not call the database', async () => {
+test('a spoofed client flag and a service-role bearer do not call the database', async () => {
   let called = false;
   const denied = await preview({
     method: 'POST',
     fetchImpl: async () => { called = true; throw new Error('should-not-fetch'); },
     headers: { 'x-preview-admin': 'true', authorization: `Bearer ${SERVICE_KEY}` },
-    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, status: 'live' }
+    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false, status: 'live' }
   });
   assert.equal(denied.statusCode, 401);
   assert.equal(denied.json.reason, 'anonymous');
@@ -126,62 +150,97 @@ test('a spoofed client flag and a missing cookie do not call the database', asyn
   assert.equal(called, false);
 });
 
-test('writing then reading persists by product_id and sha256 for a second cookie jar', async () => {
+test('a shared passphrase, metadata-only claim, and mismatched sub do not sign in', async () => {
   const db = memory();
-  const firstJar = await login();
-  const secondJar = await login();
+  const shared = await session({ secret: 'shared-preview-password' }, { fetchImpl: db.fetchImpl });
+  const metadata = await session({ email: METADATA_ONLY.email, password: METADATA_ONLY.password }, { fetchImpl: db.fetchImpl });
+  const mismatch = await session({ email: MISMATCH.email, password: MISMATCH.password }, { fetchImpl: db.fetchImpl });
+  assert.equal(shared.statusCode, 401);
+  assert.equal(shared.json.reason, 'access-rejected');
+  assert.equal(metadata.statusCode, 403);
+  assert.equal(metadata.json.reason, 'brand-access-missing');
+  assert.equal(mismatch.statusCode, 401);
+  assert.equal(mismatch.json.reason, 'identity');
+  assert.equal(shared.headers['set-cookie'], undefined);
+  assert.equal(metadata.headers['set-cookie'], undefined);
+  assert.equal(db.calls.some((call) => call.method !== 'GET' && call.path.includes('product_image_selections')), false);
+});
+
+test('a reader can read and cannot write', async () => {
+  const db = memory();
+  const cookie = await login(db, READER);
+  const read = await preview({ cookie, fetchImpl: db.fetchImpl });
+  const write = await preview({
+    method: 'POST',
+    cookie,
+    fetchImpl: db.fetchImpl,
+    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false }
+  });
+  assert.equal(read.statusCode, 200);
+  assert.deepEqual(read.json.selected, []);
+  assert.equal(write.statusCode, 403);
+  assert.equal(write.json.reason, 'brand-admin-missing');
+  assert.equal(write.json.saved, false);
+  assert.equal(db.calls.some((call) => call.method === 'POST' && call.path.includes('product_image_selections')), false);
+});
+
+test('writing then reading persists by product_id and sha256 for a second named session', async () => {
+  const db = memory();
+  const firstJar = await login(db);
+  const secondJar = await login(db);
   const saved = await preview({
     method: 'POST',
     cookie: firstJar,
     fetchImpl: db.fetchImpl,
-    body: { productId: PRODUCT_ID, sku: 'CAT-001', sha256: FIRST_SHA, selected: true, status: 'live' }
+    body: { productId: PRODUCT_ID, sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false, status: 'live' }
   });
   assert.equal(saved.json.saved, true);
   assert.equal(saved.json.store, 'terrella-product-db');
   assert.equal(saved.json.productId, PRODUCT_ID);
-  assert.equal(saved.text.includes(ACCESS), false);
+  assert.equal(saved.text.includes(ADMIN.password), false);
   assert.equal(saved.text.includes(SERVICE_KEY), false);
+  assert.equal(saved.text.includes(ANON), false);
   const read = await preview({ cookie: secondJar, fetchImpl: db.fetchImpl });
   assert.equal(read.json.saved, false);
   assert.deepEqual(read.json.selected, [FIRST_SHA]);
   assert.equal(readStatus(read.json).ok, true);
   assert.equal(writeStatus(saved.json, { sha256: FIRST_SHA, want: true }).ok, true);
-  const posted = db.calls.find((call) => call.method === 'POST');
+  const posted = db.calls.find((call) => call.method === 'POST' && call.path.includes('product_image_selections'));
   assert.deepEqual(Object.keys(JSON.parse(posted.body)).sort(), ['image_sha256', 'product_id']);
   assert.equal(posted.body.includes('live'), false);
-  assert.equal(posted.authorization, `Bearer ${SERVICE_KEY}`);
-  assert.equal(db.calls.some((call) => call.path.includes('product_assets')), false);
+  assert.equal(posted.apikey, ANON);
+  assert.equal(posted.authorization.startsWith('Bearer '), true);
+  assert.equal(posted.authorization.includes(SERVICE_KEY), false);
+  assert.equal(db.calls.some((call) => call.path.includes('product_assets') || call.path.endsWith('/products')), false);
 });
 
 test('unchecking deletes only that row and leaves the product row', async () => {
   const db = memory();
-  const cookie = await login();
-  await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true } });
-  await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-001', sha256: SECOND_SHA, selected: true } });
-  await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-003', sha256: OTHER_SHA, selected: true } });
+  const cookie = await login(db);
+  await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false } });
+  await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-001', sha256: SECOND_SHA, selected: true, expectedSelected: false } });
   const removed = await preview({
     method: 'POST',
     cookie,
     fetchImpl: db.fetchImpl,
-    body: { productId: PRODUCT_ID, sha256: FIRST_SHA, selected: false }
+    body: { productId: PRODUCT_ID, sha256: FIRST_SHA, selected: false, expectedSelected: true }
   });
   assert.deepEqual(removed.json.selected, [SECOND_SHA]);
   assert.equal(db.products.length, 2);
   assert.equal(db.selections.some((row) => row.image_sha256 === FIRST_SHA), false);
-  assert.equal(db.selections.some((row) => row.product_id === OTHER_ID && row.image_sha256 === OTHER_SHA), true);
-  const other = await preview({ url: '/api/internal-preview?sku=CAT-003', cookie, fetchImpl: db.fetchImpl });
-  assert.deepEqual(other.json.selected, [OTHER_SHA]);
 });
 
 test('a missing product, the formal store id, and a disallowed hash are not saved', async () => {
   const db = memory();
-  const cookie = await login();
+  const cookie = await login(db);
   const ledgerBefore = readFileSync(new URL('../image-availability.json', import.meta.url), 'utf8');
   const fileBefore = readFileSync(new URL('../internal-preview.json', import.meta.url), 'utf8');
-  const missing = await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-006', sha256: OTHER_SHA, selected: true } });
-  const formal = await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { productId: FORMAL_STORE_PRODUCT_ID, sha256: FIRST_SHA, selected: true } });
-  const outside = await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-001', sha256: OTHER_SHA, selected: true } });
+  const missing = await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-006', sha256: OTHER_SHA, selected: true, expectedSelected: false } });
+  const present = await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-003', sha256: OTHER_SHA, selected: true, expectedSelected: false } });
+  const formal = await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { productId: FORMAL_STORE_PRODUCT_ID, sha256: FIRST_SHA, selected: true, expectedSelected: false } });
+  const outside = await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-001', sha256: OTHER_SHA, selected: true, expectedSelected: false } });
   assert.equal(missing.json.reason, 'product');
+  assert.equal(present.json.reason, 'product');
   assert.equal(formal.json.reason, 'product');
   assert.equal(outside.json.reason, 'sha256');
   assert.equal(db.products.length, 2);
@@ -190,49 +249,107 @@ test('a missing product, the formal store id, and a disallowed hash are not save
   assert.equal(readFileSync(new URL('../internal-preview.json', import.meta.url), 'utf8'), fileBefore);
 });
 
-test('a valid gate still fails closed when the database env is missing', async () => {
-  let called = false;
-  const cookie = await login();
-  const missing = await preview({
+test('a stale writer receives the current rows and does not delete them', async () => {
+  const db = memory();
+  const cookie = await login(db);
+  await preview({ method: 'POST', cookie, fetchImpl: db.fetchImpl, body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false } });
+  const conflict = await preview({
     method: 'POST',
     cookie,
-    useEnv: { TERRELLA_PREVIEW_ACCESS_SECRET: ACCESS },
-    fetchImpl: async () => { called = true; throw new Error('should-not-fetch'); },
-    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true }
+    fetchImpl: db.fetchImpl,
+    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: false, expectedSelected: false }
   });
-  assert.equal(missing.statusCode, 503);
-  assert.equal(missing.json.reason, 'store-not-configured');
-  assert.equal(called, false);
+  assert.equal(conflict.statusCode, 409);
+  assert.equal(conflict.json.saved, false);
+  assert.equal(conflict.json.ok, false);
+  assert.equal(conflict.json.readback, true);
+  assert.equal(conflict.json.durable, true);
+  assert.equal(conflict.json.store, 'terrella-product-db');
+  assert.deepEqual(conflict.json.selected, [FIRST_SHA]);
+  assert.equal(writeStatus(conflict.json, { sha256: FIRST_SHA, want: false }).readback, true);
+  assert.equal(db.selections.some((row) => row.image_sha256 === FIRST_SHA), true);
+  assert.equal(db.calls.filter((call) => call.method === 'DELETE').length, 0);
 });
 
-test('the catalog page does not embed the service role or a second selection schema', () => {
+test('a committed write that reports failure is judged from the readback', async () => {
+  const db = memory();
+  const cookie = await login(db);
+  db.beforeWrite = () => {
+    db.selections.push({ product_id: PRODUCT_ID, image_sha256: FIRST_SHA });
+    return { status: 500, body: { message: 'failed' } };
+  };
+  const failed = await preview({
+    method: 'POST',
+    cookie,
+    fetchImpl: db.fetchImpl,
+    body: { sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false }
+  });
+  assert.equal(failed.statusCode, 503);
+  assert.equal(failed.json.saved, false);
+  assert.equal(failed.json.readback, true);
+  assert.deepEqual(failed.json.selected, db.selections.map((row) => row.image_sha256));
+  db.readsUntilFailure = 1;
+  db.beforeWrite = null;
+  const unread = await preview({
+    method: 'POST',
+    cookie,
+    fetchImpl: db.fetchImpl,
+    body: { sku: 'CAT-001', sha256: SECOND_SHA, selected: true, expectedSelected: false }
+  });
+  assert.equal(unread.statusCode, 503);
+  assert.equal(unread.json.reason, 'readback');
+  assert.equal(unread.json.saved, false);
+  assert.equal(unread.json.selected, undefined);
+  assert.equal(db.selections.some((row) => row.image_sha256 === SECOND_SHA), true);
+});
+
+test('logout revokes the token that the cookie was carrying', async () => {
+  const db = memory();
+  const cookie = await login(db);
+  const out = await session({ action: 'logout' }, { cookie, fetchImpl: db.fetchImpl });
+  assert.equal(out.json.signedIn, false);
+  const again = await preview({ cookie, fetchImpl: db.fetchImpl });
+  assert.equal(again.statusCode, 401);
+  assert.equal(again.json.reason, 'anonymous');
+});
+
+test('the catalog page does not embed a database key or a shared passphrase', () => {
   assert.match(failureText('access-not-configured'), /失败关闭/);
   assert.match(failureText('product'), /没有新建商品/);
+  assert.match(failureText('conflict'), /读回/);
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const previewPage = readFileSync(new URL('../cat-001-internal-preview.html', import.meta.url), 'utf8');
   const client = readFileSync(new URL('../internal-preview-client.mjs', import.meta.url), 'utf8');
+  const identity = readFileSync(new URL('../lib/internal-preview-identity.mjs', import.meta.url), 'utf8');
   const runtime = [
     'api/internal-preview.js',
     'api/internal-preview/session.js',
     'lib/internal-preview-http.mjs',
     'lib/internal-preview-session.mjs',
     'lib/internal-preview-supabase.mjs',
-    'lib/internal-preview-store.mjs'
+    'lib/internal-preview-store.mjs',
+    'lib/internal-preview-identity.mjs',
+    'lib/internal-preview-allowlist.mjs'
   ].map((file) => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8')).join('\n');
   const browser = `${html}\n${previewPage}\n${client}`;
   assert.match(html, /id="preview-sign-in"/);
+  assert.match(html, /id="preview-email"/);
+  assert.match(html, /id="preview-password"/);
+  assert.equal(html.includes('preview-secret'), false);
   assert.match(html, /id="publish-unavailable" disabled/);
   assert.match(html, /0f057213-b8af-4982-9e44-582a2a1d3469/);
   assert.equal(html.includes(FORMAL_STORE_PRODUCT_ID), false);
   assert.equal(html.includes('localStorage'), false);
   assert.equal(html.includes('sessionStorage'), false);
   assert.equal(browser.includes('TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY'), false);
+  assert.equal(browser.includes('TERRELLA_PRODUCT_DB_ANON_KEY'), false);
   assert.equal(browser.includes(SERVICE_KEY), false);
-  assert.equal(browser.includes(ACCESS), false);
-  assert.equal(runtime.includes('SUPABASE_URL'), false);
-  assert.equal(runtime.includes('SUPABASE_ANON_KEY'), false);
+  assert.equal(browser.includes(ANON), false);
+  assert.equal(runtime.includes('TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY'), false);
+  assert.equal(runtime.includes('TERRELLA_PREVIEW_ACCESS_SECRET'), false);
+  assert.match(identity, /app_metadata/);
+  assert.equal(identity.includes('user_metadata'), false);
   assert.equal(runtime.includes('internal_preview'), false);
-  assert.equal(runtime.includes('app_metadata'), false);
   assert.equal(runtime.includes('crm-core'), false);
 });
 
@@ -259,7 +376,7 @@ test('the unconfigured local server fails closed and does not write the json fil
     const write = await (await fetch(`${base}/api/internal-preview`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-preview-admin': 'true' },
-      body: JSON.stringify({ sku: 'CAT-001', sha256: FIRST_SHA, selected: true })
+      body: JSON.stringify({ sku: 'CAT-001', sha256: FIRST_SHA, selected: true, expectedSelected: false })
     })).json();
     assert.equal(read.reason, 'access-not-configured');
     assert.equal(read.saved, false);

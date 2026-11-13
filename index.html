@@ -157,16 +157,17 @@
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <div class="copy-bar">
   <button type="button" id="copy-release">复制放行清单</button>
-  <p id="copy-status">复制清单仍是剪贴板草稿，并且只包含当前这一个产品。持久勾选只写入 terrella-product-db 的 product_image_selections。没有预览访问口令时不会保存。这不是上架或下架。</p>
+  <p id="copy-status">复制清单仍是剪贴板草稿，并且只包含当前这一个产品。持久勾选只写入 terrella-product-db 的 product_image_selections。没有具名账号时不会保存。这不是上架或下架。</p>
   <button type="button" id="publish-unavailable" disabled title="没有已确认的目标网站">上架/下架不可用</button>
   <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
 </div>
-<p id="preview-status" role="status">勾选写入默认关闭。通过预览访问口令之后，才会读取 terrella-product-db。</p>
+<p id="preview-status" role="status">勾选写入默认关闭。用具名账号登录之后，才会读取 terrella-product-db。</p>
 <form id="preview-sign-in" style="max-width:1200px;margin:8px auto 0;padding:0 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:end;">
-  <label>预览访问口令 <input id="preview-secret" type="password" autocomplete="off"></label>
+  <label>账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
+  <label>账号密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
   <button type="submit">打开勾选写入</button>
   <button type="button" id="preview-logout">退出</button>
-  <span>口令只交给服务器核对。页面不保存口令，也不使用 Supabase 账号。公开目录本身不需要登录。</span>
+  <span>使用可单独撤销的账号。页面不保存密码，也不使用共享口令或服务角色密钥。公开目录本身不需要登录。</span>
 </form>
 <p id="availability-status" role="status">正在读取仓库里的放行与同步记录。</p>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
@@ -823,6 +824,20 @@ async function savePreviewToggle(box, key, payload, selected, previous, serial){
       return;
     }
     const interpreted = client.writeStatus(data, { sha256: payload.sha256, want: selected });
+    if (interpreted.readback && data && Array.isArray(data.selected)) {
+      const now = data.selected.includes(payload.sha256);
+      if (now) previewSelected.add(payload.sha256);
+      else previewSelected.delete(payload.sha256);
+      box.checked = now;
+      if (!releaseCopy.sku || releaseCopy.sku === box.dataset.sku) {
+        if (now) rememberPick(box);
+        else releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+        mirrorReleasePicks();
+      }
+      setCopyStatus();
+      setPreviewStatus(interpreted.text);
+      return;
+    }
     if (!response.ok || !interpreted.ok) throw new Error((data && data.reason) || 'http');
     if (data.productId) {
       knownProductIds.set(data.sku || payload.sku, data.productId);
@@ -847,6 +862,7 @@ app.addEventListener('change', e => {
   const box = e.target.closest('input[data-release]');
   if (!box) return;
   const key = `${box.dataset.sku}\n${box.dataset.sha}`;
+  const expectedSelected = previewSelected.has(box.dataset.sha);
   const knownId = box.dataset.sku === INTERNAL_PREVIEW_SKU ? INTERNAL_PREVIEW_PRODUCT_ID : (box.dataset.productId || '');
   const previous = releaseCopy.items.find(item => item.sku === box.dataset.sku && item.sha256 === box.dataset.sha) || null;
   if (box.checked) {
@@ -865,7 +881,7 @@ app.addEventListener('change', e => {
   if (selected && knownId) previewSelected.add(box.dataset.sha);
   const serial = ++previewToggleSerial;
   previewToggleLatest.set(key, serial);
-  const payload = { sku: box.dataset.sku, sha256: box.dataset.sha, selected };
+  const payload = { sku: box.dataset.sku, sha256: box.dataset.sha, selected, expectedSelected };
   if (knownId) payload.productId = knownId;
   setPreviewStatus(selected ? '正在写入 terrella-product-db。还没有保存，也不是上架。' : '正在从 terrella-product-db 去掉这张图的勾选。还没有保存。Bunny 原图不会删除。');
   previewSaveChain = previewSaveChain.then(() => savePreviewToggle(box, key, payload, selected, previous, serial)).catch(() => {});
@@ -998,16 +1014,18 @@ loadInternalPreview();
 document.getElementById('preview-sign-in').addEventListener('submit', async (event) => {
   event.preventDefault();
   const client = await previewClientReady;
-  const input = document.getElementById('preview-secret');
-  const secret = input.value;
-  input.value = '';
-  setPreviewStatus('正在核对预览访问口令。图片还没有保存。');
+  const emailInput = document.getElementById('preview-email');
+  const passwordInput = document.getElementById('preview-password');
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  passwordInput.value = '';
+  setPreviewStatus('正在核对具名账号。图片还没有保存。');
   try {
     const response = await fetch('/api/internal-preview/session', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ secret })
+      body: JSON.stringify({ email, password })
     });
     const data = await response.json().catch(() => null);
     if (!response.ok || !data || data.signedIn !== true) {
@@ -1026,7 +1044,7 @@ document.getElementById('preview-sign-in').addEventListener('submit', async (eve
   }
 });
 document.getElementById('preview-logout').addEventListener('click', async () => {
-  const input = document.getElementById('preview-secret');
+  const input = document.getElementById('preview-password');
   if (input) input.value = '';
   try {
     await fetch('/api/internal-preview/session', {
