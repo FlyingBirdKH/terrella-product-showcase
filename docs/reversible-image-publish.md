@@ -4,54 +4,40 @@
 
 ## 现在仓库里实际有什么
 
-- 公开页面是 `index.html`。除 CAT-001 内部预览以外，勾选仍在内存里的 `releasePicks`，复制到剪贴板，刷新就没了。CAT-001 的勾选只在共享 Supabase 记录读回成功后才算保存。`internal-preview.json` 不是真源，接口不会写它。
+- 公开页面是 `index.html`，不要求登录。勾选由服务器写入 terrella-product-db 的 `public.product_image_selections`，读回成功后才算保存。复制清单每次只包含当前这一个产品。`internal-preview.json` 不是真源，接口不会写它。crm-core 的 `internal_preview` 也不是这条路径，不要再接。
 - 图是否出现在展示页，由页面内嵌的 `publicCopyApproved`、`contentVerified`、`byteVerified`、`assignedSku` 决定。这只说明展示页可以显示这张图，不是目标网站已经上架。
 - 持久证据文件是 `image-availability.json`。当前 `records` 为空。没有记录就不是已放行，也不是已同步。
-- 本仓库没有目标网站的写入接口，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。内部预览有单独的已有账号登录，不代表正式商城可以上架。
+- 本仓库没有目标网站的写入接口，也没有把单张图从 `terralla.com` 画廊撤下的实现。`http://terralla.com` 只是草稿目标，不是授权。公开目录不登录。勾选走服务器接口，不代表正式商城可以上架。
 - 原图在 Bunny / Drive。下架若将来发生，也只针对目标画廊里的那一张图，不删除原件，不删除整个产品。
 
-## 内部预览（共享记录，不是正式商城）
+## 勾选存在哪里（terrella-product-db，不是 crm-core）
 
-`384a994e` 把 EXECUTE 授给 `kevin_admin`、`terralla_admin`、`terralla_team`。crm-core 的 `pg_roles` 只有 `anon`、`authenticated`、`authenticator`、`service_role`，那次 GRANT 不能实施。Supabase Auth 的 JWT `role` 也只是这几个标准值，PostgREST 用它做 `SET ROLE`，不能再当成自定义数据库角色。那个方案已从迁移里去掉。
+图片文件仍在 Bunny 的 `products/{series}/{SKU}/ai/`。不要把图片文件同步进 Supabase。
 
-现在的设计按 [Supabase JWT 字段](https://supabase.com/docs/guides/auth/jwt-fields) 和 [密码登录](https://supabase.com/docs/guides/auth/passwords)：用户令牌的 `role` 只能是 `authenticated`，`sub` 是用户 UUID。写入只认 `app_metadata.terrella_brand_admin = terralla`。读取同时接受这个写入声明，或分开的 `app_metadata.terrella_brand_reader = terralla`。`user_metadata` 不参与判断。supplier 的 `admin` / `sourcing_manager` 也不参与判断。这些声明要由操作者在 Supabase 控制台改已有用户；本仓库不改 metadata。
+勾选写入已经存在的 terrella-product-db（ref `wwsfmfxwhktglgmeukgr`）表 `public.product_image_selections`。本仓库不创建、不修改这张表，也不写 crm-core。`384a994`、`3e32522`、`f640c146` 那条 crm-core `internal_preview` 事件表、自定义角色和 Auth cookie 路径不要再接。仓库里不再带那份迁移。
 
-登录请求是 `POST /auth/v1/token?grant_type=password`。访问令牌 cookie 的 Max-Age 用 Auth 返回的 `expires_in`（通常 3600 秒）。刷新 cookie 不照抄这个数，绝对会话最长 12 小时，刷新只使用剩余时间，不会把会话重新延长。页面遇到 401 会自动刷新一次并重试原请求，失败就停，不循环，也不把令牌写进页面。退出会清掉访问、刷新和到期 cookie。
+表已经有这些列，名字不要改：`id`、`product_id`、`image_sha256`、`created_at`、`updated_at`。`product_id` 引用 `public.products(id)`，并和 `image_sha256` 唯一。RLS 已开启，anon 和 authenticated 没有策略。浏览器不能拿密钥。服务器只用这两个环境变量：
 
-同源检查按 Fetch Metadata：浏览器请求必须带 `Sec-Fetch-Site: same-origin`、`Content-Type: application/json`，并且 `Origin` 和 Host 一致。浏览器请求缺 `Origin` 会拒绝。没有 Fetch Metadata、也没有 `Origin` 的服务端 JSON 请求可以继续。跨站、表单内容类型都会拒绝。
+- `TERRELLA_PRODUCT_DB_URL`：terrella-product-db 的项目 URL，不是 crm-core。
+- `TERRELLA_PRODUCT_DB_SERVICE_ROLE_KEY`：只放在服务器上。不要写成 `NEXT_PUBLIC_`，不要放进页面、测试夹具或日志。
 
-本地 `tests/preview-rest-gateway.mjs` 是假的 Auth 和 PostgREST，只用于回归。它不是 crm-core，也不能代替真实 Supabase 登录。
+不需要 `SUPABASE_URL`、`SUPABASE_ANON_KEY` 或 crm-core 的密钥。公开产品册仍直接读 `products.json`，不要求登录。勾选的读写只走 `/api/internal-preview`。
 
-验收一个已部署的 SHA 时，先确认该部署的 Git SHA 就是要验的提交，再确认服务端已有 `SUPABASE_URL` 和 `SUPABASE_ANON_KEY`，以及测试账号的 `app_metadata` 已分别有 admin 或 reader 声明。用两个浏览器登录：admin 写入一张图，reader 只能读回，不能改。退出后 cookie 清除。没有真实会话和已确认的 Vercel 项目时，不能把这一步报成线上可用。
+CAT-001 / TR260002 在这张库里的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。正式商城商品 ID `426bf18c-8649-4aa5-939c-f0b33eca95f8` 不能当表的键。CAT-001 仍只接受原来的四条完整 SHA-256。其他 SKU 按 terrella-product-db 的 `products.sku` 或 `products.id` 查找已有行；找不到就拒绝，不猜测 ID，不插入商品行，也不改用别的编码。
 
-登录用已有账号的密码授权，对应官方 `POST /auth/v1/token?grant_type=password`，请求头只带 anon key。成功后访问令牌和刷新令牌放在 `HttpOnly`、`SameSite=Lax` 的 cookie，HTTPS 上再加 `Secure`。JSON 响应不返回令牌。页面不把 JWT 放进 `sessionStorage`，也不提供粘贴框。没有注册、邀请或修改 `auth` 用户元数据的接口。
+勾选插入 `(product_id, image_sha256)`。取消勾选只删除这一对。不删除 Bunny 文件，不删除商品行。成功文案只在响应同时带 `saved`、`durable` 和 `store: terrella-product-db` 时出现。
 
-公开产品册仍直接读 `products.json`，不要求登录。内部预览接口单独失败关闭。
+`image-availability.json` 仍是正式放行和同步账本。这一步不往里面写。
 
-CAT-001（产品编号 `426bf18c-8649-4aa5-939c-f0b33eca95f8`，SKU CAT-001，货号 TR260002，handle `eastern-heritage-tr260002`，brand `terralla`）的勾选按完整 SHA-256 写入 crm-core schema `internal_preview`。`actor` 是 `auth.uid()`。状态保持暂停、非公开。这一步没有连接生产库，也没有改商品状态。
+这一次提交不合并 main，不部署到 Vercel、常用目录地址或 terralla.com。
 
-- 表开启 RLS 且不授权给 `anon`、`authenticated`、`service_role` 直接读写。写入只经过 private schema 里的 security definer 函数；公开函数是 security invoker，只把 EXECUTE 授给已有的 `authenticated`。
-- 缺 `sub`、`sub` 和 `auth.uid()` 不一致、`role` 不是 `authenticated`、或 `app_metadata.terrella_brand_admin` 不是 `terralla`，都拒绝。只在 `user_metadata` 里放同样的声明也拒绝。
-- 登录成功但没有该声明时，页面说明账号已登录、预览没有保存。不能把这说成预览可用。
-- 成功文案只在响应同时带 `saved`、`durable` 和 `store: supabase` 时出现。
-- 取消勾选追加一条 `selected: false`。Bunny 原件和商品记录还在。
-- `image-availability.json` 仍是正式放行和同步账本。这一步不往里面写。
+## 后续正式同步（尚未执行，不能把勾选当商城）
 
-匿名读取正式商品的条件保持原样：`deleted_at` 为空，且 `status` 属于 `shortlisted`、`ready_for_shopify`、`live`。本迁移不改这条。
-
-服务端配置只需要这两个名字：`SUPABASE_URL`（crm-core）、`SUPABASE_ANON_KEY`。不要配置 `SUPABASE_SERVICE_ROLE_KEY`。
-
-还缺一个非秘密前置：某个已经存在的 Auth 用户，其 `app_metadata.terrella_brand_admin` 被设为 `terralla`。本仓库不写这个声明。没有它时，标准登录可以完成，预览写入仍然失败关闭。这个环境没有真实会话，也看不到 Vercel 项目，不能报线上可用。
-
-迁移：`supabase/migrations/20261112160000_internal_preview_shared.sql`。回滚：`supabase/rollbacks/20261112160000_internal_preview_shared_down.sql`。回滚只删除这次创建的函数、事件表和 schema。本仓库不执行生产迁移。
-
-## 后续 13 张正式同步（尚未执行，不能把预览当商城）
-
-图片版本已批准的数量是 CAT-001 四张、CAT-003 五张、CAT-006 四张。当前共享预览只接受 CAT-001 那四条完整 SHA 和已确认的商品 ID `426bf18c-8649-4aa5-939c-f0b33eca95f8`。按 sku、handle、external_id 精确查询，CAT-003/TR260004 与 CAT-006/TR260007 都是空的。完全不同的编码还没有排除，所以禁止猜测 ID，禁止自动建行，也禁止改用 CAT-013/TR2605002。
+图片版本已批准的数量是 CAT-001 四张、CAT-003 五张、CAT-006 四张。勾选可以按已有的 `products.sku` / `products.id` 落到 terrella-product-db。没有查到的 SKU 保持拒绝。禁止猜测 ID，禁止自动建行，也禁止改用 CAT-013/TR2605002。
 
 正式同步仍要另一次独立终验和 Kevin 的 GO。到那时才做这些事，而且不在这一次里做：
 
-1. 只用确认过的 crm-core 商品 ID，按完整 SHA 逐张写入目标画廊字段。
+1. 只用确认过的目标商品，按完整 SHA 逐张写入目标画廊字段。
 2. 写入后读回同一张图仍在画廊里，才把证据追加到 `image-availability.json`。没有读回就保持未同步。
 3. 撤回只从目标画廊去掉这一张图的关联。不删除 Bunny 原件，不删除商品，不修改 `status`，也不把 `paused` 改成公开。
 4. 每一张使用新的事件号和上一代 revision。重复事件号且内容相同则幂等；revision 冲突则放弃这次写入并重新读回。

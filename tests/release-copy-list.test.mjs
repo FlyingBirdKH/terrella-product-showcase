@@ -8,7 +8,7 @@ const end = html.indexOf('let copyEpoch');
 const source = html.slice(start, end);
 const pure = new Function(`${source}\nreturn { emptyReleaseCopy, focusReleaseProduct, selectReleaseImage, unselectReleaseImage, itemsForReleaseExport, adoptReleasePicks, releaseListText };`)();
 
-const PREVIEW_ID = '426bf18c-8649-4aa5-939c-f0b33eca95f8';
+const PREVIEW_ID = '0f057213-b8af-4982-9e44-582a2a1d3469';
 
 function sha(n) {
   return n.toString(16).padStart(64, '0');
@@ -46,6 +46,8 @@ test('the copy button exports the focused product, not the global pick map', () 
   assert.match(click, /releaseListText\(items\)/);
   assert.equal(click.includes('releasePicks.values'), false);
   assert.match(html, /adoptReleasePicks\(releaseCopy, INTERNAL_PREVIEW_SKU, seeded\)/);
+  assert.match(html, /0f057213-b8af-4982-9e44-582a2a1d3469/);
+  assert.equal(html.includes('426bf18c-8649-4aa5-939c-f0b33eca95f8'), false);
 });
 
 test('exporting product B after product A contains only B, with no duplicates', () => {

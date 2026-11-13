@@ -2,9 +2,8 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createSupabasePreviewClient } from '../lib/internal-preview-supabase.mjs';
-import { handlePreview, send as sendJson } from '../lib/internal-preview-http.mjs';
-import { handleSession } from '../lib/internal-preview-session.mjs';
+import { createProductDbClient } from '../lib/internal-preview-supabase.mjs';
+import { handlePreview } from '../lib/internal-preview-http.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const port = Number(process.env.PORT || 8788);
@@ -23,13 +22,9 @@ async function buffer(req) {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1');
-  if (url.pathname === '/api/internal-preview' || url.pathname === '/api/internal-preview-session') {
+  if (url.pathname === '/api/internal-preview') {
     await buffer(req);
-    if (url.pathname === '/api/internal-preview-session') {
-      await handleSession(req, res, { env: process.env, fetchImpl: globalThis.fetch, send: sendJson });
-    } else {
-      await handlePreview(req, res, { env: process.env, fetchImpl: globalThis.fetch, clientFactory: createSupabasePreviewClient });
-    }
+    await handlePreview(req, res, { env: process.env, fetchImpl: globalThis.fetch, clientFactory: createProductDbClient });
     return;
   }
   const requested = normalize(decodeURIComponent(url.pathname));
