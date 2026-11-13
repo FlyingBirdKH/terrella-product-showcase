@@ -28,7 +28,8 @@ export function createProductDbMemory({
     calls,
     anonKey,
     readsUntilFailure: Infinity,
-    beforeWrite: null
+    beforeWrite: null,
+    afterRead: null
   };
 
   function issue(user) {
@@ -114,12 +115,36 @@ export function createProductDbMemory({
     if (!live.has(bearer(headers)) || bearer(headers) === serviceRoleKey) return json(401, { message: 'jwt' });
     const table = target.pathname.slice(prefix.length);
     if (table === 'products' || table === 'product_assets') return json(401, { message: 'products-closed' });
+    if (table === 'rpc/apply_image_selection') {
+      if (method !== 'POST') return json(405, { message: 'method' });
+      if (state.beforeWrite) {
+        const outcome = state.beforeWrite({ method, table });
+        if (outcome && outcome.status) return json(outcome.status, outcome.body || { message: 'injected' });
+      }
+      const row = JSON.parse(options.body || '{}');
+      const keys = Object.keys(row).sort();
+      if (keys.join(',') !== 'expected_selected,image_sha256,product_id,selected') return json(400, { message: 'columns' });
+      if (typeof row.expected_selected !== 'boolean' || typeof row.selected !== 'boolean') return json(400, { message: 'expected' });
+      if (!productRows.some((item) => item.id === row.product_id)) return json(409, { code: '23503', message: 'product_id' });
+      const index = selectionRows.findIndex((item) => item.product_id === row.product_id && item.image_sha256 === row.image_sha256);
+      const present = index !== -1;
+      if (present !== row.expected_selected) return json(200, { applied: false });
+      if (row.selected && !present) selectionRows.push({ product_id: row.product_id, image_sha256: row.image_sha256 });
+      if (!row.selected && present) selectionRows.splice(index, 1);
+      return json(200, { applied: true });
+    }
     if (table !== 'product_image_selections') return json(404, { message: 'table' });
     if (method === 'GET') {
       if (state.readsUntilFailure <= 0) return json(500, { message: 'read' });
       if (Number.isFinite(state.readsUntilFailure)) state.readsUntilFailure -= 1;
       const filters = [['product_id', filterValue(target.searchParams, 'product_id')], ['image_sha256', filterValue(target.searchParams, 'image_sha256')]];
-      return json(200, selectionRows.filter((row) => matches(row, filters)).map((row) => ({ ...row })));
+      const snapshot = selectionRows.filter((row) => matches(row, filters)).map((row) => ({ ...row }));
+      if (state.afterRead) {
+        const hook = state.afterRead;
+        state.afterRead = null;
+        hook();
+      }
+      return json(200, snapshot);
     }
     if (state.beforeWrite) {
       const outcome = state.beforeWrite({ method, table });

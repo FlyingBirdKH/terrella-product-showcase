@@ -205,8 +205,8 @@ test('writing then reading persists by product_id and sha256 for a second named 
   assert.deepEqual(read.json.selected, [FIRST_SHA]);
   assert.equal(readStatus(read.json).ok, true);
   assert.equal(writeStatus(saved.json, { sha256: FIRST_SHA, want: true }).ok, true);
-  const posted = db.calls.find((call) => call.method === 'POST' && call.path.includes('product_image_selections'));
-  assert.deepEqual(Object.keys(JSON.parse(posted.body)).sort(), ['image_sha256', 'product_id']);
+  const posted = db.calls.find((call) => call.method === 'POST' && call.path.endsWith('/rpc/apply_image_selection'));
+  assert.deepEqual(Object.keys(JSON.parse(posted.body)).sort(), ['expected_selected', 'image_sha256', 'product_id', 'selected']);
   assert.equal(posted.body.includes('live'), false);
   assert.equal(posted.apikey, ANON);
   assert.equal(posted.authorization.startsWith('Bearer '), true);
@@ -288,7 +288,7 @@ test('a committed write that reports failure is judged from the readback', async
   assert.equal(failed.json.saved, false);
   assert.equal(failed.json.readback, true);
   assert.deepEqual(failed.json.selected, db.selections.map((row) => row.image_sha256));
-  db.readsUntilFailure = 1;
+  db.readsUntilFailure = 0;
   db.beforeWrite = null;
   const unread = await preview({
     method: 'POST',

@@ -5,6 +5,8 @@ import { INTERNAL_PREVIEW_PRODUCT_ID, INTERNAL_PREVIEW_SHA256 } from '../lib/int
 
 const migration = readFileSync(new URL('../supabase/migrations/20261113193000_selection_claim_rls.sql', import.meta.url), 'utf8');
 const rollback = readFileSync(new URL('../supabase/rollbacks/20261113193000_selection_claim_rls_down.sql', import.meta.url), 'utf8');
+const compare = readFileSync(new URL('../supabase/migrations/20261113200000_selection_compare_and_swap.sql', import.meta.url), 'utf8');
+const compareRollback = readFileSync(new URL('../supabase/rollbacks/20261113200000_selection_compare_and_swap_down.sql', import.meta.url), 'utf8');
 
 test('the selection claim migration is pinned to CAT-001 and does not grant a shared role', () => {
   assert.match(migration, /enable row level security/);
@@ -25,4 +27,13 @@ test('the selection claim migration is pinned to CAT-001 and does not grant a sh
   assert.match(rollback, /drop policy if exists product_image_selections_select/);
   assert.match(rollback, /revoke all on table public\.product_image_selections from authenticated/);
   assert.equal(rollback.includes('disable row level security'), false);
+  assert.match(compare, /where not exists/);
+  assert.match(compare, /apply_image_selection/);
+  assert.match(compare, new RegExp(INTERNAL_PREVIEW_PRODUCT_ID));
+  for (const sha of INTERNAL_PREVIEW_SHA256) assert.match(compare, new RegExp(sha));
+  assert.equal(compare.includes('user_metadata'), false);
+  assert.equal(compare.includes('service_role'), false);
+  assert.equal(compare.includes('CAT-003'), false);
+  assert.equal(compare.includes('CAT-006'), false);
+  assert.match(compareRollback, /drop function if exists public\.apply_image_selection/);
 });

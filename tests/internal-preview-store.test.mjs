@@ -75,11 +75,12 @@ test('unchecking deletes only that selection row', async () => {
   assert.equal(removed.selected.includes(SECOND), true);
   assert.equal(memory.selections.some((row) => row.product_id === CAT_003 && row.image_sha256 === OTHER_SHA), true);
   assert.equal(memory.products.length, 2);
-  const deleted = memory.calls.filter((call) => call.method === 'DELETE');
-  assert.equal(deleted.length, 1);
-  assert.match(deleted[0].path, /\/product_image_selections$/);
-  assert.match(deleted[0].search, new RegExp(`product_id=eq\\.${CAT_001}`));
-  assert.match(deleted[0].search, new RegExp(`image_sha256=eq\\.${FIRST}`));
+  const compared = memory.calls.filter((call) => call.path.endsWith('/rpc/apply_image_selection'));
+  const removal = compared.map((call) => JSON.parse(call.body)).find((body) => body.selected === false);
+  assert.equal(removal.product_id, CAT_001);
+  assert.equal(removal.image_sha256, FIRST);
+  assert.equal(removal.expected_selected, true);
+  assert.equal(memory.calls.some((call) => call.method === 'DELETE'), false);
 });
 
 test('another existing product and a hash outside the four are rejected', async () => {
@@ -126,7 +127,7 @@ test('a failed write still returns the readback and does not claim it was saved'
 test('a write whose readback fails does not report the new selection', async () => {
   const memory = seed();
   const client = clientFor(memory);
-  memory.readsUntilFailure = 1;
+  memory.readsUntilFailure = 0;
   const failed = await setSelection(client, { sku: 'CAT-001', sha256: FIRST, selected: true, expectedSelected: false }).then(() => null, (error) => error);
   assert.equal(failed.status, 503);
   assert.equal(failed.reason, 'readback');

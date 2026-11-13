@@ -23,7 +23,7 @@
 
 CAT-001 / TR260002 的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。允许名单只认这个 id、SKU `CAT-001` 或货号 `TR260002`，以及原来的四条完整 SHA-256。商品名称不能当作键。其他商品即使在 `products` 里有行，也拒绝。CAT-003 五张和 CAT-006 四张的回收图哈希出现在 2026-11-12 的清单草稿里，但这份草稿没有这两款在 terrella-product-db 的商品 UUID，所以没有放进允许名单。找不到就拒绝，不猜测 ID，不插入商品，不改 `products.status`，不写 `product_assets`。
 
-写入要带上一次读到的 `expectedSelected`。和当前行不一致时返回 `409`，`saved` 为 false，并带上读回的 `selected`。数据库报错时同样先读回；读回也失败则只有 `readback`，不宣称已保存。
+写入把上次读到的 `expectedSelected` 交给 `apply_image_selection`。这一次数据库语句只在当前行仍等于这个值时插入或删除；对不上就返回 `409`，`saved` 为 false，并带上新的成功读回，不改那一行。读回必须是 JSON 数组，元素含字符串 `product_id` 和 `image_sha256`。2xx 但正文为空、空白、HTML、非法 JSON 或别的形状，都是 `readback` 失败，不会变成空的 `selected`，也不会把 `saved` 设为 true。
 
 勾选插入这一对。取消勾选只删除这一对。不删除 Bunny 文件，不删除商品行。成功文案只在响应同时带 `saved`、`durable` 和 `store: terrella-product-db` 时出现。刷新和另一个浏览器看到的是同一张表里的行，不是 `localStorage`。
 
@@ -42,7 +42,7 @@ CAT-001 / TR260002 的商品 UUID 是 `0f057213-b8af-4982-9e44-582a2a1d3469`。�
 
 每次请求都向 Auth 核对这个 token。`sub` 必须等于 Auth 用户 id。写入只认 `app_metadata.terrella_brand_admin = terralla`。读取还接受 `app_metadata.terrella_brand_reader = terralla`。其他 metadata 不参与判断。停用该用户后，下一次请求不再通过。
 
-`supabase/migrations/20261113193000_selection_claim_rls.sql` 把同样的限制写成 `product_image_selections` 的 RLS。本仓库不执行它，也不在线上库创建用户或改 claims。Kevin 之后需要：在 terrella-product-db 创建或邀请具名用户、写入对应 claim，并自行应用这份迁移。在此之前，线上 RLS 仍会拒绝 authenticated 访问。
+`supabase/migrations/20261113193000_selection_claim_rls.sql` 把同样的限制写成 `product_image_selections` 的 RLS。`supabase/migrations/20261113200000_selection_compare_and_swap.sql` 增加 `apply_image_selection`，用当前行是否存在来比较 `expected_selected`。本仓库不执行这两份文件，也不在线上库创建用户或改 claims。在此之前，线上 RLS 仍会拒绝 authenticated 访问。
 
 项目的 `ssoProtection` 现在是 null。不能把预览地址当成已经受部署保护。命令行有 `--sso` 和 `--password`，当前方案是否允许还没有确认，所以本仓库不调用它们，也不假设它们已经生效。接受这个预览之前，由父流程打开只针对预览的部署保护。生产访问控制保持原样。
 
