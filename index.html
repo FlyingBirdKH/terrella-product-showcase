@@ -97,6 +97,12 @@
   .gallery-item img { width:100%; height:auto; aspect-ratio:1; object-fit:contain; display:block; }
   .gallery-item img[hidden], [hidden] { display:none !important; }
   .gallery-item figcaption { padding:7px 9px; color:var(--muted); font-size:.75rem; line-height:1.4; }
+  .gallery-item[data-selectable] { cursor:pointer; }
+  .gallery-item.is-selected { box-shadow:inset 0 0 0 3px var(--accent); background:#fff7ed; }
+  .gallery-item:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .release-pick, .release-pick input { pointer-events:none; }
+  .selection-help { color:var(--muted); font-size:.75rem; line-height:1.4; }
+  .selection-help kbd, .copy-bar kbd { font:inherit; font-size:.72rem; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 4px; background:#fff; }
   .image-failure { padding:24px 10px; min-height:120px; color:#92400e; display:flex; align-items:center; font-size:.8rem; }
   .gallery-empty { min-height:180px; padding:30px; display:grid; place-items:center; color:var(--muted); background:#ebe4d8; }
   .image-count, .category-count { color:var(--muted); font-size:.8rem; font-weight:400; }
@@ -156,7 +162,10 @@
 <nav class="filters" id="filters" aria-label="品类筛选"></nav>
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <div class="copy-bar">
+  <button type="button" id="select-all-images">全选当前产品 <kbd>Ctrl/⌘ A</kbd></button>
+  <button type="button" id="invert-selection">反选当前产品 <kbd>Ctrl/⌘ I</kbd></button>
   <button type="button" id="copy-release">复制放行清单</button>
+  <p class="selection-help">点图片即可勾选，不必点复选框。Shift+点击选择同一产品中的一段。空格切换当前图片。全选和反选只作用于当前这一个产品。</p>
   <p id="copy-status">复制清单仍是剪贴板草稿，并且只包含当前这一个产品。持久勾选只写入 terrella-product-db 的 product_image_selections。没有具名账号时不会保存。这不是上架或下架。</p>
   <button type="button" id="publish-unavailable" disabled title="没有已确认的目标网站">上架/下架不可用</button>
   <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
@@ -629,12 +638,14 @@ function stripGallery(items, aria, extraClass='', product){
     const sha = String(a.outputSha256 || '').toLowerCase();
     const key = ai ? `${product.sku}\n${sha}` : '';
     const previewId = product ? (knownProductIds.get(product.sku) || '') : '';
-    const checked = key && (releasePicks.has(key) || (previewId && previewSelected.has(sha))) ? ' checked' : '';
+    const selectedNow = Boolean(key && (releasePicks.has(key) || (previewId && previewSelected.has(sha))));
+    const checked = selectedNow ? ' checked' : '';
     const code = id ? `<div class="short-id"><code>${esc(id)}</code></div>` : '';
     const durable = product ? durableBadgeHtml(product.sku, sha) : '';
     const pickLabel = previewId ? '内部预览勾选，不上架' : '本次勾选，不上架';
     const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${previewId ? ` data-product-id="${esc(previewId)}"` : ''}${checked}> ${pickLabel}</label>` : '';
-    return `<figure class="gallery-item"><img src="${esc(a.path)}" alt="${esc(a.label || '图')} ${i+1}" loading="lazy" decoding="async"><span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${durable}${pick}</figcaption></figure>`;
+    const face = ai && id ? ` tabindex="0" data-selectable="1" aria-pressed="${selectedNow ? 'true' : 'false'}"` : '';
+    return `<figure class="gallery-item${selectedNow ? ' is-selected' : ''}"${face}><img src="${esc(a.path)}" alt="${esc(a.label || '图')} ${i+1}" loading="lazy" decoding="async"><span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${durable}${pick}</figcaption></figure>`;
   }).join('')}</div>`;
 }
 function aiImagesFor(p){
@@ -724,6 +735,7 @@ function render(){
     const body=subKeys.map(s=>`<h3 class="sub-title">子系列 · ${esc(s)} <span class="category-count">(${subMap.get(s).length})</span></h3><div class="grid">${subMap.get(s).map(card).join('')}</div>`).join('');
     return `<h2 class="section-title">${esc(c)} <span class="category-count">(${total})</span></h2>${body}`;
   }).join('');
+  syncSelectionFaces();
 }
 filters.addEventListener('click',e=>{const btn=e.target.closest('button[data-cat]');if(!btn||!categories().includes(btn.dataset.cat))return;active=btn.dataset.cat;activeSub='全部';renderFilters();render();});
 subfilters.addEventListener('click',e=>{const btn=e.target.closest('button[data-sub]');if(!btn)return;const v=btn.dataset.sub;if(!subSeriesOptions().includes(v))return;activeSub=v;renderFilters();render();});
@@ -884,8 +896,17 @@ app.addEventListener('change', e => {
   const payload = { sku: box.dataset.sku, sha256: box.dataset.sha, selected, expectedSelected };
   if (knownId) payload.productId = knownId;
   setPreviewStatus(selected ? '正在写入 terrella-product-db。还没有保存，也不是上架。' : '正在从 terrella-product-db 去掉这张图的勾选。还没有保存。Bunny 原图不会删除。');
+  syncSelectionFaces();
   previewSaveChain = previewSaveChain.then(() => savePreviewToggle(box, key, payload, selected, previous, serial)).catch(() => {});
 });
+function syncSelectionFaces(){
+  for (const box of document.querySelectorAll('input[data-release]')) {
+    const figure = box.closest('figure.gallery-item');
+    if (!figure) continue;
+    figure.classList.toggle('is-selected', box.checked);
+    figure.setAttribute('aria-pressed', box.checked ? 'true' : 'false');
+  }
+}
 function hideManualList(){
   const list = document.getElementById('copy-fallback');
   if (!list) return;
@@ -1061,5 +1082,6 @@ document.getElementById('preview-logout').addEventListener('click', async () => 
 });
 
 </script>
+<script type="module" src="./selection-ui.mjs"></script>
 </body>
 </html>

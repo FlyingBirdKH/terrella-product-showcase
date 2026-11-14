@@ -17,6 +17,13 @@
   button[disabled] { opacity: .55; cursor: not-allowed; }
   ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
   li { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  li[data-selectable] { cursor: pointer; }
+  li.is-selected { box-shadow: inset 0 0 0 3px #9a3412; background: #fff7ed; }
+  li[data-selectable]:focus-visible { outline: 2px solid #9a3412; outline-offset: 2px; }
+  .release-pick, .release-pick input { pointer-events: none; }
+  .selection-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+  .selection-tools button { font: inherit; }
+  .selection-tools kbd { font: inherit; font-size: .75rem; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: #fff; }
   figure { margin: 0; }
   img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #f1ebe1; display: block; }
   figcaption { padding: 10px 12px 12px; font-size: .82rem; line-height: 1.45; }
@@ -31,6 +38,11 @@
   <h1>CAT-001 已选图片的内部预览</h1>
   <p class="muted">商品 ID <code id="product-id"></code>，SKU CAT-001，货号 TR260002。勾选只写入 terrella-product-db 的 product_image_selections。没有具名账号时写入关闭。公开产品册不需要登录。</p>
   <p><button type="button" id="publish-unavailable" disabled>正式上架/下架不可用</button></p>
+  <div class="selection-tools">
+    <button type="button" id="select-all-images">全选 <kbd>Ctrl/⌘ A</kbd></button>
+    <button type="button" id="invert-selection">反选 <kbd>Ctrl/⌘ I</kbd></button>
+    <span class="muted">点一行即可勾选。Shift+点击选择一段。空格切换当前行。</span>
+  </div>
   <form id="preview-sign-in">
     <label>账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
     <label>账号密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
@@ -66,7 +78,10 @@ function esc(value) {
   return String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 function paint() {
-  document.getElementById('frames').innerHTML = IMAGES.map((item) => `<li><label><input type="checkbox" data-sha="${esc(item.sha256)}" ${selected.has(item.sha256) ? 'checked' : ''} ${readable ? '' : 'disabled'}> ${item.order}. <code>${esc(item.shortId)}</code></label><div>SHA-256 <code>${esc(item.sha256)}</code></div></li>`).join('');
+  document.getElementById('frames').innerHTML = IMAGES.map((item) => {
+    const on = selected.has(item.sha256);
+    return `<li class="${on ? 'is-selected' : ''}" tabindex="0" data-selectable="1" aria-pressed="${on ? 'true' : 'false'}"><label class="release-pick"><input type="checkbox" data-sha="${esc(item.sha256)}" ${on ? 'checked' : ''} ${readable ? '' : 'disabled'}> ${item.order}. <code>${esc(item.shortId)}</code></label><div>SHA-256 <code>${esc(item.sha256)}</code></div></li>`;
+  }).join('');
   const chosen = IMAGES.filter((item) => selected.has(item.sha256));
   document.getElementById('chosen').innerHTML = chosen.length
     ? chosen.map((item) => `<li><figure><img alt="内部预览 ${esc(item.shortId)}" src="${esc(item.path)}"><figcaption><div><code>${esc(item.shortId)}</code></div><div>SHA-256 <code>${esc(item.sha256)}</code></div><div><a href="${esc(item.path)}" target="_blank" rel="noopener noreferrer">打开 Bunny 原图</a></div></figcaption></figure></li>`).join('')
@@ -163,5 +178,6 @@ document.getElementById('frames').addEventListener('change', async (event) => {
 paint();
 load().catch(() => failClosed('store-not-writable'));
 </script>
+<script type="module" src="./selection-ui.mjs"></script>
 </body>
 </html>
