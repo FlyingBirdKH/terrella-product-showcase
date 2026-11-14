@@ -37,6 +37,12 @@
   .short-id { margin-top:4px; }
   .short-id code { background:#efe7da; padding:1px 6px; border-radius:4px; font-size:.75rem; }
   .release-pick { display:flex; align-items:center; gap:6px; margin-top:4px; font-size:.75rem; }
+  .durable-status { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+  .durable-badge { border-radius:999px; padding:1px 6px; font-size:.68rem; line-height:1.4; border:1px solid var(--line); }
+  .durable-badge.approval { background:#ecfdf3; color:#166534; border-color:#bbf7d0; }
+  .durable-badge.sync { background:#eff6ff; color:#1e3a8a; border-color:#bfdbfe; }
+  .durable-badge.revoked { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+  #publish-unavailable { border-style:dashed; }
   footer { max-width:1200px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:.8rem; line-height:1.5; }
   .section-title { margin: 22px 0 10px; font-size:1.05rem; }
   .badge { display:inline-block; font-size:.7rem; border:1px solid var(--line); border-radius:999px; padding:1px 8px; color:var(--muted); margin-left:4px; }
@@ -91,6 +97,12 @@
   .gallery-item img { width:100%; height:auto; aspect-ratio:1; object-fit:contain; display:block; }
   .gallery-item img[hidden], [hidden] { display:none !important; }
   .gallery-item figcaption { padding:7px 9px; color:var(--muted); font-size:.75rem; line-height:1.4; }
+  .gallery-item[data-selectable] { cursor:pointer; }
+  .gallery-item.is-selected { box-shadow:inset 0 0 0 3px var(--accent); background:#fff7ed; }
+  .gallery-item:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .release-pick, .release-pick input { pointer-events:none; }
+  .selection-help { color:var(--muted); font-size:.75rem; line-height:1.4; }
+  .selection-help kbd, .copy-bar kbd { font:inherit; font-size:.72rem; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 4px; background:#fff; }
   .image-failure { padding:24px 10px; min-height:120px; color:#92400e; display:flex; align-items:center; font-size:.8rem; }
   .gallery-empty { min-height:180px; padding:30px; display:grid; place-items:center; color:var(--muted); background:#ebe4d8; }
   .image-count, .category-count { color:var(--muted); font-size:.8rem; font-weight:400; }
@@ -137,6 +149,7 @@
     overflow:hidden; color:#64748b;
   }
   article > .media-stack { flex:1 1 auto; min-width:0; }
+  #preview-status { max-width:1200px; margin:8px auto 0; padding:0 20px; color:#9a3412; font-size:.85rem; line-height:1.45; }
 
 </style>
 </head>
@@ -149,17 +162,32 @@
 <nav class="filters" id="filters" aria-label="品类筛选"></nav>
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <div class="copy-bar">
+  <button type="button" id="select-all-images">全选当前产品 <kbd>Ctrl/⌘ A</kbd></button>
+  <button type="button" id="invert-selection">反选当前产品 <kbd>Ctrl/⌘ I</kbd></button>
   <button type="button" id="copy-release">复制放行清单</button>
-  <p id="copy-status">勾选只留在这一页，刷新会消失。复制后贴回 Slack，还没有写入仓库。</p>
+  <p class="selection-help">点图片即可勾选，不必点复选框。Shift+点击选择同一产品中的一段。空格切换当前图片。全选和反选只作用于当前这一个产品。</p>
+  <p id="copy-status">复制清单仍是剪贴板草稿，并且只包含当前这一个产品。持久勾选只写入 terrella-product-db 的 product_image_selections。没有具名账号时不会保存。这不是上架或下架。</p>
+  <button type="button" id="publish-unavailable" disabled title="没有已确认的目标网站">上架/下架不可用</button>
   <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
 </div>
+<p id="preview-status" role="status">勾选写入默认关闭。用具名账号登录之后，才会读取 terrella-product-db。</p>
+<form id="preview-sign-in" style="max-width:1200px;margin:8px auto 0;padding:0 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:end;">
+  <label>账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
+  <label>账号密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
+  <button type="submit">打开勾选写入</button>
+  <button type="button" id="preview-logout">退出</button>
+  <span>使用可单独撤销的账号。页面不保存密码，也不使用共享口令或服务角色密钥。公开目录本身不需要登录。</span>
+</form>
+<p id="availability-status" role="status">正在读取仓库里的放行与同步记录。</p>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
 <p id="load-status" role="status" aria-live="polite" hidden></p>
 <main id="app"></main>
 <footer>
   真源主表：<a href="https://docs.google.com/spreadsheets/d/1FCoD3BOs95yAOkfCl5uudeAICDvsB6KpdS13raJyUB8/edit">Terrella 产品库｜图片与原文件链接｜2026-10-26</a>
   · Drive 根：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 选品</a>
-  · 不写入 silu-supplier-db / image-video-prompts · 未合并 storefront（合并需另 GO）。
+  · 不写入 silu-supplier-db / image-video-prompts · 未合并 storefront（合并需另 GO）。勾选不是上架或下架。持久状态只认 image-availability.json 里的证据。
+  · <a href="cat-001-static-check.html">CAT-001 四图静态核验（尚未同步商城）</a>
+  · <a href="cat-001-internal-preview.html">CAT-001 内部预览（非正式商城）</a>
 </footer>
 <script>
 const FALLBACK = [{"sku": "CAT-001", "code": "TR260002", "name": "TR260002", "category": "东方非遗", "status": "candidate", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/g-e9564d61fbde3560c442.jpg", "original": "https://drive.google.com/file/d/1va3K3sNI4zQLj9Scp39fOt21ozlpx38C/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1qssnuZZcXi7owf7NfRk3r_6OnJlWPl12", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-002", "code": "TR260003", "name": "TR260003", "category": "东方非遗", "status": "candidate", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-002/g-58d43406d259ad215be5.jpg", "original": "https://drive.google.com/file/d/1L7UrTynSdMwf7Suzm7zODHid2JTjOheV/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1woj0ZYBcUOWzbIhQwp_m9za1oNG-88nJ", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-003", "code": "TR260004", "name": "TR260004", "category": "东方非遗", "status": "candidate", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-003/g-d43b4e1a86422e27f5c7.jpg", "original": "https://drive.google.com/file/d/1CfGZR8B4hBpMUCRVnAV__7aPhBVDUgjC/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1ymYP1ml4xPUyrYqeV35GKfb-9q_hj7BI", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-004", "code": "TR260005", "name": "TR260005", "category": "东方非遗", "status": "candidate", "product_type": "戒指", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-004/g-a7f7c7881721822c077f.jpg", "original": "https://drive.google.com/file/d/1MqMK5_wa5ZD77epW8Y69RXFdwbnI11Az/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1BH5GJo1mkPSpm7HvucUxX0U20Y_DoLGj", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-005", "code": "TR260006", "name": "TR260006", "category": "东方非遗", "status": "candidate", "product_type": "手镯", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-edfcfbf0c56425aadefd.jpg", "original": "https://drive.google.com/file/d/1HJCrFNBd5LbKXPaJHmm9DpYPKkwL-klZ/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/16onQ7FBBcxZMufR32yqZg7mIJ8R_Ipz4", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-006", "code": "TR260007", "name": "TR260007", "category": "东方非遗", "status": "candidate", "product_type": "手镯", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-006/g-850c5d229af33bb741e5.jpg", "original": "https://drive.google.com/file/d/11O66IUwR7JdRQRt9dpF-JDNu8koWKMKh/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1Fd1e4GiElCy9nNrInHJOEHQKCZ0s4Lp9", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-007", "code": "TR260008", "name": "TR260008", "category": "东方非遗", "status": "candidate", "product_type": "戒指", "thumb": "https://terralla-internal.b-cdn.net/showcase/multi-image-20261108/CAT-007.jpg", "original": "https://drive.google.com/file/d/125EJe43SwNAoqeZbSfDV9Awj_Y6IddV2/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1ujDvzhX-V2qSavDuiQmtiAnohbV2FN4r", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补；同码跨类别冲突", "sub_series": "2026年10月目录"}, {"sku": "CAT-008", "code": "TR260008-CAT-008", "name": "TR260008", "category": "东方非遗", "status": "candidate", "product_type": "手镯", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-008/CAT-008-hold-01.jpg", "original": "https://drive.google.com/file/d/1KF9yZDA76lsEVa-XiJoDHEr94_PLEeyN/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1EYgSfRSzDlBUXBefa50OKXTtNDgMaYHz", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补；同码跨类别冲突 | code_dup_original=TR260008", "sub_series": "2026年10月目录"}, {"sku": "CAT-009", "code": "TR260009", "name": "TR260009", "category": "东方非遗", "status": "candidate", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-009/g-f0869ae085f69ed5e85f.jpg", "original": "https://drive.google.com/file/d/1Tib7fM5uL7zUrUE81fTBe_GYMWDpJk-e/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1w2BRiBZGdNVXxzVNOEqFYl9xinEOIiUE", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-010", "code": "TR260010", "name": "粉晶凝炉", "category": "东方非遗", "status": "candidate", "product_type": "香炉", "thumb": "https://terralla-internal.b-cdn.net/showcase/multi-image-20261108/CAT-010.jpg", "original": "https://drive.google.com/file/d/1Uz8u3L-PZ69XjnQcflA9ehCA9HhIATXZ/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1n6B1FJ8VC9lsLFftDhQQTtTHXS2ZzShW/view", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 材质:天然粉水晶器身；铜镀金累丝（PDF） | PDF粉水晶与图片名称萤石/绿玛瑙冲突；与旧表是否重合、尺寸待确认", "sub_series": "2026年10月目录"}, {"sku": "CAT-011", "code": "TR260011", "name": "TR260011", "category": "东方非遗", "status": "candidate", "product_type": "胸针", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-011/g-b3f18829f384b3e89d3d.jpg", "original": "https://drive.google.com/file/d/1VSIsEqfM-o2BemiLlkMmYCUqK0BaAnko/view?usp=drivesdk", "source": "https://drive.google.com/drive/folders/1w7piWvo4R1u3ccRW8ZeBp97ZxoO1ziRi", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；名称/尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-012", "code": "TR2605001", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-012/g-d44e15571f5e73568b88.jpg", "original": "https://drive.google.com/file/d/13K_3Oh0y77KsGLqkENBWTllArRDoWmmc/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:13.2*1.2cm/    8.2(拆卸*1.2cm) | 材质:银镀金/玛瑙/珍珠/人工宝石/锆石 | 产品名待补；规格未拆独立SKU", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-013", "code": "TR2605002", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-013/g-b633e2d481f953bd2910.jpg", "original": "https://drive.google.com/file/d/18fUCiaz2vCMShcJaeljp7FWUlf2VPWvQ/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:8.7*2.8*1.7cm | 材质:银镀金/碧玉/人工宝石/锆石/紫水晶 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-014", "code": "TR2605003", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-014/g-10eafb0475bcbbe07636.jpg", "original": "https://drive.google.com/file/d/1Z7iYDeE7-atK6Tyrv5pwuMJfDNY5ALOA/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:4.2*2.1cm | 材质:银镀金/碧玉/人工宝石/锆石/粉水晶 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-015", "code": "TR2605004", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-015/g-0959db4daa893c26fb8d.jpg", "original": "https://drive.google.com/file/d/1vpyg82EzS646X-laMhgftmC_alNj2BJM/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:10.2*2.4cm | 材质:银镀金/南红/和田玉/人工宝石/锆石 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-016", "code": "TR2605005", "name": "一鸣惊人", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-016/g-63f6f1c9447ecbd8ac02.jpg", "original": "https://drive.google.com/file/d/1vo6OiEtoHnWtyxOpIulHq0Q7W-e4I5F-/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:7.4*1.2cm | 材质:银镀金/珍珠/碧玉/人造宝石/锆石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-017", "code": "TR2605006", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-017/g-1baaa5d7a41f6dfe6c69.jpg", "original": "https://drive.google.com/file/d/1HCoaZXrZokKTnNPfn6AiyETjgW0RQ8_A/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:4.6*2.1cm | 材质:银镀金/珍珠/人造宝石/锆石 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-018", "code": "TR2605007", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-018/g-7448f218bc5943f4e7eb.jpg", "original": "https://drive.google.com/file/d/1fPoLDrGhHKy4cDvSrKIIqSGi2nE8ggK0/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:12*2.8cm | 材质:银镀金/人造宝石/锆石/红玉髓 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-019", "code": "TR2605008", "name": "蝴蝶结耳环", "category": "东方非遗", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-019/g-7fd6c3e2e4096a0e5233.jpg", "original": "https://drive.google.com/file/d/1H8TeUd1KtfE9zHQzbsV1KqjxHE_Zha4C/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:6cm*3cm*1cm(淡水珠） | 材质:银镀金/人造宝石/锆石/淡水珠/南红", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-020", "code": "TR2605009", "name": "扇影清欢", "category": "东方非遗", "status": "imported", "product_type": "手镯", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-020/g-016dfc48efbd6ea13cc7.jpg", "original": "https://drive.google.com/file/d/1CXXSUJ6A9kNAQWMUCOP9cShCVnFLef0U/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:55*55mm(圈口） | 材质:银镀金/和田玉/碧玉/人造宝石/锆石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-021", "code": "TR2605010", "name": "鎏金", "category": "东方非遗", "status": "imported", "product_type": "手镯", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-021/g-724cee96b2c22a30607d.jpg", "original": "https://drive.google.com/file/d/1P0QmUdtnTSZOpm5knzo73MQDz1y-2wk-/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:58*54mm(圈口） | 材质:银镀金/和田玉/碧玉/人造宝石/锆石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-022", "code": "TR2605011", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "香囊", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-022/g-f0fc809e9ae18381e407.jpg", "original": "https://drive.google.com/file/d/1cPHDw2nyHeh9cJ4vQHEzSTVnk8iq3kyG/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:香囊：5.2*4.2cm；流苏：6.2*1.2cm（下一行） | 材质:银镀金/碧玉/人造宝石/锆石/贝母 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-023", "code": "TR2605012", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "香囊", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-023/g-3ec172b7d10c8d5cec91.jpg", "original": "https://drive.google.com/file/d/1NNmOdP1fhIbIqEf-qUZXzG9xCHy5qL5w/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:链长：30cm       香囊：5.2*3.9cm流苏：4.2cm | 材质:银镀金/老翠片/人造宝石/锆石/贝母/珍珠 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-024", "code": "TR2605013", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "香囊", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-024/g-25cf48b4b2226cd50f30.jpg", "original": "https://drive.google.com/file/d/1BtSV9WFSWe2L4Fu7l2A4xIwlKP2PQfI9/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:香囊：4.9*4.9cm | 材质:银镀金/贝母/锆石/人造宝石/和田玉/翡翠 | 产品名待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-025", "code": "TR2605014", "name": "待定", "category": "东方非遗", "status": "imported", "product_type": "香囊", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-025/g-9243a5ece14a2becae3e.jpg", "original": "https://drive.google.com/file/d/1ZEo6FAg98T6DdzZNQxu-8ObTDAWCoeGw/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:待定 | 材质:银镀金/贝母/锆石/人造宝石/和田玉 | 产品名待补；尺寸待补", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-026", "code": "TR2605015", "name": "葫芦香囊", "category": "东方非遗", "status": "imported", "product_type": "香囊", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-026/g-8042dce63c7cdc8b99e4.jpg", "original": "https://drive.google.com/file/d/1RqJOLij1uI04aZFe-9PrrM2IMaGJ4piZ/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:香囊3.2*2.65*1.4cm链长：42cm | 材质:银镀金/锆石/人造宝石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-027", "code": "TR2605016", "name": "马上有钱", "category": "东方非遗", "status": "imported", "product_type": "香囊", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-027/g-58b298207376586016b3.jpg", "original": "https://drive.google.com/file/d/1_8_Aw7oULkethuGMtALkQ3Z7X7bibF5v/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:32.2*26.5*14.3 | 材质:银镀金/锆石/人造宝石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-028", "code": "TR2605017", "name": "TR2605017", "category": "东方非遗", "status": "imported", "product_type": "NOOR定制香囊", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-028/g-96b5691992fba3b9bddf.jpg", "original": "https://drive.google.com/file/d/10f30IE-6rH-OtlBNlafeIjRPAoQRB4gV/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 仅香囊设计稿，非产品实拍；保留原文件链接。 | 尺寸:42cm | 材质:银镀金/人造宝石/锆石 | 产品名待补；源行列错位，材质按文本位置恢复", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-029", "code": "TR2605018", "name": "锦鲤", "category": "东方非遗", "status": "imported", "product_type": "胸针", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-029/g-fafe990cc0eb5dc72659.jpg", "original": "https://drive.google.com/file/d/1uVdJ0Sd0IzfQOLxDR56SJLlShSsg3bcR/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:6.2*4.2cm | 材质:银镀金/碧玉/锆石/珍珠/人造宝石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-030", "code": "TR2605019", "name": "蝶舞", "category": "东方非遗", "status": "imported", "product_type": "胸针", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-030/g-6a66b00e788aa46ddba1.jpg", "original": "https://drive.google.com/file/d/1kbV6fVU2Wuo1WGV0JgoYdfFr1ZIF8zMM/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:6.2*4.4cm | 材质:银镀金/碧玉/锆石/珍珠/人造宝石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-031", "code": "TR2605020", "name": "弦音", "category": "东方非遗", "status": "imported", "product_type": "胸针", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-031/g-85e77f5e35a75c557f6d.jpg", "original": "https://drive.google.com/file/d/1cN26vZkw8lCVTJUYQ-GYZ8N5Ombum2uu/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录对应图：仅背面参考 | 尺寸:8.4*3.6cm | 材质:银镀金/碧玉/锆石/珍珠/人造宝石", "sub_series": "中式花丝镶嵌"}, {"sku": "CAT-032", "code": "TR2610001", "name": "粉晶玉兰花耳饰", "category": "东方非遗", "status": "candidate", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-032/g-eccda2da339da492e7ee.jpg", "original": "https://drive.google.com/file/d/1Np3CK6EN9uckEeJxAL0wUw2n8hxrBPpb/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1AObGCKQ4m-0SLDvGO2EgKi8M1P-0gixj/view", "notes": "目录候选 | 目录对应图；产品候选仍待确认 | 与旧表是否重合待确认；尺寸/材质待补", "sub_series": "2026年10月目录"}, {"sku": "CAT-033", "code": "PS2508200", "name": "PS2508200", "category": "望山系列", "status": "imported_no_image", "product_type": "项链", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 缺图：原表仅编号记录 | 产品名待补；材质待补；尺寸待补；未找到同编号素材目录；主表仅编号/类别且备注未给照片；在选状态待确认", "sub_series": "还未给到照片"}, {"sku": "CAT-034", "code": "TR2508009", "name": "晶灰", "category": "望山系列", "status": "imported", "product_type": "项链／手串", "thumb": "https://terralla-internal.b-cdn.net/products/distant-mountain/CAT-034/g-f9defe68f538a4e52e10.jpg", "original": "https://drive.google.com/file/d/1cSqRtfL9FMurK9UotCe2E_AD9_MYOkSt/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:14.5/15/16\n17/18cm | 材质:灰色两面光巴洛克珍珠／白水晶斜方糖／白水晶长牙／纯银logo小吊牌／纯银大孔圆珠 | 规格未拆独立SKU", "sub_series": "望山系列"}, {"sku": "CAT-035", "code": "TR2508145", "name": "魔晶-幻珠", "category": "望山系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/distant-mountain/CAT-035/g-52f31a516de48659cdfc.jpg", "original": "https://drive.google.com/file/d/1ojJ2FsJ1QgtXnwzklcHRfLevnaJygfdU/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:动感茶晶/大巴洛克/银几何光面亮片/纯银吊牌 | 采购表名为墨晶·幻珠，主表魔晶-幻珠；规格未拆独立SKU", "sub_series": "望山系列"}, {"sku": "CAT-036", "code": "TR2508216", "name": "焰璃", "category": "望山系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/showcase/multi-image-20261108/CAT-036.jpg", "original": "https://drive.google.com/file/d/170ErK9LPJ7cWnioHkgCW_sL5Cx2wr5es/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 疑似同款图，编号待确认 | 尺寸:14.5/15/16\n17/18cm | 材质:淡水异形长牙珍珠/红波斯玛瑙随形/纯银吊牌 | 焰璃编号不一致，待确认映射；规格未拆独立SKU", "sub_series": "望山系列"}, {"sku": "CAT-037", "code": "TR2508238", "name": "森澜-碎珀", "category": "望山系列", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/distant-mountain/CAT-037/g-dacd7196d0252a35e274.jpg", "original": "https://drive.google.com/file/d/1jrYgLPQJuMv4GocZCw4XE2y-YRudyAcf/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:48cm | 材质:茶晶小号随形／巴洛克长牙珍珠／水滴巴洛克／孔雀石碎石／黑碧玺刻面／纯银气泡珠／纯银大孔圆珠／银弯弯／纯银问号扣", "sub_series": "望山系列"}, {"sku": "CAT-038", "code": "TR2508276", "name": "烟寂-银序", "category": "望山系列", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/distant-mountain/CAT-038/g-06a7c185979d6a3bb128.jpg", "original": "https://drive.google.com/file/d/1vSYVFwG71W3vLGtHIGRMP0J7fyPyvOk6/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:49cm | 材质:茶晶水滴/茶晶长牙/白水晶长牙/茶晶小号随形／白水晶碎碎冰／黑碧玺碎石／动感茶晶／黑玛瑙小方块／黑碧玺刻面／白水晶圆珠／纯银大孔圆珠／泰银方块隔珠／纯银t扣", "sub_series": "望山系列"}, {"sku": "CAT-039", "code": "TR2604001", "name": "TR2604001", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-039/g-7b2f107a89a6ebf96851.jpg", "original": "https://drive.google.com/file/d/1_ly86ySKaVvvKK6kyslIt_4i-m1oNtAp/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:花珀/白水晶 | 产品名待补", "sub_series": "金"}, {"sku": "CAT-040", "code": "TR2604002", "name": "TR2604002", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-040/g-23ff045f7dcd973fa76b.jpg", "original": "https://drive.google.com/file/d/1VlyL-KM3lPqkku1FwUkFK5UOSnKX8xE1/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然乌拉圭紫水晶切面珠/黄水晶随形 | 产品名待补", "sub_series": "金"}, {"sku": "CAT-041", "code": "TR2604003", "name": "TR2604003", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-041/g-a9b90fd841faea8904aa.jpg", "original": "https://drive.google.com/file/d/1_eqDeGDCUdoNFlSZIuF8zAot1YXYa2cq/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:黄胶花/天然浅色兔毛/天然凉山冰飘南红玛瑙 | 产品名待补", "sub_series": "金"}, {"sku": "CAT-042", "code": "TR2604004", "name": "TR2604004", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-042/g-d6fd9ec440e1f2a20f50.jpg", "original": "https://drive.google.com/file/d/13yVZUXaxBjG7HxeksxkpRa2EHxngU1XA/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:金箔锦鲤/天然薰衣草紫水晶/黄胶花 | 产品名待补", "sub_series": "金"}, {"sku": "CAT-043", "code": "TR2604005", "name": "TR2604005", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-043/g-684af49dd3ebb8a6ee31.jpg", "original": "https://drive.google.com/file/d/18QmCZOsP8HALbaf9dzN9CAJcW55pbe0t/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然茶色列姆利亚/黄胶花/黄水晶随形 | 产品名待补", "sub_series": "金"}, {"sku": "CAT-044", "code": "TR2604006", "name": "TR2604006", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-044/g-4e3de94307f3e4e76ecf.jpg", "original": "https://drive.google.com/file/d/1_dXp_K7DbU87XR8sZoQLyG8sGuu9cGLz/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然黄水晶/黄胶花/白水晶随形/天然浅色兔毛 | 产品名待补", "sub_series": "金"}, {"sku": "CAT-045", "code": "TR2604007", "name": "TR2604007", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-045/g-d71f5048df92fcebba86.jpg", "original": "https://drive.google.com/file/d/1LgjRzw2_od8F7k5PEvhGoECAJiuv0DpR/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:天然绿兔毛/白水晶随形 | 产品名待补", "sub_series": "木"}, {"sku": "CAT-046", "code": "TR2604008", "name": "TR2604008", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-046/g-082fdd47fd4bb2260923.jpg", "original": "https://drive.google.com/file/d/1at__NMsvx_PmSpXM5HMezDvwvMRAe-B5/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:天然海蓝宝/天然蓝晶石头/天然白水晶异形 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-047", "code": "TR2604009", "name": "TR2604009", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-047/g-2448396ba306203558dc.jpg", "original": "https://drive.google.com/file/d/1dieDs7ecrudU7ukR_N7B0_xYmQ4u25Uq/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:天然蓝晶石/天然白兔毛/蜜蜡 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-048", "code": "TR2604010", "name": "TR2604010", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-048/g-1a83e353a411e0780b42.jpg", "original": "https://drive.google.com/file/d/1IrKuRNYknXpsa17hX8zbZO16-YsPrg_e/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:天然白水晶/天然海蓝宝切片/天然黄水晶 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-049", "code": "TR2604011", "name": "TR2604011", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-049/g-14924df4ea0c04d89e77.jpg", "original": "https://drive.google.com/file/d/1j4H1apJ31ucqZ_Yqnj_IU_lYEATb5Ebx/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然海蓝宝/天然薰衣草紫水晶 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-050", "code": "TR2604012", "name": "TR2604012", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-050/g-defea1cb2cd8f4e40209.jpg", "original": "https://drive.google.com/file/d/1yMkIQEJJOEWicTF6MtQHEuylwaBWGgnd/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然海蓝宝/天然薰衣草紫水晶/天然蓝晶石/白兔毛/天然托帕石 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-051", "code": "TR2604013", "name": "TR2604013", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-051/g-2d064cd8caa76820c8e2.jpg", "original": "https://drive.google.com/file/d/1XLbrD5V_0gQxXknD8S_KaLHRbuFpD6v1/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然托帕石/天然海蓝宝切片/天然薰衣草紫水晶 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-052", "code": "TR2604014", "name": "TR2604014", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-052/g-5ce1ae077d9fa3d591ba.jpg", "original": "https://drive.google.com/file/d/1M0oNgUA98619u4c77k8-sr1R-9wMdTrL/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:天然托帕石/天然乌拉圭紫水晶异形/天然紫水晶 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-053", "code": "TR2604015", "name": "TR2604015", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-053/g-14b39deb759a057c77ae.jpg", "original": "https://drive.google.com/file/d/1WKYNR9rWnAtpFAVm7DvwVkKVvQE2A3-v/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然茶色列姆利亚/海蓝宝 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-054", "code": "TR2604016", "name": "TR2604016", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-054/g-8677321c08ff67a3769c.jpg", "original": "https://drive.google.com/file/d/1deTbBIGefkTHBiX93AIn3n1s0b7y-iFI/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然茶色列姆利亚/蓝晶石/黄胶花/白兔毛 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-055", "code": "TR2604017", "name": "TR2604017", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-055/g-14f53a268b2fe3ae96a0.jpg", "original": "https://drive.google.com/file/d/1efg_aE3xSYaCcXTT9gh67rQ7XTW5aSqZ/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然天河石/天然红玛瑙 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-056", "code": "TR2604018", "name": "TR2604018", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-056/g-873d2370515040bb0b89.jpg", "original": "https://drive.google.com/file/d/13aO7Zr2iiAXUMaXDcOrdaMx2oBnOPw9m/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:海蓝宝/蓝晶石/白兔毛 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-057", "code": "TR2604019", "name": "TR2604019", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-057/g-cfe564d475da952d688b.jpg", "original": "https://drive.google.com/file/d/1u8v8xKgDkX3cLyp8lp0bPISf94x1VASu/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:925银镀24K真金天然海蓝宝配件/海蓝宝 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-058", "code": "TR2604020", "name": "TR2604020", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-058/g-70ca9d56e6ecd39b3d66.jpg", "original": "https://drive.google.com/file/d/1t3tqkbHKZO2jS70jeUzIkrn0JdNLSqUK/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:白水晶 | 产品名待补", "sub_series": "水"}, {"sku": "CAT-059", "code": "TR2604021", "name": "TR2604021", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-059/g-f12b0355006431b2ca74.jpg", "original": "https://drive.google.com/file/d/1hSGyKom0jivvtTSG6OvFIFaELni9CCsG/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然乌拉圭紫水晶/天然薰衣草紫水晶/天然紫马粉 | 产品名待补", "sub_series": "火"}, {"sku": "CAT-060", "code": "TR2604022", "name": "TR2604022", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-060/g-07b341178e3f211d419f.jpg", "original": "https://drive.google.com/file/d/1uW-p4njJqQtsLLVILJ6vM7ff4_MVM7Tz/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:天然红胶花/天然盐源玛瑙 | 产品名待补", "sub_series": "火"}, {"sku": "CAT-061", "code": "TR2604023", "name": "TR2604023", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:16cm | 材质:天然乌拉圭紫水/天然紫水晶随形 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-062", "code": "TR2604024", "name": "TR2604024", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:15cm | 材质:天然乌拉圭紫水随形 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-063", "code": "TR2604025", "name": "TR2604025", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:15cm | 材质:天然乌拉圭紫水晶/天然薰衣草紫水晶 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-064", "code": "TR2604026", "name": "TR2604026", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:16cm | 材质:天然乌拉圭紫水晶/天然薰衣草紫水晶 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-065", "code": "TR2604027", "name": "TR2604027", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:15cm | 材质:天然乌拉圭紫水晶切面珠/天然薰衣草紫水晶 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-066", "code": "TR2604028", "name": "TR2604028", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:16cm | 材质:红胶花/黄胶花/黄水晶随形 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-067", "code": "TR2604029", "name": "TR2604029", "category": "五行系列", "status": "imported_no_image", "product_type": "项链", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:36cm | 材质:红胶花桶珠/黄胶花桶珠/白水晶 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-068", "code": "TR2604030", "name": "TR2604030", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:15cm | 材质:红胶花桶珠/天然薰衣草紫水晶 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-069", "code": "TR2604031", "name": "TR2604031", "category": "五行系列", "status": "imported_no_image", "product_type": "手串", "thumb": null, "original": null, "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 暂缺已映射图：huo旧编号待核 | 尺寸:16cm | 材质:天然粉晶/天然薰衣草紫水晶/天然紫马粉 | 产品名待补；火系huo目录未完成编号映射", "sub_series": "火"}, {"sku": "CAT-070", "code": "TR2604032", "name": "TR2604032", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-070/g-f303bac0dfa08c6c1e8f.jpg", "original": "https://drive.google.com/file/d/1BAd02VQ_EDOrChQVASi6hVilvP2Q7upE/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:16cm | 材质:天然黄胶花/黑金超七 | 产品名待补", "sub_series": "土"}, {"sku": "CAT-071", "code": "TR2604033", "name": "TR2604033", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-071/g-45611ad247b4ce9732ce.jpg", "original": "https://drive.google.com/file/d/1Sch-mca9XgqcSLhLqmnwF5JKWX2DfeNL/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:红胶花/黄胶花/红胶花异形/白兔毛/天然虎眼石 | 产品名待补", "sub_series": "土"}, {"sku": "CAT-072", "code": "TR2604034", "name": "TR2604034", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-072/g-7b0208cc5e3dce1d3fc8.jpg", "original": "https://drive.google.com/file/d/1jptN_yRMf2yrckaEGbbhXmMEcy6kFDXA/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:多宝兔毛 | 产品名待补", "sub_series": "土"}, {"sku": "CAT-073", "code": "TR2604035", "name": "TR2604035", "category": "五行系列", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-faf8f0e21d9b5bd85c04.jpg", "original": "https://drive.google.com/file/d/1WiYsY3-7EVOxrCHeBIK-EIhOe6V1Obr1/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15cm | 材质:多宝兔毛/金色方块 | 产品名待补", "sub_series": "土"}, {"sku": "CAT-074", "code": "TR2607001", "name": "埃及艳后", "category": "中古系列", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/antique/CAT-074/g-c4eb18e5cf114fda5e1a.jpg", "original": "https://drive.google.com/file/d/14FMHY5E69PUHmh4w8rsipgWTss4SJxKD/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:45cm | 材质:铜，施华洛水钻，俄罗斯真金", "sub_series": "中古系列"}, {"sku": "CAT-075", "code": "TR2607002", "name": "至尊公主", "category": "中古系列", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/antique/CAT-075/g-85b6aa44d429b8c89555.jpg", "original": "https://drive.google.com/file/d/1grTyDu-Cwq2wXj1ElctyJpodsAJRIps7/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:58cm | 材质:铜，南洋奶金色珍珠，施华洛水钻，24K俄罗斯真金", "sub_series": "中古系列"}, {"sku": "CAT-076", "code": "TR2607003", "name": "蓝色之恋", "category": "中古系列", "status": "imported", "product_type": "手链", "thumb": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-d7053c85a68d3b85d4d5.jpg", "original": "https://drive.google.com/file/d/1tCWpsKSZh11r3y8QwAUtN8TA8aED3XfS/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:20cm | 材质:铜，天然蓝晶芽石，南洋澳白粉光珍珠，施华洛水钻，电镀素银做旧", "sub_series": "中古系列"}, {"sku": "CAT-077", "code": "TR2607004", "name": "红色妖姬", "category": "中古系列", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-d9ec67af5ca2771b6288.jpg", "original": "https://drive.google.com/file/d/1Rysxqp9EZYfqRnG-Bvi3mvIPOLxb3KVV/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:62cm | 材质:铜，缅甸鸽血红水晶，天然珍珠，施华洛水钻，24K俄罗斯真金", "sub_series": "中古系列"}, {"sku": "CAT-078", "code": "TR2607005", "name": "孔雀公主", "category": "中古系列", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-06902ad2221919dabcd9.jpg", "original": "https://drive.google.com/file/d/1vp9fPR5s0mZTBcJpW5Tu0cv20zXkHuDt/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1DRQmd6pVt0GOZeFadXDMmxD1UJPXEAxv/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:42cm | 材质:铜，玉化孔雀石，施华洛水钻，俄罗斯真金", "sub_series": "中古系列"}, {"sku": "CAT-079", "code": null, "name": "赤羽灵雀・净心晶韵", "category": "Nina水晶画", "status": "imported", "product_type": "水晶画", "thumb": "https://terralla-internal.b-cdn.net/products/nina-crystal-art/CAT-079/g-8037937ae13081f7331f.jpg", "original": "https://drive.google.com/file/d/1Rw_TRg7ViF5i8AV2Gnf7VoWfoWCDnRK8/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸） | 无SKU编码；每款适用尺寸待确认；材质明细待补", "sub_series": "鎏晶六瑞"}, {"sku": "CAT-080", "code": null, "name": "鎏金雪狮・王权晶辉", "category": "Nina水晶画", "status": "imported", "product_type": "水晶画", "thumb": "https://terralla-internal.b-cdn.net/showcase/multi-image-20261108/CAT-080.jpg", "original": "https://drive.google.com/file/d/17xe9tkklMT1R22z1MbS5qKGSUzjHx_eH/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原文件名鎏金雪狮对应棕金色雄狮图，与供货表白狮描述不一致；名称与图片待确认，未自行交换。 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸） | 无SKU编码；每款适用尺寸待确认；材质明细待补", "sub_series": "鎏晶六瑞"}, {"sku": "CAT-081", "code": null, "name": "赤焰御狮・圣晶镇运", "category": "Nina水晶画", "status": "imported", "product_type": "水晶画", "thumb": "https://terralla-internal.b-cdn.net/showcase/multi-image-20261108/CAT-081.jpg", "original": "https://drive.google.com/file/d/1orDr42fr24RIMBvP6cJtw-ACobZaqtYd/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原文件名赤焰御狮对应白狮图，与供货表红底金纹雄狮描述不一致；名称与图片待确认，未自行交换。 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸） | 无SKU编码；每款适用尺寸待确认；材质明细待补", "sub_series": "鎏晶六瑞"}, {"sku": "CAT-082", "code": null, "name": "星澜灵豹・天河晶能", "category": "Nina水晶画", "status": "imported", "product_type": "水晶画", "thumb": "https://terralla-internal.b-cdn.net/products/nina-crystal-art/CAT-082/g-71076528a786f0f69944.jpg", "original": "https://drive.google.com/file/d/1MyEWoekzF9Sr_yDEj-R2ZiyyZHO_iyVA/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸） | 无SKU编码；每款适用尺寸待确认；材质明细待补", "sub_series": "鎏晶六瑞"}, {"sku": "CAT-083", "code": null, "name": "双骏鎏晶・鸿运乘风", "category": "Nina水晶画", "status": "imported", "product_type": "水晶画", "thumb": "https://terralla-internal.b-cdn.net/products/nina-crystal-art/CAT-083/g-a8a248b871dbc4d090ac.jpg", "original": "https://drive.google.com/file/d/1BSx8Z7Rjq2osxVCOfKhrpc845TZEB4EK/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸） | 无SKU编码；每款适用尺寸待确认；材质明细待补", "sub_series": "鎏晶六瑞"}, {"sku": "CAT-084", "code": null, "name": "绯纹金豹・福禄晶裳", "category": "Nina水晶画", "status": "imported", "product_type": "水晶画", "thumb": "https://terralla-internal.b-cdn.net/products/nina-crystal-art/CAT-084/g-9b59015a569f023f31c3.jpg", "original": "https://drive.google.com/file/d/1CdDERYPHEISR9TANQByZrwdhv3UAnd-c/view?usp=drivesdk", "source": "https://drive.google.com/file/d/1ZYI2oMpctYMCFXdhSr6MVXX0hdL96Uti/view", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:40×50 / 60×80 / 80×100 / 90×120 / 120×160 cm（系列尺寸） | 无SKU编码；每款适用尺寸待确认；材质明细待补", "sub_series": "鎏晶六瑞"}, {"sku": "CAT-085", "code": "TR2603001", "name": "蔚蓝海岸-平静与智慧", "category": "Yis-Duan", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-085/g-b99bfe48350e56a64475.jpg", "original": "https://drive.google.com/file/d/1-0qeuDo5RhGG51Zm9cTMtA_QwKd4QeH9/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.6 | 材质:海蓝宝、海纹石、蓝纹玛瑙、s925银", "sub_series": "南法系列"}, {"sku": "CAT-086", "code": "TR2603002", "name": "蔚蓝海岸-自由呼吸", "category": "Yis-Duan", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-086/g-6a710fea189f8bed0842.jpg", "original": "https://drive.google.com/file/d/1JfLmwg3mIER93-9668ZWaoHV0sw4NiSb/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:45cm | 材质:海蓝宝、海纹石、s925银", "sub_series": "南法系列"}, {"sku": "CAT-087", "code": "TR2603003", "name": "紫野之夏-松弛守护", "category": "Yis-Duan", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-087/g-3541ca97a3560ccbe18b.jpg", "original": "https://drive.google.com/file/d/1Iut6dLtyFq0oyCKvW9KthFqDEctlbAek/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.9 | 材质:紫锂辉石、紫水晶、白水晶、白玛瑙、s925银", "sub_series": "南法系列"}, {"sku": "CAT-088", "code": "TR2603004", "name": "紫野之夏-仲夏夜之梦", "category": "Yis-Duan", "status": "imported", "product_type": "手串", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-088/g-ff479516306b315a068c.jpg", "original": "https://drive.google.com/file/d/1QANgPxDKTeDeoc9p_vn_2xOP8qrZSKro/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.10 | 材质:白水晶、橄榄石、紫水晶、黄水晶", "sub_series": "南法系列"}, {"sku": "CAT-089", "code": "TR2603005", "name": "内在力量", "category": "Yis-Duan", "status": "imported", "product_type": "手串，可拆卸吊坠", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-089/g-7e63ab3301b6d0ec0051.jpg", "original": "https://drive.google.com/file/d/1AQb59AP2F78h3PMBGwZy9wCQiwIrvZ1u/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:15.15-16.13 | 材质:黑曜石、白水晶、月光石，s925银", "sub_series": "冰魄之光"}, {"sku": "CAT-090", "code": "TR2603006", "name": "TR2603006", "category": "Yis-Duan", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-090/g-007d4e7c590f068d7fd5.jpg", "original": "https://drive.google.com/file/d/1kQMxW3D1vzdt0sAqXXNhidpIm_nxUOu3/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:50cm | 材质:白水晶、s925银 | 产品名待补", "sub_series": "白水晶"}, {"sku": "CAT-091", "code": "TR2603007", "name": "TR2603007", "category": "Yis-Duan", "status": "imported", "product_type": "耳环", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-091/g-354838e9b8beea1d5cac.jpg", "original": "https://drive.google.com/file/d/1dpOLdAn5d2fOFWgVjva8VHLn1xNxSQYt/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 材质:白水晶、s925银 | 产品名待补；尺寸待补", "sub_series": "白水晶"}, {"sku": "CAT-092", "code": "TR2603008", "name": "TR2603008", "category": "Yis-Duan", "status": "imported", "product_type": "原石项链", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-092/g-1301972f71896298e8ed.jpg", "original": "https://drive.google.com/file/d/1m36dqPUWf3dRzMD-6XPLmTwmj2RzWB0F/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:50cm | 材质:白水晶、s925银 | 产品名待补", "sub_series": "白水晶"}, {"sku": "CAT-093", "code": "TR2603009", "name": "红豆", "category": "Yis-Duan", "status": "imported", "product_type": "红玛瑙银手链+项链", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-093/g-580aa76eb39900786a0c.jpg", "original": "https://drive.google.com/file/d/1k-bQtvQ_8rtWPXUgOoDNHKrx0Y82p-b9/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:43cm | 材质:红玛瑙、人造珍珠、S925银", "sub_series": "红豆"}, {"sku": "CAT-094", "code": "TR2603010", "name": "TR2603010", "category": "Yis-Duan", "status": "imported", "product_type": "NOOR羽毛手镯", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-094/g-cd0d3813b11f1978a5a2.jpg", "original": "https://drive.google.com/file/d/16CJFT_HyrAaytvxaNj15c-Hq2mGjlfzI/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 仅产品设计/说明拼图，非纯产品实拍缩略图；保留原文件链接。 | 尺寸:15-17cm | 材质:天然珍珠/孔雀珠子/孔雀石/蓝色宝石/虎眼石/黑玛瑙/金色珠子 | 产品名待补", "sub_series": "定制款"}, {"sku": "CAT-095", "code": "TR2603011", "name": "TR2603011", "category": "Yis-Duan", "status": "imported", "product_type": "NOOR火焰羽毛手镯", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-095/g-698be97ab2e3556965f2.jpg", "original": "https://drive.google.com/file/d/1nvFlUxUGvMmnNYPXCWcRWPX-5X8uiv3A/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 仅产品设计/说明拼图，非纯产品实拍缩略图；保留原文件链接。 | 尺寸:15-17cm | 材质:天然珍珠/孔雀珠子 | 产品名待补", "sub_series": "定制款"}, {"sku": "CAT-096", "code": "TR2603012", "name": "绿野仙踪", "category": "Yis-Duan", "status": "imported", "product_type": "项链", "thumb": "https://terralla-internal.b-cdn.net/products/yis/CAT-096/g-2d6b909cc3689d488e21.jpg", "original": "https://drive.google.com/file/d/1_zwqC42nrXxAsbDQzKhZNuSJ9lxvjJL_/view?usp=drivesdk", "source": "https://docs.google.com/spreadsheets/d/1YUw-tqjyP1AfPqkMpoU7RGokKLTeypkh/edit", "notes": "有明细依据 | 原目录/品名对应图 | 尺寸:待定 | 材质待补；尺寸待补", "sub_series": "定制款"}];
@@ -340,9 +368,268 @@ function versionLabel(a){
   if (named) return `V${named[2]}`;
   return a.version || '';
 }
+let availabilityIndex = new Map();
+let availabilityPhase = 'loading';
+function cleanToken(value, max){
+  if (typeof value !== 'string') return '';
+  const text = value.trim();
+  if (!text || text.length > max || /[\r\n]/.test(text)) return '';
+  return text;
+}
+function cleanSha(value){
+  const text = cleanToken(String(value || '').toLowerCase(), 64);
+  return /^[a-f0-9]{64}$/.test(text) ? text : '';
+}
+function cleanSku(value){
+  const text = cleanToken(value, 32);
+  return /^CAT-\d{3}$/.test(text) ? text : '';
+}
+function cleanTarget(value){
+  return cleanToken(value, 80);
+}
+function cleanEvidence(value){
+  return cleanToken(value, 500);
+}
+function parseSide(side, states){
+  if (side == null) return { ok: true, value: null };
+  if (!side || typeof side !== 'object' || Array.isArray(side)) return { ok: false };
+  if (!states.includes(side.state)) return { ok: false };
+  return { ok: true, value: { state: side.state, evidence: cleanEvidence(side.evidence) } };
+}
+function parseOrder(row){
+  let revision = null;
+  let eventId = null;
+  if (Object.prototype.hasOwnProperty.call(row, 'revision')) {
+    const value = row.revision;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || !Number.isSafeInteger(value)) return { ok: false };
+    revision = value;
+  }
+  if (Object.prototype.hasOwnProperty.call(row, 'eventId')) {
+    eventId = cleanToken(row.eventId, 120);
+    if (!eventId) return { ok: false };
+  }
+  return { ok: true, revision, eventId };
+}
+function parseAvailabilityRow(row){
+  if (!row || typeof row !== 'object' || Array.isArray(row)) return null;
+  const sku = cleanSku(row.sku);
+  const sha256 = cleanSha(row.sha256);
+  const target = cleanTarget(row.target);
+  if (!sku || !sha256 || !target) return null;
+  if (row.schema != null && row.schema !== 'terrella.image-availability.v1') return { sku, sha256, target, invalid: true };
+  const order = parseOrder(row);
+  if (!order.ok) return { sku, sha256, target, invalid: true };
+  const approval = parseSide(row.approval, ['approved', 'revoked', 'pending']);
+  const sync = parseSide(row.sync, ['verified', 'failed', 'pending', 'revoked']);
+  if (!approval.ok || !sync.ok) return { sku, sha256, target, invalid: true };
+  return { sku, sha256, target, approval: approval.value, sync: sync.value, revision: order.revision, eventId: order.eventId, invalid: false };
+}
+function sameAvailabilityOutcome(a, b){
+  return JSON.stringify(a.approval) === JSON.stringify(b.approval) && JSON.stringify(a.sync) === JSON.stringify(b.sync);
+}
+function overlayAvailability(base, next){
+  return {
+    sku: base.sku,
+    sha256: base.sha256,
+    target: base.target,
+    approval: next.approval || base.approval,
+    sync: next.sync || base.sync,
+    revision: next.revision,
+    eventId: next.eventId,
+    invalid: false
+  };
+}
+function mergeAvailabilityGroup(rows){
+  if (rows.some(row => row.invalid)) return { conflict: true, row: null };
+  const seenEvents = new Map();
+  for (const row of rows) {
+    if (!row.eventId) continue;
+    const prev = seenEvents.get(row.eventId);
+    if (!prev) seenEvents.set(row.eventId, row);
+    else if (prev.revision !== row.revision || !sameAvailabilityOutcome(prev, row)) return { conflict: true, row: null };
+  }
+  const unique = [];
+  for (const row of rows) {
+    if (row.eventId && unique.some(item => item.eventId === row.eventId && sameAvailabilityOutcome(item, row) && item.revision === row.revision)) continue;
+    unique.push(row);
+  }
+  const numbered = unique.filter(row => row.revision !== null);
+  const plain = unique.filter(row => row.revision === null);
+  if (numbered.length && plain.length) return { conflict: true, row: null };
+  const sequence = numbered.length ? [...numbered].sort((a, b) => a.revision - b.revision) : plain;
+  if (numbered.length) {
+    for (let i = 1; i < sequence.length; i++) {
+      if (sequence[i].revision === sequence[i - 1].revision && !sameAvailabilityOutcome(sequence[i], sequence[i - 1])) return { conflict: true, row: null };
+    }
+  }
+  let current = null;
+  let lastRevision = null;
+  for (const row of sequence) {
+    if (lastRevision !== null && row.revision === lastRevision) continue;
+    current = current ? overlayAvailability(current, row) : row;
+    lastRevision = row.revision;
+  }
+  return { conflict: false, row: current };
+}
+function parseAvailabilityDocument(data){
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false, index: new Map(), reason: 'shape' };
+  if (data.example === true) return { ok: false, index: new Map(), reason: 'example' };
+  if (data.schema !== 'terrella.image-availability.v1' || !Array.isArray(data.records)) return { ok: false, index: new Map(), reason: 'shape' };
+  const groups = new Map();
+  for (const row of data.records) {
+    const parsed = parseAvailabilityRow(row);
+    if (!parsed) continue;
+    const key = `${parsed.sku}\n${parsed.sha256}\n${parsed.target}`;
+    const list = groups.get(key) || [];
+    list.push(parsed);
+    groups.set(key, list);
+  }
+  const index = new Map();
+  groups.forEach((list, key) => index.set(key, mergeAvailabilityGroup(list)));
+  return { ok: true, index, reason: '' };
+}
+function badgesForImage(index, sku, sha){
+  const out = { approved: [], synced: [], revoked: [], conflict: [] };
+  const skuNorm = cleanSku(sku);
+  const shaNorm = cleanSha(sha);
+  if (!index || typeof index.forEach !== 'function' || !skuNorm || !shaNorm) return out;
+  index.forEach((entry, key) => {
+    const [rowSku, rowSha, rowTarget] = String(key).split('\n');
+    if (rowSku !== skuNorm || rowSha !== shaNorm) return;
+    if (!entry || entry.conflict) { out.conflict.push(rowTarget || ''); return; }
+    const row = entry.row;
+    if (!row || row.sku !== skuNorm || row.sha256 !== shaNorm) return;
+    if (row.approval && row.approval.state === 'approved' && row.approval.evidence) out.approved.push(row.target);
+    if (row.sync && row.sync.state === 'verified' && row.sync.evidence) out.synced.push(row.target);
+    if ((row.approval && row.approval.state === 'revoked') || (row.sync && row.sync.state === 'revoked')) out.revoked.push(row.target);
+  });
+  return out;
+}
+function durableBadgeHtml(sku, sha){
+  if (availabilityPhase !== 'ready') return '';
+  const view = badgesForImage(availabilityIndex, sku, sha);
+  const bits = [];
+  for (const target of view.approved) bits.push(`<span class="durable-badge approval">已放行 · ${esc(target)}</span>`);
+  for (const target of view.synced) bits.push(`<span class="durable-badge sync">已同步 · ${esc(target)}</span>`);
+  for (const target of view.revoked) bits.push(`<span class="durable-badge revoked">已撤回 · ${esc(target)}</span>`);
+  for (const target of view.conflict) bits.push(`<span class="durable-badge revoked">记录冲突 · ${esc(target)}</span>`);
+  return bits.length ? `<div class="durable-status">${bits.join('')}</div>` : '';
+}
 const releasePicks = new Map();
+let releaseCopy = { sku: '', items: [] };
+// release-copy-list:start
+function emptyReleaseCopy() {
+  return { sku: '', items: [] };
+}
+function releaseIdentity(item) {
+  return `${item.sku}\n${String(item.sha256 || '').toLowerCase()}`;
+}
+function normalizeReleaseItem(item) {
+  return {
+    short_id: item.short_id || '',
+    sku: item.sku,
+    sha256: String(item.sha256 || '').toLowerCase(),
+    version: item.version || '',
+    path: item.path || '',
+    productId: item.productId || ''
+  };
+}
+function dedupeReleaseItems(sku, items) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of items || []) {
+    if (!raw || raw.sku !== sku) continue;
+    const sha = String(raw.sha256 || '').toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(sha)) continue;
+    const item = normalizeReleaseItem(raw);
+    const key = releaseIdentity(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+function focusReleaseProduct(state, sku, items) {
+  // One product per copy. A different sku replaces the previous list instead of appending.
+  const next = dedupeReleaseItems(sku, items);
+  return { sku: next.length ? sku : '', items: next };
+}
+function selectReleaseImage(state, item) {
+  const current = state || emptyReleaseCopy();
+  if (!item || !item.sku) return current;
+  if (current.sku && current.sku !== item.sku) return current;
+  return focusReleaseProduct(current, item.sku, current.items.concat([item]));
+}
+function unselectReleaseImage(state, sku, sha256) {
+  const current = state || emptyReleaseCopy();
+  if (current.sku && sku !== current.sku) return current;
+  const sha = String(sha256 || '').toLowerCase();
+  const items = (current.items || []).filter(item => !(item.sku === sku && item.sha256 === sha));
+  return { sku: items.length ? current.sku : '', items };
+}
+function itemsForReleaseExport(state) {
+  if (!state || !state.sku) return [];
+  return dedupeReleaseItems(state.sku, state.items);
+}
+function adoptReleasePicks(state, sku, items) {
+  const current = state || emptyReleaseCopy();
+  if (!sku || (current.sku && current.sku !== sku)) return current;
+  if (current.sku === sku && current.items.length) return current;
+  return focusReleaseProduct(current, sku, items);
+}
+function releaseListText(items) {
+  const lines = ['放行清单草稿（只是复制，尚未写入仓库，也不是上架或下架指令）', '目标：未确认', `张数：${items.length}`, ''];
+  for (const item of items) {
+    lines.push(`- short_id: ${item.short_id}`);
+    lines.push(`  sku: ${item.sku}`);
+    lines.push(`  version: ${item.version || '见文件名'}`);
+    lines.push(`  sha256: ${item.sha256}`);
+    lines.push(`  path: ${item.path}`);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+// release-copy-list:end
+function mirrorReleasePicks() {
+  releasePicks.clear();
+  for (const item of releaseCopy.items) releasePicks.set(releaseIdentity(item), item);
+}
+function releaseItemFromBox(box) {
+  return {
+    short_id: box.dataset.short,
+    sku: box.dataset.sku,
+    sha256: box.dataset.sha,
+    version: box.dataset.version,
+    path: box.dataset.path,
+    productId: box.dataset.productId || ''
+  };
+}
+function checkedReleaseItems(sku) {
+  const items = [];
+  for (const node of document.querySelectorAll('input[data-release]')) {
+    if (node.dataset.sku !== sku || !node.checked) continue;
+    items.push(releaseItemFromBox(node));
+  }
+  return items;
+}
+function clearOtherTemporaryChecks(sku) {
+  for (const node of document.querySelectorAll('input[data-release]')) {
+    if (node.dataset.sku === sku || !node.checked) continue;
+    if (node.dataset.productId && previewSelected.has(node.dataset.sha)) continue;
+    node.checked = false;
+  }
+}
 let copyEpoch = 0;
 let copyBusy = false;
+const INTERNAL_PREVIEW_PRODUCT_ID = '0f057213-b8af-4982-9e44-582a2a1d3469';
+const INTERNAL_PREVIEW_SKU = 'CAT-001';
+const knownProductIds = new Map([[INTERNAL_PREVIEW_SKU, INTERNAL_PREVIEW_PRODUCT_ID]]);
+const previewSelected = new Set();
+let previewGateOpen = false;
+let previewSaveChain = Promise.resolve();
+let previewToggleSerial = 0;
+const previewToggleLatest = new Map();
+const previewClientReady = import('./internal-preview-client.mjs');
 function stripGallery(items, aria, extraClass='', product){
   if (!items.length) return '';
   return `<div class="gallery${items.length === 1 ? ' single' : ''}${extraClass ? ' '+extraClass : ''}" aria-label="${esc(aria)}">${items.map((a,i) => {
@@ -350,10 +637,15 @@ function stripGallery(items, aria, extraClass='', product){
     const ai = a.kind === 'ai' && /^[a-f0-9]{64}$/.test(String(a.outputSha256 || '').toLowerCase());
     const sha = String(a.outputSha256 || '').toLowerCase();
     const key = ai ? `${product.sku}\n${sha}` : '';
-    const checked = key && releasePicks.has(key) ? ' checked' : '';
+    const previewId = product ? (knownProductIds.get(product.sku) || '') : '';
+    const selectedNow = Boolean(key && (releasePicks.has(key) || (previewId && previewSelected.has(sha))));
+    const checked = selectedNow ? ' checked' : '';
     const code = id ? `<div class="short-id"><code>${esc(id)}</code></div>` : '';
-    const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${checked}> 选入放行清单</label>` : '';
-    return `<figure class="gallery-item"><img src="${esc(a.path)}" alt="${esc(a.label || '图')} ${i+1}" loading="lazy" decoding="async"><span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${pick}</figcaption></figure>`;
+    const durable = product ? durableBadgeHtml(product.sku, sha) : '';
+    const pickLabel = previewId ? '内部预览勾选，不上架' : '本次勾选，不上架';
+    const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${previewId ? ` data-product-id="${esc(previewId)}"` : ''}${checked}> ${pickLabel}</label>` : '';
+    const face = ai && id ? ` tabindex="0" data-selectable="1" aria-pressed="${selectedNow ? 'true' : 'false'}"` : '';
+    return `<figure class="gallery-item${selectedNow ? ' is-selected' : ''}"${face}><img src="${esc(a.path)}" alt="${esc(a.label || '图')} ${i+1}" loading="lazy" decoding="async"><span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${durable}${pick}</figcaption></figure>`;
   }).join('')}</div>`;
 }
 function aiImagesFor(p){
@@ -443,30 +735,178 @@ function render(){
     const body=subKeys.map(s=>`<h3 class="sub-title">子系列 · ${esc(s)} <span class="category-count">(${subMap.get(s).length})</span></h3><div class="grid">${subMap.get(s).map(card).join('')}</div>`).join('');
     return `<h2 class="section-title">${esc(c)} <span class="category-count">(${total})</span></h2>${body}`;
   }).join('');
+  syncSelectionFaces();
 }
 filters.addEventListener('click',e=>{const btn=e.target.closest('button[data-cat]');if(!btn||!categories().includes(btn.dataset.cat))return;active=btn.dataset.cat;activeSub='全部';renderFilters();render();});
 subfilters.addEventListener('click',e=>{const btn=e.target.closest('button[data-sub]');if(!btn)return;const v=btn.dataset.sub;if(!subSeriesOptions().includes(v))return;activeSub=v;renderFilters();render();});
 app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG')return;img.hidden=true;const f=img.parentElement?.querySelector('.image-failure');if(f)f.hidden=false;},true);
+function setPreviewStatus(text){
+  const node = document.getElementById('preview-status');
+  if (node) node.textContent = text;
+}
+function setCopyStatus(){
+  const status = document.getElementById('copy-status');
+  if (status) status.textContent = `已勾选 ${itemsForReleaseExport(releaseCopy).length} 张。复制清单只含当前产品，取消勾选也不会从网站撤下。`;
+}
+function rememberPick(box){
+  const item = releaseItemFromBox(box);
+  if (releaseCopy.sku && item.sku !== releaseCopy.sku) return releaseIdentity(item);
+  releaseCopy = selectReleaseImage(releaseCopy, item);
+  mirrorReleasePicks();
+  return releaseIdentity(item);
+}
+function clearPreviewSelection(){
+  previewSelected.clear();
+}
+async function loadInternalPreview(){
+  let client;
+  try {
+    client = await previewClientReady;
+    const session = await fetch('/api/internal-preview/session', { credentials: 'same-origin', cache: 'no-store' });
+    const sessionData = await session.json().catch(() => null);
+    if (!session.ok || !sessionData || sessionData.signedIn !== true) {
+      previewGateOpen = false;
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText((sessionData && sessionData.reason) || 'anonymous'));
+      return;
+    }
+    previewGateOpen = true;
+    const response = await client.previewFetch('/api/internal-preview', { cache: 'no-store' });
+    const data = await response.json().catch(() => null);
+    const interpreted = client.readStatus(data);
+    if (!response.ok || !interpreted.ok || !data || !Array.isArray(data.selections)) {
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText(data && data.reason));
+      return;
+    }
+    previewSelected.clear();
+    for (const row of data.selections) {
+      if (!row || !row.sku || !row.productId || !row.sha256) continue;
+      if (row.sku === INTERNAL_PREVIEW_SKU && row.productId !== INTERNAL_PREVIEW_PRODUCT_ID) continue;
+      knownProductIds.set(row.sku, row.productId);
+      previewSelected.add(row.sha256);
+    }
+    knownProductIds.set(INTERNAL_PREVIEW_SKU, INTERNAL_PREVIEW_PRODUCT_ID);
+    render();
+    const seeded = [];
+    for (const box of document.querySelectorAll(`input[data-product-id="${INTERNAL_PREVIEW_PRODUCT_ID}"]`)) {
+      if (previewSelected.has(box.dataset.sha)) seeded.push(releaseItemFromBox(box));
+    }
+    releaseCopy = adoptReleasePicks(releaseCopy, INTERNAL_PREVIEW_SKU, seeded);
+    mirrorReleasePicks();
+    setPreviewStatus(interpreted.text);
+  } catch (err) {
+    previewGateOpen = false;
+    clearPreviewSelection();
+    render();
+    setPreviewStatus(client ? client.failureText('store-not-writable') : '勾选写入没有打开，已失败关闭。没有保存。');
+  }
+}
+async function savePreviewToggle(box, key, payload, selected, previous, serial){
+  let client;
+  const durable = payload.sku === INTERNAL_PREVIEW_SKU || Boolean(payload.productId);
+  const fail = message => {
+    if (previewToggleLatest.get(key) !== serial) return;
+    if (!durable) {
+      setPreviewStatus(message);
+      return;
+    }
+    const sku = previous ? previous.sku : box.dataset.sku;
+    if (!releaseCopy.sku || releaseCopy.sku === sku) {
+      releaseCopy = previous ? selectReleaseImage(releaseCopy, previous) : unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+      mirrorReleasePicks();
+    }
+    if (previous) previewSelected.add(payload.sha256);
+    else previewSelected.delete(payload.sha256);
+    box.checked = Boolean(previous);
+    setCopyStatus();
+    setPreviewStatus(message);
+  };
+  try {
+    client = await previewClientReady;
+    const response = await client.previewFetch('/api/internal-preview', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await response.json().catch(() => null);
+    if (previewToggleLatest.get(key) !== serial) return;
+    if (response.status === 401 || response.status === 503) previewGateOpen = false;
+    if (data && data.reason === 'product' && payload.sku !== INTERNAL_PREVIEW_SKU) {
+      previewSelected.delete(payload.sha256);
+      setPreviewStatus(client.failureText('product') + '复制清单仍只在这一页。');
+      return;
+    }
+    const interpreted = client.writeStatus(data, { sha256: payload.sha256, want: selected });
+    if (interpreted.readback && data && Array.isArray(data.selected)) {
+      const now = data.selected.includes(payload.sha256);
+      if (now) previewSelected.add(payload.sha256);
+      else previewSelected.delete(payload.sha256);
+      box.checked = now;
+      if (!releaseCopy.sku || releaseCopy.sku === box.dataset.sku) {
+        if (now) rememberPick(box);
+        else releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+        mirrorReleasePicks();
+      }
+      setCopyStatus();
+      setPreviewStatus(interpreted.text);
+      return;
+    }
+    if (!response.ok || !interpreted.ok) throw new Error((data && data.reason) || 'http');
+    if (data.productId) {
+      knownProductIds.set(data.sku || payload.sku, data.productId);
+      box.dataset.productId = data.productId;
+    }
+    previewGateOpen = true;
+    if (selected) previewSelected.add(payload.sha256);
+    else previewSelected.delete(payload.sha256);
+    if (selected) {
+      if (box.checked && (!releaseCopy.sku || releaseCopy.sku === box.dataset.sku)) rememberPick(box);
+    } else {
+      releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+      mirrorReleasePicks();
+    }
+    box.checked = selected;
+    setPreviewStatus(interpreted.text);
+  } catch (err) {
+    fail(client ? client.failureText(err && err.message) : '没有保存。勾选已退回。没有写入 terrella-product-db，也没有写入正式商城。');
+  }
+}
 app.addEventListener('change', e => {
   const box = e.target.closest('input[data-release]');
   if (!box) return;
   const key = `${box.dataset.sku}\n${box.dataset.sha}`;
+  const expectedSelected = previewSelected.has(box.dataset.sha);
+  const knownId = box.dataset.sku === INTERNAL_PREVIEW_SKU ? INTERNAL_PREVIEW_PRODUCT_ID : (box.dataset.productId || '');
+  const previous = releaseCopy.items.find(item => item.sku === box.dataset.sku && item.sha256 === box.dataset.sha) || null;
   if (box.checked) {
-    releasePicks.set(key, {
-      short_id: box.dataset.short,
-      sku: box.dataset.sku,
-      sha256: box.dataset.sha,
-      version: box.dataset.version,
-      path: box.dataset.path
-    });
+    releaseCopy = focusReleaseProduct(releaseCopy, box.dataset.sku, checkedReleaseItems(box.dataset.sku));
+    mirrorReleasePicks();
+    clearOtherTemporaryChecks(box.dataset.sku);
   } else {
-    releasePicks.delete(key);
+    releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, box.dataset.sha);
+    mirrorReleasePicks();
+    if (knownId) previewSelected.delete(box.dataset.sha);
   }
   hideManualList();
   copyEpoch++;
-  const status = document.getElementById('copy-status');
-  if (status) status.textContent = `已勾选 ${releasePicks.size} 张。这只留在这一页，还没有写入仓库。`;
+  setCopyStatus();
+  const selected = box.checked;
+  if (selected && knownId) previewSelected.add(box.dataset.sha);
+  const serial = ++previewToggleSerial;
+  previewToggleLatest.set(key, serial);
+  const payload = { sku: box.dataset.sku, sha256: box.dataset.sha, selected, expectedSelected };
+  if (knownId) payload.productId = knownId;
+  setPreviewStatus(selected ? '正在写入 terrella-product-db。还没有保存，也不是上架。' : '正在从 terrella-product-db 去掉这张图的勾选。还没有保存。Bunny 原图不会删除。');
+  syncSelectionFaces();
+  previewSaveChain = previewSaveChain.then(() => savePreviewToggle(box, key, payload, selected, previous, serial)).catch(() => {});
 });
+function syncSelectionFaces(){
+  for (const box of document.querySelectorAll('input[data-release]')) {
+    const figure = box.closest('figure.gallery-item');
+    if (!figure) continue;
+    figure.classList.toggle('is-selected', box.checked);
+    figure.setAttribute('aria-pressed', box.checked ? 'true' : 'false');
+  }
+}
 function hideManualList(){
   const list = document.getElementById('copy-fallback');
   if (!list) return;
@@ -504,22 +944,13 @@ document.getElementById('copy-release').addEventListener('click', async () => {
   if (copyBusy || button.disabled) return;
   const requestEpoch = ++copyEpoch;
   const status = document.getElementById('copy-status');
-  const items = [...releasePicks.values()];
+  const items = itemsForReleaseExport(releaseCopy);
   if (!items.length) {
     hideManualList();
-    status.textContent = '还没有勾选。勾选后复制，再贴回 Slack。';
+    status.textContent = '还没有勾选。勾选只用于复制清单，不会上架或下架。';
     return;
   }
-  const lines = ['放行清单草稿（只是复制，尚未写入仓库）', '目标：terralla.com', `张数：${items.length}`, ''];
-  for (const item of items) {
-    lines.push(`- short_id: ${item.short_id}`);
-    lines.push(`  sku: ${item.sku}`);
-    lines.push(`  version: ${item.version || '见文件名'}`);
-    lines.push(`  sha256: ${item.sha256}`);
-    lines.push(`  path: ${item.path}`);
-    lines.push('');
-  }
-  const text = lines.join('\n');
+  const text = releaseListText(items);
   copyBusy = true;
   button.disabled = true;
   let outcome = 'failed';
@@ -573,9 +1004,84 @@ async function loadProducts(){
   } catch {return {data:FALLBACK,state:'fallback'};}
   finally {clearTimeout(timer);}
 }
+async function loadAvailability(){
+  const status = document.getElementById('availability-status');
+  try {
+    const response = await fetch('image-availability.json?v=' + Date.now());
+    if (!response.ok) throw new Error('http');
+    const data = await response.json();
+    const parsed = parseAvailabilityDocument(data);
+    if (!parsed.ok) throw new Error(parsed.reason || 'shape');
+    availabilityIndex = parsed.index;
+    availabilityPhase = 'ready';
+    if (status) status.textContent = parsed.index.size
+      ? '已读取仓库中的放行与同步记录。没有对应证据的图不会显示已放行或已同步。'
+      : '仓库里还没有放行或同步记录。没有记录就不是已放行，也不是已同步。';
+  } catch (err) {
+    if (availabilityPhase === 'ready') {
+      if (status) status.textContent = '重新读取失败。仍显示上一次读到的记录，不会把失败写成已同步。';
+    } else {
+      availabilityIndex = new Map();
+      availabilityPhase = 'unavailable';
+      if (status) status.textContent = '放行记录没有读到。这不能当成已放行或已同步。';
+    }
+  }
+  render();
+}
 renderFilters();render();
 loadProducts().then(({data,state})=>{PRODUCTS=data;if(!categories().includes(active))active='全部';renderFilters();render();loadStatus.textContent=state==='fallback'?'当前使用已保存的产品资料，原图文件夹仍可打开。':'';loadStatus.hidden=state==='live';});
+loadAvailability();
+loadInternalPreview();
+document.getElementById('preview-sign-in').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const client = await previewClientReady;
+  const emailInput = document.getElementById('preview-email');
+  const passwordInput = document.getElementById('preview-password');
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  passwordInput.value = '';
+  setPreviewStatus('正在核对具名账号。图片还没有保存。');
+  try {
+    const response = await fetch('/api/internal-preview/session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || data.signedIn !== true) {
+      previewGateOpen = false;
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText(data && data.reason));
+      return;
+    }
+    await loadInternalPreview();
+  } catch (err) {
+    previewGateOpen = false;
+    clearPreviewSelection();
+    render();
+    setPreviewStatus(client.failureText('store-not-writable'));
+  }
+});
+document.getElementById('preview-logout').addEventListener('click', async () => {
+  const input = document.getElementById('preview-password');
+  if (input) input.value = '';
+  try {
+    await fetch('/api/internal-preview/session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' })
+    });
+  } catch (err) {}
+  previewGateOpen = false;
+  clearPreviewSelection();
+  render();
+  setPreviewStatus('已退出。数据库里的勾选没有被删除，这一页也不再把它们当成已保存。');
+});
 
 </script>
+<script type="module" src="./selection-ui.mjs"></script>
 </body>
 </html>
