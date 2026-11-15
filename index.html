@@ -487,7 +487,7 @@ function render(){
 }
 filters.addEventListener('click',e=>{const btn=e.target.closest('button[data-cat]');if(!btn||!categories().includes(btn.dataset.cat))return;active=btn.dataset.cat;activeSub='全部';renderFilters();render();});
 subfilters.addEventListener('click',e=>{const btn=e.target.closest('button[data-sub]');if(!btn)return;const v=btn.dataset.sub;if(!subSeriesOptions().includes(v))return;activeSub=v;renderFilters();render();});
-app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG')return;img.hidden=true;const f=img.parentElement?.querySelector('.image-failure');if(f)f.hidden=false;},true);
+app.addEventListener('error',e=>{const img=e.target;if(!img||img.tagName!=='IMG')return;img.hidden=true;const item=typeof img.closest==='function'?img.closest('.gallery-item'):null;const failure=item?item.querySelector('.image-failure'):null;if(failure)failure.hidden=false;},true);
 app.addEventListener('change', e => {
   const box = e.target.closest('input[data-release]');
   if (!box) return;
