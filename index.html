@@ -144,6 +144,8 @@
   .gallery-item:has(.thumb-missing) { width:168px; }
   .thumb-missing a { color:var(--accent); }
 
+
+  .build-version{display:block;margin-top:6px;font-size:12px;color:#a8a29e;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -166,6 +168,7 @@
   真源主表：<a href="https://docs.google.com/spreadsheets/d/1FCoD3BOs95yAOkfCl5uudeAICDvsB6KpdS13raJyUB8/edit">Terrella 产品库｜图片与原文件链接｜2026-10-26</a>
   · Drive 根：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 选品</a>
   · 不写入 silu-supplier-db / image-video-prompts · 未合并 storefront（合并需另 GO）。
+  <span id="build-version" class="build-version"></span>
 </footer>
 <script src="thumbs/manifest.js"></script>
 <script>
@@ -614,6 +617,22 @@ async function loadProducts(){
 renderFilters();render();
 loadProducts().then(({data,state})=>{PRODUCTS=data;if(!categories().includes(active))active='全部';renderFilters();render();loadStatus.textContent=state==='fallback'?'当前使用已保存的产品资料，原图文件夹仍可打开。':'';loadStatus.hidden=state==='live';});
 
+</script>
+<script>
+(async () => {
+  const el = document.getElementById('build-version');
+  if (!el) return;
+  try {
+    const res = await fetch('version.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('no version');
+    const v = await res.json();
+    const sha = String(v.sha || '').slice(0, 7);
+    const day = String(v.builtAt || '').slice(0, 10);
+    el.textContent = sha ? '\u7248\u672c ' + sha + (day ? ' \u00b7 ' + day : '') : '';
+  } catch {
+    el.textContent = '';
+  }
+})();
 </script>
 </body>
 </html>
