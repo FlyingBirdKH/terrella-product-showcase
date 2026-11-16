@@ -146,6 +146,11 @@
 
 
   .build-version{display:block;margin-top:6px;font-size:12px;color:#a8a29e;letter-spacing:.02em}
+  .search-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-width:1100px;margin:14px auto 4px;padding:0 20px}
+  .search-bar input{flex:1 1 260px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+  .search-bar input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .search-bar button{min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--accent);font:inherit;cursor:pointer}
+  .search-count{color:var(--muted);font-size:.85rem}
 </style>
 </head>
 <body>
@@ -154,6 +159,11 @@
   <p>图片来源：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 的 Drive 文件夹</a></p>
 </header>
 <p class="meta" style="background:#fff7e7;padding:8px 12px;border-radius:8px;border:1px solid #e7e0d4;">预览验收版 v4（图横向一排可滑＋同行右侧信息＋品类→子系列）· 非生产 · 子系列来自 Jenny 主表 · Asia/Shanghai 2026-11-08</p>
+<div class="search-bar">
+  <input id="search" type="search" placeholder="搜索 SKU / 产品名 / 文件名…" aria-label="搜索产品：SKU、产品名或图片文件名" autocomplete="off">
+  <button type="button" id="search-clear" hidden>清除</button>
+  <span class="search-count" id="search-count" role="status" aria-live="polite"></span>
+</div>
 <nav class="filters" id="filters" aria-label="品类筛选"></nav>
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <div class="copy-bar">
@@ -207,6 +217,19 @@ const IDENTITY_HOLDS = new Set(['CAT-007','CAT-008','CAT-010','CAT-036','CAT-080
 let PRODUCTS = FALLBACK;
 let active = '全部';
 let activeSub = '全部';
+let searchTerm = '';
+function productHaystack(p){
+  const base = String(p.original || '').split('?')[0].split('/').pop() || '';
+  const gallery = [GALLERY, AI_GALLERY]
+    .map(book => (book[p.sku] && Array.isArray(book[p.sku].images) ? book[p.sku].images : []))
+    .flat()
+    .map(a => a && a.path).filter(Boolean);
+  return [p.sku, p.code, p.name, p.category, p.sub_series, p.product_type, p.status, base, ...gallery]
+    .filter(Boolean).join(' ').toLowerCase();
+}
+function matchesSearch(p, term){
+  return !term || productHaystack(p).includes(term);
+}
 const subfilters = document.getElementById('subfilters');
 function escapeAttribute(value){
   return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -456,14 +479,18 @@ function renderFilters(){
 }
 let renderStamp = '';
 function render(){
-  const stamp = JSON.stringify([active, activeSub, PRODUCTS.map(p => [p.sku, p.name ?? null, p.code ?? null, p.category ?? null, p.status ?? null, p.product_type ?? null, p.sub_series ?? null, p.original ?? null, imagesFor(p).map(a => a.path), aiImagesFor(p).map(a => a.path)])]);
+  const stamp = JSON.stringify([active, activeSub, searchTerm, PRODUCTS.map(p => [p.sku, p.name ?? null, p.code ?? null, p.category ?? null, p.status ?? null, p.product_type ?? null, p.sub_series ?? null, p.original ?? null, imagesFor(p).map(a => a.path), aiImagesFor(p).map(a => a.path)])]);
   if (stamp === renderStamp) return;
+  const term = searchTerm.trim().toLowerCase();
   const filtered=PRODUCTS.filter(p=>{
     if(active!=='全部' && p.category!==active) return false;
     const sub=p.sub_series||'（主表无子系列）';
     if(activeSub!=='全部' && sub!==activeSub) return false;
+    if(term && !matchesSearch(p, term)) return false;
     return true;
   });
+  const countEl=document.getElementById('search-count');
+  if(countEl) countEl.textContent = term ? `匹配 ${filtered.length} 款` : '';
   const byCat=new Map();
   for(const p of filtered){
     const c=p.category||'未分类';
@@ -614,8 +641,48 @@ async function loadProducts(){
   } catch {return {data:FALLBACK,state:'fallback'};}
   finally {clearTimeout(timer);}
 }
+(function applyUrlState(){
+  try{
+    const u=new URL(location.href);
+    const cat=u.searchParams.get('cat'); const sub=u.searchParams.get('sub'); const q=u.searchParams.get('q');
+    if(cat && categories().includes(cat)) active=cat;
+    if(sub) activeSub=sub;
+    if(q) searchTerm=q;
+    const input=document.getElementById('search');
+    if(input && q) input.value=q;
+    const clear=document.getElementById('search-clear');
+    if(clear) clear.hidden=!q;
+  }catch{}
+})();
 renderFilters();render();
 loadProducts().then(({data,state})=>{PRODUCTS=data;if(!categories().includes(active))active='全部';renderFilters();render();loadStatus.textContent=state==='fallback'?'当前使用已保存的产品资料，原图文件夹仍可打开。':'';loadStatus.hidden=state==='live';});
+(function wireSearch(){
+  const input=document.getElementById('search');
+  const clear=document.getElementById('search-clear');
+  if(!input) return;
+  function writeUrl(){
+    try{
+      const u=new URL(location.href);
+      const set=(k,v)=>{ if(v) u.searchParams.set(k,v); else u.searchParams.delete(k); };
+      set('cat', active==='全部'? '' : active);
+      set('sub', activeSub==='全部'? '' : activeSub);
+      set('q', searchTerm.trim());
+      history.replaceState(null, '', u.pathname + (u.searchParams.toString()? '?'+u.searchParams.toString() : ''));
+    }catch{}
+  }
+  input.addEventListener('input', ()=>{
+    searchTerm=input.value;
+    if(clear) clear.hidden=!searchTerm.trim();
+    render();
+    writeUrl();
+  });
+  if(clear) clear.addEventListener('click', ()=>{
+    input.value=''; searchTerm='';
+    clear.hidden=true; render(); writeUrl(); input.focus();
+  });
+  if(filters) filters.addEventListener('click', ()=>setTimeout(writeUrl,0));
+  if(subfilters) subfilters.addEventListener('click', ()=>setTimeout(writeUrl,0));
+})();
 
 </script>
 <script>
