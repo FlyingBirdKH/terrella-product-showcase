@@ -771,7 +771,7 @@ function renderFilters(){
 }
 let renderStamp = '';
 function render(){
-  const stamp = JSON.stringify([active, activeSub, searchTerm, PRODUCTS.map(p => [p.sku, p.name ?? null, p.code ?? null, p.category ?? null, p.status ?? null, p.product_type ?? null, p.sub_series ?? null, p.original ?? null, imagesFor(p).map(a => a.path), aiImagesFor(p).map(a => a.path)])]);
+  const stamp = JSON.stringify([active, activeSub, searchTerm, (typeof previewSelected === 'undefined' ? '' : [...previewSelected].sort().join('|')), (typeof releasePicks === 'undefined' ? '' : [...releasePicks.keys()].sort().join('|')), PRODUCTS.map(p => [p.sku, p.name ?? null, p.code ?? null, p.category ?? null, p.status ?? null, p.product_type ?? null, p.sub_series ?? null, p.original ?? null, imagesFor(p).map(a => a.path), aiImagesFor(p).map(a => a.path)])]);
   if (stamp === renderStamp) return;
   const term = searchTerm.trim().toLowerCase();
   const filtered=PRODUCTS.filter(p=>{
