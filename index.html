@@ -37,6 +37,12 @@
   .short-id { margin-top:4px; }
   .short-id code { background:#efe7da; padding:1px 6px; border-radius:4px; font-size:.75rem; }
   .release-pick { display:flex; align-items:center; gap:6px; margin-top:4px; font-size:.75rem; }
+  .durable-status { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+  .durable-badge { border-radius:999px; padding:1px 6px; font-size:.68rem; line-height:1.4; border:1px solid var(--line); }
+  .durable-badge.approval { background:#ecfdf3; color:#166534; border-color:#bbf7d0; }
+  .durable-badge.sync { background:#eff6ff; color:#1e3a8a; border-color:#bfdbfe; }
+  .durable-badge.revoked { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+  #publish-unavailable { border-style:dashed; }
   footer { max-width:1200px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:.8rem; line-height:1.5; }
   .section-title { margin: 22px 0 10px; font-size:1.05rem; }
   .badge { display:inline-block; font-size:.7rem; border:1px solid var(--line); border-radius:999px; padding:1px 8px; color:var(--muted); margin-left:4px; }
@@ -91,6 +97,12 @@
   .gallery-item img { width:100%; height:auto; aspect-ratio:1; object-fit:contain; display:block; }
   .gallery-item img[hidden], [hidden] { display:none !important; }
   .gallery-item figcaption { padding:7px 9px; color:var(--muted); font-size:.75rem; line-height:1.4; }
+  .gallery-item[data-selectable] { cursor:pointer; }
+  .gallery-item.is-selected { box-shadow:inset 0 0 0 3px var(--accent); background:#fff7ed; }
+  .gallery-item:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .release-pick, .release-pick input { pointer-events:none; }
+  .selection-help { color:var(--muted); font-size:.75rem; line-height:1.4; }
+  .selection-help kbd, .copy-bar kbd { font:inherit; font-size:.72rem; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 4px; background:#fff; }
   .image-failure { padding:24px 10px; min-height:120px; color:#92400e; display:flex; align-items:center; font-size:.8rem; }
   .gallery-empty { min-height:180px; padding:30px; display:grid; place-items:center; color:var(--muted); background:#ebe4d8; }
   .image-count, .category-count { color:var(--muted); font-size:.8rem; font-weight:400; }
@@ -137,6 +149,7 @@
     overflow:hidden; color:#64748b;
   }
   article > .media-stack { flex:1 1 auto; min-width:0; }
+  #preview-status { max-width:1200px; margin:8px auto 0; padding:0 20px; color:#9a3412; font-size:.85rem; line-height:1.45; }
   .gallery-item .thumb-link { display:block; position:relative; line-height:0; text-decoration:none; color:inherit; }
   .gallery-item .thumb-link:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   .visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
@@ -167,18 +180,33 @@
 <nav class="filters" id="filters" aria-label="品类筛选"></nav>
 <nav class="subfilters" id="subfilters" aria-label="子系列筛选"></nav>
 <div class="copy-bar">
+  <button type="button" id="select-all-images">全选当前产品 <kbd>Ctrl/⌘ A</kbd></button>
+  <button type="button" id="invert-selection">反选当前产品 <kbd>Ctrl/⌘ I</kbd></button>
   <button type="button" id="copy-release">复制放行清单</button>
-  <p id="copy-status">勾选只留在这一页，刷新会消失。复制后贴回 Slack，还没有写入仓库。</p>
+  <p class="selection-help">点图片即可勾选，不必点复选框。Shift+点击选择同一产品中的一段。空格切换当前图片。全选和反选只作用于当前这一个产品。</p>
+  <p id="copy-status">复制清单仍是剪贴板草稿，并且只包含当前这一个产品。持久勾选只写入 terrella-product-db 的 product_image_selections。没有具名账号时不会保存。这不是上架或下架。</p>
+  <button type="button" id="publish-unavailable" disabled title="没有已确认的目标网站">上架/下架不可用</button>
   <pre id="copy-fallback" hidden aria-label="可手动复制的放行清单"></pre>
 </div>
+<p id="preview-status" role="status">勾选写入默认关闭。用具名账号登录之后，才会读取 terrella-product-db。</p>
+<form id="preview-sign-in" style="max-width:1200px;margin:8px auto 0;padding:0 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:end;">
+  <label>账号邮箱 <input id="preview-email" type="email" autocomplete="username"></label>
+  <label>账号密码 <input id="preview-password" type="password" autocomplete="current-password"></label>
+  <button type="submit">打开勾选写入</button>
+  <button type="button" id="preview-logout">退出</button>
+  <span>使用可单独撤销的账号。页面不保存密码，也不使用共享口令或服务角色密钥。公开目录本身不需要登录。</span>
+</form>
+<p id="availability-status" role="status">正在读取仓库里的放行与同步记录。</p>
 <p class="hierarchy-note">分层：品类（系列分类）→ 子系列 → 产品；卡片另标「类别」。子系列真源＝Jenny 主表「产品库」列，未猜测归类。</p>
 <p id="load-status" role="status" aria-live="polite" hidden></p>
 <main id="app"></main>
 <footer>
   真源主表：<a href="https://docs.google.com/spreadsheets/d/1FCoD3BOs95yAOkfCl5uudeAICDvsB6KpdS13raJyUB8/edit">Terrella 产品库｜图片与原文件链接｜2026-10-26</a>
   · Drive 根：<a href="https://drive.google.com/drive/folders/1MAhAaVhWQ7x8vsZ59f3u0ZeW1DGBg5J3">Jenny 选品</a>
-  · 不写入 silu-supplier-db / image-video-prompts · 未合并 storefront（合并需另 GO）。
+  · 不写入 silu-supplier-db / image-video-prompts · 未合并 storefront（合并需另 GO）。勾选不是上架或下架。持久状态只认 image-availability.json 里的证据。
   <span id="build-version" class="build-version"></span>
+  · <a href="cat-001-static-check.html">CAT-001 四图静态核验（尚未同步商城）</a>
+  · <a href="cat-001-internal-preview.html">CAT-001 内部预览（非正式商城）</a>
 </footer>
 <script src="thumbs/manifest.js"></script>
 <script>
@@ -382,9 +410,268 @@ function versionLabel(a){
   if (named) return `V${named[2]}`;
   return a.version || '';
 }
+let availabilityIndex = new Map();
+let availabilityPhase = 'loading';
+function cleanToken(value, max){
+  if (typeof value !== 'string') return '';
+  const text = value.trim();
+  if (!text || text.length > max || /[\r\n]/.test(text)) return '';
+  return text;
+}
+function cleanSha(value){
+  const text = cleanToken(String(value || '').toLowerCase(), 64);
+  return /^[a-f0-9]{64}$/.test(text) ? text : '';
+}
+function cleanSku(value){
+  const text = cleanToken(value, 32);
+  return /^CAT-\d{3}$/.test(text) ? text : '';
+}
+function cleanTarget(value){
+  return cleanToken(value, 80);
+}
+function cleanEvidence(value){
+  return cleanToken(value, 500);
+}
+function parseSide(side, states){
+  if (side == null) return { ok: true, value: null };
+  if (!side || typeof side !== 'object' || Array.isArray(side)) return { ok: false };
+  if (!states.includes(side.state)) return { ok: false };
+  return { ok: true, value: { state: side.state, evidence: cleanEvidence(side.evidence) } };
+}
+function parseOrder(row){
+  let revision = null;
+  let eventId = null;
+  if (Object.prototype.hasOwnProperty.call(row, 'revision')) {
+    const value = row.revision;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || !Number.isSafeInteger(value)) return { ok: false };
+    revision = value;
+  }
+  if (Object.prototype.hasOwnProperty.call(row, 'eventId')) {
+    eventId = cleanToken(row.eventId, 120);
+    if (!eventId) return { ok: false };
+  }
+  return { ok: true, revision, eventId };
+}
+function parseAvailabilityRow(row){
+  if (!row || typeof row !== 'object' || Array.isArray(row)) return null;
+  const sku = cleanSku(row.sku);
+  const sha256 = cleanSha(row.sha256);
+  const target = cleanTarget(row.target);
+  if (!sku || !sha256 || !target) return null;
+  if (row.schema != null && row.schema !== 'terrella.image-availability.v1') return { sku, sha256, target, invalid: true };
+  const order = parseOrder(row);
+  if (!order.ok) return { sku, sha256, target, invalid: true };
+  const approval = parseSide(row.approval, ['approved', 'revoked', 'pending']);
+  const sync = parseSide(row.sync, ['verified', 'failed', 'pending', 'revoked']);
+  if (!approval.ok || !sync.ok) return { sku, sha256, target, invalid: true };
+  return { sku, sha256, target, approval: approval.value, sync: sync.value, revision: order.revision, eventId: order.eventId, invalid: false };
+}
+function sameAvailabilityOutcome(a, b){
+  return JSON.stringify(a.approval) === JSON.stringify(b.approval) && JSON.stringify(a.sync) === JSON.stringify(b.sync);
+}
+function overlayAvailability(base, next){
+  return {
+    sku: base.sku,
+    sha256: base.sha256,
+    target: base.target,
+    approval: next.approval || base.approval,
+    sync: next.sync || base.sync,
+    revision: next.revision,
+    eventId: next.eventId,
+    invalid: false
+  };
+}
+function mergeAvailabilityGroup(rows){
+  if (rows.some(row => row.invalid)) return { conflict: true, row: null };
+  const seenEvents = new Map();
+  for (const row of rows) {
+    if (!row.eventId) continue;
+    const prev = seenEvents.get(row.eventId);
+    if (!prev) seenEvents.set(row.eventId, row);
+    else if (prev.revision !== row.revision || !sameAvailabilityOutcome(prev, row)) return { conflict: true, row: null };
+  }
+  const unique = [];
+  for (const row of rows) {
+    if (row.eventId && unique.some(item => item.eventId === row.eventId && sameAvailabilityOutcome(item, row) && item.revision === row.revision)) continue;
+    unique.push(row);
+  }
+  const numbered = unique.filter(row => row.revision !== null);
+  const plain = unique.filter(row => row.revision === null);
+  if (numbered.length && plain.length) return { conflict: true, row: null };
+  const sequence = numbered.length ? [...numbered].sort((a, b) => a.revision - b.revision) : plain;
+  if (numbered.length) {
+    for (let i = 1; i < sequence.length; i++) {
+      if (sequence[i].revision === sequence[i - 1].revision && !sameAvailabilityOutcome(sequence[i], sequence[i - 1])) return { conflict: true, row: null };
+    }
+  }
+  let current = null;
+  let lastRevision = null;
+  for (const row of sequence) {
+    if (lastRevision !== null && row.revision === lastRevision) continue;
+    current = current ? overlayAvailability(current, row) : row;
+    lastRevision = row.revision;
+  }
+  return { conflict: false, row: current };
+}
+function parseAvailabilityDocument(data){
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false, index: new Map(), reason: 'shape' };
+  if (data.example === true) return { ok: false, index: new Map(), reason: 'example' };
+  if (data.schema !== 'terrella.image-availability.v1' || !Array.isArray(data.records)) return { ok: false, index: new Map(), reason: 'shape' };
+  const groups = new Map();
+  for (const row of data.records) {
+    const parsed = parseAvailabilityRow(row);
+    if (!parsed) continue;
+    const key = `${parsed.sku}\n${parsed.sha256}\n${parsed.target}`;
+    const list = groups.get(key) || [];
+    list.push(parsed);
+    groups.set(key, list);
+  }
+  const index = new Map();
+  groups.forEach((list, key) => index.set(key, mergeAvailabilityGroup(list)));
+  return { ok: true, index, reason: '' };
+}
+function badgesForImage(index, sku, sha){
+  const out = { approved: [], synced: [], revoked: [], conflict: [] };
+  const skuNorm = cleanSku(sku);
+  const shaNorm = cleanSha(sha);
+  if (!index || typeof index.forEach !== 'function' || !skuNorm || !shaNorm) return out;
+  index.forEach((entry, key) => {
+    const [rowSku, rowSha, rowTarget] = String(key).split('\n');
+    if (rowSku !== skuNorm || rowSha !== shaNorm) return;
+    if (!entry || entry.conflict) { out.conflict.push(rowTarget || ''); return; }
+    const row = entry.row;
+    if (!row || row.sku !== skuNorm || row.sha256 !== shaNorm) return;
+    if (row.approval && row.approval.state === 'approved' && row.approval.evidence) out.approved.push(row.target);
+    if (row.sync && row.sync.state === 'verified' && row.sync.evidence) out.synced.push(row.target);
+    if ((row.approval && row.approval.state === 'revoked') || (row.sync && row.sync.state === 'revoked')) out.revoked.push(row.target);
+  });
+  return out;
+}
+function durableBadgeHtml(sku, sha){
+  if (availabilityPhase !== 'ready') return '';
+  const view = badgesForImage(availabilityIndex, sku, sha);
+  const bits = [];
+  for (const target of view.approved) bits.push(`<span class="durable-badge approval">已放行 · ${esc(target)}</span>`);
+  for (const target of view.synced) bits.push(`<span class="durable-badge sync">已同步 · ${esc(target)}</span>`);
+  for (const target of view.revoked) bits.push(`<span class="durable-badge revoked">已撤回 · ${esc(target)}</span>`);
+  for (const target of view.conflict) bits.push(`<span class="durable-badge revoked">记录冲突 · ${esc(target)}</span>`);
+  return bits.length ? `<div class="durable-status">${bits.join('')}</div>` : '';
+}
 const releasePicks = new Map();
+let releaseCopy = { sku: '', items: [] };
+// release-copy-list:start
+function emptyReleaseCopy() {
+  return { sku: '', items: [] };
+}
+function releaseIdentity(item) {
+  return `${item.sku}\n${String(item.sha256 || '').toLowerCase()}`;
+}
+function normalizeReleaseItem(item) {
+  return {
+    short_id: item.short_id || '',
+    sku: item.sku,
+    sha256: String(item.sha256 || '').toLowerCase(),
+    version: item.version || '',
+    path: item.path || '',
+    productId: item.productId || ''
+  };
+}
+function dedupeReleaseItems(sku, items) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of items || []) {
+    if (!raw || raw.sku !== sku) continue;
+    const sha = String(raw.sha256 || '').toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(sha)) continue;
+    const item = normalizeReleaseItem(raw);
+    const key = releaseIdentity(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+function focusReleaseProduct(state, sku, items) {
+  // One product per copy. A different sku replaces the previous list instead of appending.
+  const next = dedupeReleaseItems(sku, items);
+  return { sku: next.length ? sku : '', items: next };
+}
+function selectReleaseImage(state, item) {
+  const current = state || emptyReleaseCopy();
+  if (!item || !item.sku) return current;
+  if (current.sku && current.sku !== item.sku) return current;
+  return focusReleaseProduct(current, item.sku, current.items.concat([item]));
+}
+function unselectReleaseImage(state, sku, sha256) {
+  const current = state || emptyReleaseCopy();
+  if (current.sku && sku !== current.sku) return current;
+  const sha = String(sha256 || '').toLowerCase();
+  const items = (current.items || []).filter(item => !(item.sku === sku && item.sha256 === sha));
+  return { sku: items.length ? current.sku : '', items };
+}
+function itemsForReleaseExport(state) {
+  if (!state || !state.sku) return [];
+  return dedupeReleaseItems(state.sku, state.items);
+}
+function adoptReleasePicks(state, sku, items) {
+  const current = state || emptyReleaseCopy();
+  if (!sku || (current.sku && current.sku !== sku)) return current;
+  if (current.sku === sku && current.items.length) return current;
+  return focusReleaseProduct(current, sku, items);
+}
+function releaseListText(items) {
+  const lines = ['放行清单草稿（只是复制，尚未写入仓库，也不是上架或下架指令）', '目标：未确认', `张数：${items.length}`, ''];
+  for (const item of items) {
+    lines.push(`- short_id: ${item.short_id}`);
+    lines.push(`  sku: ${item.sku}`);
+    lines.push(`  version: ${item.version || '见文件名'}`);
+    lines.push(`  sha256: ${item.sha256}`);
+    lines.push(`  path: ${item.path}`);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+// release-copy-list:end
+function mirrorReleasePicks() {
+  releasePicks.clear();
+  for (const item of releaseCopy.items) releasePicks.set(releaseIdentity(item), item);
+}
+function releaseItemFromBox(box) {
+  return {
+    short_id: box.dataset.short,
+    sku: box.dataset.sku,
+    sha256: box.dataset.sha,
+    version: box.dataset.version,
+    path: box.dataset.path,
+    productId: box.dataset.productId || ''
+  };
+}
+function checkedReleaseItems(sku) {
+  const items = [];
+  for (const node of document.querySelectorAll('input[data-release]')) {
+    if (node.dataset.sku !== sku || !node.checked) continue;
+    items.push(releaseItemFromBox(node));
+  }
+  return items;
+}
+function clearOtherTemporaryChecks(sku) {
+  for (const node of document.querySelectorAll('input[data-release]')) {
+    if (node.dataset.sku === sku || !node.checked) continue;
+    if (node.dataset.productId && previewSelected.has(node.dataset.sha)) continue;
+    node.checked = false;
+  }
+}
 let copyEpoch = 0;
 let copyBusy = false;
+const INTERNAL_PREVIEW_PRODUCT_ID = '0f057213-b8af-4982-9e44-582a2a1d3469';
+const INTERNAL_PREVIEW_SKU = 'CAT-001';
+const knownProductIds = new Map([[INTERNAL_PREVIEW_SKU, INTERNAL_PREVIEW_PRODUCT_ID]]);
+const previewSelected = new Set();
+let previewGateOpen = false;
+let previewSaveChain = Promise.resolve();
+let previewToggleSerial = 0;
+const previewToggleLatest = new Map();
+const previewClientReady = import('./internal-preview-client.mjs');
 function safeThumbPath(path){
   return typeof path === 'string' && /^thumbs\/(?:200|400)\/[A-Za-z0-9_.\/-]+\.webp$/.test(path) && !path.includes('..');
 }
@@ -419,10 +706,15 @@ function stripGallery(items, aria, extraClass='', product){
     const ai = a.kind === 'ai' && /^[a-f0-9]{64}$/.test(String(a.outputSha256 || '').toLowerCase());
     const sha = String(a.outputSha256 || '').toLowerCase();
     const key = ai ? `${product.sku}\n${sha}` : '';
-    const checked = key && releasePicks.has(key) ? ' checked' : '';
+    const previewId = product ? (knownProductIds.get(product.sku) || '') : '';
+    const selectedNow = Boolean(key && (releasePicks.has(key) || (previewId && previewSelected.has(sha))));
+    const checked = selectedNow ? ' checked' : '';
     const code = id ? `<div class="short-id"><code>${esc(id)}</code></div>` : '';
-    const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${checked}> 选入放行清单</label>` : '';
-    return `<figure class="gallery-item">${thumbMarkup(a, i)}<span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${pick}</figcaption></figure>`;
+    const durable = product ? durableBadgeHtml(product.sku, sha) : '';
+    const pickLabel = previewId ? '内部预览勾选，不上架' : '本次勾选，不上架';
+    const pick = ai && id ? `<label class="release-pick"><input type="checkbox" data-release="1" data-sku="${esc(product.sku)}" data-sha="${esc(sha)}" data-short="${esc(id)}" data-version="${esc(versionLabel(a))}" data-path="${esc(a.path)}"${previewId ? ` data-product-id="${esc(previewId)}"` : ''}${checked}> ${pickLabel}</label>` : '';
+    const face = ai && id ? ` tabindex="0" data-selectable="1" aria-pressed="${selectedNow ? 'true' : 'false'}"` : '';
+    return `<figure class="gallery-item${selectedNow ? ' is-selected' : ''}"${face}>${thumbMarkup(a, i)}<span class="image-failure" hidden>图片暂时未加载，请打开下方原图文件夹</span><figcaption>${i+1} / ${items.length} · ${esc(a.label || '产品图')}${a.version ? ' · '+esc(a.version) : ''}${code}${durable}${pick}</figcaption></figure>`;
   }).join('')}</div>`;
 }
 function aiImagesFor(p){
@@ -488,7 +780,7 @@ function renderFilters(){
 }
 let renderStamp = '';
 function render(){
-  const stamp = JSON.stringify([active, activeSub, searchTerm, PRODUCTS.map(p => [p.sku, p.name ?? null, p.code ?? null, p.category ?? null, p.status ?? null, p.product_type ?? null, p.sub_series ?? null, p.original ?? null, imagesFor(p).map(a => a.path), aiImagesFor(p).map(a => a.path)])]);
+  const stamp = JSON.stringify([active, activeSub, searchTerm, (typeof previewSelected === 'undefined' ? '' : [...previewSelected].sort().join('|')), (typeof releasePicks === 'undefined' ? '' : [...releasePicks.keys()].sort().join('|')), PRODUCTS.map(p => [p.sku, p.name ?? null, p.code ?? null, p.category ?? null, p.status ?? null, p.product_type ?? null, p.sub_series ?? null, p.original ?? null, imagesFor(p).map(a => a.path), aiImagesFor(p).map(a => a.path)])]);
   if (stamp === renderStamp) return;
   const term = searchTerm.trim().toLowerCase();
   const filtered=PRODUCTS.filter(p=>{
@@ -519,31 +811,179 @@ function render(){
     const body=subKeys.map(s=>`<h3 class="sub-title">子系列 · ${esc(s)} <span class="category-count">(${subMap.get(s).length})</span></h3><div class="grid">${subMap.get(s).map(card).join('')}</div>`).join('');
     return `<h2 class="section-title">${esc(c)} <span class="category-count">(${total})</span></h2>${body}`;
   }).join('');
+  syncSelectionFaces();
   renderStamp=stamp;
 }
 filters.addEventListener('click',e=>{const btn=e.target.closest('button[data-cat]');if(!btn||!categories().includes(btn.dataset.cat))return;active=btn.dataset.cat;activeSub='全部';renderFilters();render();});
 subfilters.addEventListener('click',e=>{const btn=e.target.closest('button[data-sub]');if(!btn)return;const v=btn.dataset.sub;if(!subSeriesOptions().includes(v))return;activeSub=v;renderFilters();render();});
 app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG')return;img.hidden=true;const f=img.parentElement?.querySelector('.image-failure');if(f)f.hidden=false;},true);
+function setPreviewStatus(text){
+  const node = document.getElementById('preview-status');
+  if (node) node.textContent = text;
+}
+function setCopyStatus(){
+  const status = document.getElementById('copy-status');
+  if (status) status.textContent = `已勾选 ${itemsForReleaseExport(releaseCopy).length} 张。复制清单只含当前产品，取消勾选也不会从网站撤下。`;
+}
+function rememberPick(box){
+  const item = releaseItemFromBox(box);
+  if (releaseCopy.sku && item.sku !== releaseCopy.sku) return releaseIdentity(item);
+  releaseCopy = selectReleaseImage(releaseCopy, item);
+  mirrorReleasePicks();
+  return releaseIdentity(item);
+}
+function clearPreviewSelection(){
+  previewSelected.clear();
+}
+async function loadInternalPreview(){
+  let client;
+  try {
+    client = await previewClientReady;
+    const session = await fetch('/api/internal-preview/session', { credentials: 'same-origin', cache: 'no-store' });
+    const sessionData = await session.json().catch(() => null);
+    if (!session.ok || !sessionData || sessionData.signedIn !== true) {
+      previewGateOpen = false;
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText((sessionData && sessionData.reason) || 'anonymous'));
+      return;
+    }
+    previewGateOpen = true;
+    const response = await client.previewFetch('/api/internal-preview', { cache: 'no-store' });
+    const data = await response.json().catch(() => null);
+    const interpreted = client.readStatus(data);
+    if (!response.ok || !interpreted.ok || !data || !Array.isArray(data.selections)) {
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText(data && data.reason));
+      return;
+    }
+    previewSelected.clear();
+    for (const row of data.selections) {
+      if (!row || !row.sku || !row.productId || !row.sha256) continue;
+      if (row.sku === INTERNAL_PREVIEW_SKU && row.productId !== INTERNAL_PREVIEW_PRODUCT_ID) continue;
+      knownProductIds.set(row.sku, row.productId);
+      previewSelected.add(row.sha256);
+    }
+    knownProductIds.set(INTERNAL_PREVIEW_SKU, INTERNAL_PREVIEW_PRODUCT_ID);
+    render();
+    const seeded = [];
+    for (const box of document.querySelectorAll(`input[data-product-id="${INTERNAL_PREVIEW_PRODUCT_ID}"]`)) {
+      if (previewSelected.has(box.dataset.sha)) seeded.push(releaseItemFromBox(box));
+    }
+    releaseCopy = adoptReleasePicks(releaseCopy, INTERNAL_PREVIEW_SKU, seeded);
+    mirrorReleasePicks();
+    setPreviewStatus(interpreted.text);
+  } catch (err) {
+    previewGateOpen = false;
+    clearPreviewSelection();
+    render();
+    setPreviewStatus(client ? client.failureText('store-not-writable') : '勾选写入没有打开，已失败关闭。没有保存。');
+  }
+}
+async function savePreviewToggle(box, key, payload, selected, previous, serial){
+  let client;
+  const durable = payload.sku === INTERNAL_PREVIEW_SKU || Boolean(payload.productId);
+  const fail = message => {
+    if (previewToggleLatest.get(key) !== serial) return;
+    if (!durable) {
+      setPreviewStatus(message);
+      return;
+    }
+    const sku = previous ? previous.sku : box.dataset.sku;
+    if (!releaseCopy.sku || releaseCopy.sku === sku) {
+      releaseCopy = previous ? selectReleaseImage(releaseCopy, previous) : unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+      mirrorReleasePicks();
+    }
+    if (previous) previewSelected.add(payload.sha256);
+    else previewSelected.delete(payload.sha256);
+    box.checked = Boolean(previous);
+    setCopyStatus();
+    setPreviewStatus(message);
+  };
+  try {
+    client = await previewClientReady;
+    const response = await client.previewFetch('/api/internal-preview', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await response.json().catch(() => null);
+    if (previewToggleLatest.get(key) !== serial) return;
+    if (response.status === 401 || response.status === 503) previewGateOpen = false;
+    if (data && data.reason === 'product' && payload.sku !== INTERNAL_PREVIEW_SKU) {
+      previewSelected.delete(payload.sha256);
+      setPreviewStatus(client.failureText('product') + '复制清单仍只在这一页。');
+      return;
+    }
+    const interpreted = client.writeStatus(data, { sha256: payload.sha256, want: selected });
+    if (interpreted.readback && data && Array.isArray(data.selected)) {
+      const now = data.selected.includes(payload.sha256);
+      if (now) previewSelected.add(payload.sha256);
+      else previewSelected.delete(payload.sha256);
+      box.checked = now;
+      if (!releaseCopy.sku || releaseCopy.sku === box.dataset.sku) {
+        if (now) rememberPick(box);
+        else releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+        mirrorReleasePicks();
+      }
+      setCopyStatus();
+      setPreviewStatus(interpreted.text);
+      return;
+    }
+    if (!response.ok || !interpreted.ok) throw new Error((data && data.reason) || 'http');
+    if (data.productId) {
+      knownProductIds.set(data.sku || payload.sku, data.productId);
+      box.dataset.productId = data.productId;
+    }
+    previewGateOpen = true;
+    if (selected) previewSelected.add(payload.sha256);
+    else previewSelected.delete(payload.sha256);
+    if (selected) {
+      if (box.checked && (!releaseCopy.sku || releaseCopy.sku === box.dataset.sku)) rememberPick(box);
+    } else {
+      releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, payload.sha256);
+      mirrorReleasePicks();
+    }
+    box.checked = selected;
+    setPreviewStatus(interpreted.text);
+  } catch (err) {
+    fail(client ? client.failureText(err && err.message) : '没有保存。勾选已退回。没有写入 terrella-product-db，也没有写入正式商城。');
+  }
+}
 app.addEventListener('change', e => {
   const box = e.target.closest('input[data-release]');
   if (!box) return;
   const key = `${box.dataset.sku}\n${box.dataset.sha}`;
+  const expectedSelected = previewSelected.has(box.dataset.sha);
+  const knownId = box.dataset.sku === INTERNAL_PREVIEW_SKU ? INTERNAL_PREVIEW_PRODUCT_ID : (box.dataset.productId || '');
+  const previous = releaseCopy.items.find(item => item.sku === box.dataset.sku && item.sha256 === box.dataset.sha) || null;
   if (box.checked) {
-    releasePicks.set(key, {
-      short_id: box.dataset.short,
-      sku: box.dataset.sku,
-      sha256: box.dataset.sha,
-      version: box.dataset.version,
-      path: box.dataset.path
-    });
+    releaseCopy = focusReleaseProduct(releaseCopy, box.dataset.sku, checkedReleaseItems(box.dataset.sku));
+    mirrorReleasePicks();
+    clearOtherTemporaryChecks(box.dataset.sku);
   } else {
-    releasePicks.delete(key);
+    releaseCopy = unselectReleaseImage(releaseCopy, box.dataset.sku, box.dataset.sha);
+    mirrorReleasePicks();
+    if (knownId) previewSelected.delete(box.dataset.sha);
   }
   hideManualList();
   copyEpoch++;
-  const status = document.getElementById('copy-status');
-  if (status) status.textContent = `已勾选 ${releasePicks.size} 张。这只留在这一页，还没有写入仓库。`;
+  setCopyStatus();
+  const selected = box.checked;
+  if (selected && knownId) previewSelected.add(box.dataset.sha);
+  const serial = ++previewToggleSerial;
+  previewToggleLatest.set(key, serial);
+  const payload = { sku: box.dataset.sku, sha256: box.dataset.sha, selected, expectedSelected };
+  if (knownId) payload.productId = knownId;
+  setPreviewStatus(selected ? '正在写入 terrella-product-db。还没有保存，也不是上架。' : '正在从 terrella-product-db 去掉这张图的勾选。还没有保存。Bunny 原图不会删除。');
+  syncSelectionFaces();
+  previewSaveChain = previewSaveChain.then(() => savePreviewToggle(box, key, payload, selected, previous, serial)).catch(() => {});
 });
+function syncSelectionFaces(){
+  for (const box of document.querySelectorAll('input[data-release]')) {
+    const figure = box.closest('figure.gallery-item');
+    if (!figure) continue;
+    figure.classList.toggle('is-selected', box.checked);
+    figure.setAttribute('aria-pressed', box.checked ? 'true' : 'false');
+  }
+}
 function hideManualList(){
   const list = document.getElementById('copy-fallback');
   if (!list) return;
@@ -581,22 +1021,13 @@ document.getElementById('copy-release').addEventListener('click', async () => {
   if (copyBusy || button.disabled) return;
   const requestEpoch = ++copyEpoch;
   const status = document.getElementById('copy-status');
-  const items = [...releasePicks.values()];
+  const items = itemsForReleaseExport(releaseCopy);
   if (!items.length) {
     hideManualList();
-    status.textContent = '还没有勾选。勾选后复制，再贴回 Slack。';
+    status.textContent = '还没有勾选。勾选只用于复制清单，不会上架或下架。';
     return;
   }
-  const lines = ['放行清单草稿（只是复制，尚未写入仓库）', '目标：terralla.com', `张数：${items.length}`, ''];
-  for (const item of items) {
-    lines.push(`- short_id: ${item.short_id}`);
-    lines.push(`  sku: ${item.sku}`);
-    lines.push(`  version: ${item.version || '见文件名'}`);
-    lines.push(`  sha256: ${item.sha256}`);
-    lines.push(`  path: ${item.path}`);
-    lines.push('');
-  }
-  const text = lines.join('\n');
+  const text = releaseListText(items);
   copyBusy = true;
   button.disabled = true;
   let outcome = 'failed';
@@ -693,22 +1124,82 @@ loadProducts().then(({data,state})=>{PRODUCTS=data;if(!categories().includes(act
   if(subfilters) subfilters.addEventListener('click', ()=>setTimeout(writeUrl,0));
 })();
 
-</script>
-<script>
-(async () => {
-  const el = document.getElementById('build-version');
-  if (!el) return;
+async function loadAvailability(){
+  const status = document.getElementById('availability-status');
   try {
-    const res = await fetch('version.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('no version');
-    const v = await res.json();
-    const sha = String(v.sha || '').slice(0, 7);
-    const day = String(v.builtAt || '').slice(0, 10);
-    el.textContent = sha ? '\u7248\u672c ' + sha + (day ? ' \u00b7 ' + day : '') : '';
-  } catch {
-    el.textContent = '';
+    const response = await fetch('image-availability.json?v=' + Date.now());
+    if (!response.ok) throw new Error('http');
+    const data = await response.json();
+    const parsed = parseAvailabilityDocument(data);
+    if (!parsed.ok) throw new Error(parsed.reason || 'shape');
+    availabilityIndex = parsed.index;
+    availabilityPhase = 'ready';
+    if (status) status.textContent = parsed.index.size
+      ? '已读取仓库中的放行与同步记录。没有对应证据的图不会显示已放行或已同步。'
+      : '仓库里还没有放行或同步记录。没有记录就不是已放行，也不是已同步。';
+  } catch (err) {
+    if (availabilityPhase === 'ready') {
+      if (status) status.textContent = '重新读取失败。仍显示上一次读到的记录，不会把失败写成已同步。';
+    } else {
+      availabilityIndex = new Map();
+      availabilityPhase = 'unavailable';
+      if (status) status.textContent = '放行记录没有读到。这不能当成已放行或已同步。';
+    }
   }
-})();
+  render();
+}
+loadAvailability();
+loadInternalPreview();
+document.getElementById('preview-sign-in').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const client = await previewClientReady;
+  const emailInput = document.getElementById('preview-email');
+  const passwordInput = document.getElementById('preview-password');
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  passwordInput.value = '';
+  setPreviewStatus('正在核对具名账号。图片还没有保存。');
+  try {
+    const response = await fetch('/api/internal-preview/session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || data.signedIn !== true) {
+      previewGateOpen = false;
+      clearPreviewSelection();
+      render();
+      setPreviewStatus(client.failureText(data && data.reason));
+      return;
+    }
+    await loadInternalPreview();
+  } catch (err) {
+    previewGateOpen = false;
+    clearPreviewSelection();
+    render();
+    setPreviewStatus(client.failureText('store-not-writable'));
+  }
+});
+document.getElementById('preview-logout').addEventListener('click', async () => {
+  const input = document.getElementById('preview-password');
+  if (input) input.value = '';
+  try {
+    await fetch('/api/internal-preview/session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' })
+    });
+  } catch (err) {}
+  previewGateOpen = false;
+  clearPreviewSelection();
+  render();
+  setPreviewStatus('已退出。数据库里的勾选没有被删除，这一页也不再把它们当成已保存。');
+});
+
 </script>
+<script type="module" src="./selection-ui.mjs"></script>
 </body>
 </html>
