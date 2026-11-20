@@ -1,0 +1,32 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {createWorkflowService,CATALOG}=require('../server/workflow-service.cjs');
+const manifest={products:{'CAT-900':{code:'DEMO-900',revision:'p1',templateVersion:'t1',maxImages:5,sourceAssets:[{id:'real1',sha256:'b'.repeat(64)}],sourceWorkflow:'original-generation-conversation'}},assets:{a1:{sku:'CAT-900',productCode:'DEMO-900',outputSha256:'a'.repeat(64),version:'v1'}}};
+function makeStore(){let records=new Map(),jobs=[],tail=Promise.resolve();return {get records(){return records},get jobs(){return jobs},transaction:fn=>{const run=tail.then(async()=>{const copy=new Map(records),work=[...jobs];const result=await fn({findReceipt:k=>copy.get(k),saveReceipt:(k,v)=>copy.set(k,v),enqueue:v=>work.push(v)});records=copy;jobs=work;return result});tail=run.catch(()=>{});return run}};}
+const generation={action:'generate',requestKey:'test_request_key_0001',sku:'CAT-900',productRevision:'p1',templateVersion:'t1',count:2};
+const approval={action:'approve-image',requestKey:'test_request_key_0002',assetId:'a1',outputSha256:'a'.repeat(64),version:'v1',target:CATALOG};
+const req=data=>({method:'POST',origin:'https://preview.example',contentType:'application/json',rawBody:JSON.stringify(data)});
+function setup(overrides={}){const store=makeStore();return {store,handle:createWorkflowService({authenticate:async()=>({verified:true,subject:'test-approver'}),store,manifest,approverSubject:'test-approver',allowedOrigin:'https://preview.example',enabled:true,...overrides})};}
+test('unconfigured production adapter never accepts POST',async()=>{assert.equal((await createWorkflowService()(req(generation))).status,503)});
+test('unconfigured capabilities report disconnected',async()=>{assert.deepEqual((await createWorkflowService()({method:'GET'})).body,{configured:false,generationAvailable:false,uploadAvailable:false,mode:'not-connected'})});
+test('anonymous callers rejected with no writes',async()=>{const s=setup({authenticate:async()=>null});assert.equal((await s.handle(req(generation))).status,401);assert.equal(s.store.jobs.length,0)});
+test('other verified identity rejected',async()=>{const s=setup({authenticate:async()=>({verified:true,subject:'other'})});assert.equal((await s.handle(req(approval))).status,403)});
+test('identity outage fails closed',async()=>{const s=setup({authenticate:async()=>{throw Error()}});assert.equal((await s.handle(req(generation))).status,503)});
+test('cross-origin request rejected',async()=>{const s=setup();assert.equal((await s.handle({...req(generation),origin:'https://evil.example'})).status,403)});
+test('non-json body rejected',async()=>{const s=setup();assert.equal((await s.handle({...req(generation),contentType:'text/plain'})).status,403)});
+test('malformed JSON rejected',async()=>{const s=setup();assert.equal((await s.handle({...req(generation),rawBody:'{'})).status,400)});
+test('oversized body rejected',async()=>{const s=setup();assert.equal((await s.handle({...req(generation),rawBody:' '.repeat(16385)})).status,413)});
+test('spoofed approvedBy field rejected',async()=>{const s=setup();assert.equal((await s.handle(req({...approval,approvedBy:'Kevin'}))).status,400)});
+test('arbitrary source URL rejected',async()=>{const s=setup();assert.equal((await s.handle(req({...generation,sourceUrl:'https://evil.example'}))).status,400)});
+test('generation uses server source and does not approve images',async()=>{const s=setup(),r=await s.handle(req(generation));assert.equal(r.status,202);assert.equal(s.store.jobs[0].intent.action,'generate');assert.equal(s.store.jobs[0].intent.sourceAssets[0].id,'real1');assert.equal(r.body.generated,false);assert.equal(r.body.published,false)});
+test('approval queues exact asset and does not claim upload',async()=>{const s=setup(),r=await s.handle(req(approval));assert.equal(r.status,202);assert.equal(s.store.jobs[0].intent.assetId,'a1');assert.equal(r.body.uploaded,false);assert.equal(r.body.status,'accepted-not-executed')});
+test('identical replay returns same receipt and one event',async()=>{const s=setup(),a=await s.handle(req(approval)),b=await s.handle(req(approval));assert.equal(a.body.receiptId,b.body.receiptId);assert.equal(b.body.replayed,true);assert.equal(s.store.jobs.length,1)});
+test('concurrent duplicate calls create one event',async()=>{const s=setup(),r=await Promise.all(Array.from({length:20},()=>s.handle(req(approval))));assert.equal(new Set(r.map(x=>x.body.receiptId)).size,1);assert.equal(s.store.jobs.length,1)});
+test('same key different intent rejected',async()=>{const s=setup();await s.handle(req(generation));assert.equal((await s.handle(req({...generation,count:3}))).status,409);assert.equal(s.store.jobs.length,1)});
+test('old product revision rejected',async()=>{assert.equal((await setup().handle(req({...generation,productRevision:'old'}))).status,409)});
+test('new file bytes require fresh approval',async()=>{assert.equal((await setup().handle(req({...approval,outputSha256:'c'.repeat(64)}))).status,409)});
+test('old image version rejected',async()=>{assert.equal((await setup().handle(req({...approval,version:'old'}))).status,409)});
+test('official storefront target rejected',async()=>{assert.equal((await setup().handle(req({...approval,target:'https://terralla.com/'}))).status,403)});
+test('deleted asset not restored by approval',async()=>{const m=structuredClone(manifest);m.assets.a1.deleted=true;assert.equal((await setup({manifest:m}).handle(req(approval))).status,409)});
+test('product identity hold blocks both actions',async()=>{const m=structuredClone(manifest);m.products['CAT-900'].identityHold=true;const s=setup({manifest:m});assert.equal((await s.handle(req(approval))).status,409);assert.equal((await s.handle(req(generation))).status,409)});
+test('persistence failure is uncertain, never reported unsubmitted',async()=>{const s=setup({store:{transaction:async()=>{throw Error()}}});const r=await s.handle(req(approval));assert.equal(r.status,503);assert.equal(r.body.submitted,null);assert.equal(r.body.retryWithSameRequestKey,true);assert.equal(r.body.receiptId,undefined)});
+test('new service instance resumes receipt through shared store',async()=>{const s=setup();const first=await s.handle(req(approval));const second=setup({store:s.store});assert.equal((await second.handle(req(approval))).body.receiptId,first.body.receiptId);assert.equal(s.store.jobs.length,1)});

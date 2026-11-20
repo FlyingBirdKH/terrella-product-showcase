@@ -1,0 +1,9 @@
+.control-preview-banner {max-width:1160px;margin:16px auto;padding:18px 20px;background:#fff7db;border:2px solid #ad742b;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;line-height:1.6}
+.control-preview-banner p {margin:8px 0}.preview-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.preview-toolbar button,.intent-box button{padding:9px 12px;font:inherit;border:1px solid #9f784a;border-radius:7px;background:white;color:#482e16;min-height:44px;cursor:pointer}
+.intent-box{padding:10px;background:#f8f2e7;border:1px solid #c9b493;border-radius:8px;margin:9px 4px;font-family:system-ui,sans-serif;font-size:13px}
+.intent-box label{display:flex;align-items:flex-start;gap:6px;min-height:44px;cursor:pointer;line-height:1.6}.intent-box input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:#805832}
+.intent-box small{display:block;color:#655644;line-height:1.6;overflow-wrap:anywhere}.intent-box button{margin-top:8px}
+.intent-box button:disabled{opacity:.6;cursor:not-allowed}.gallery-item{flex-shrink:0}.gallery-item img{max-height:200px}
+button:focus-visible,input:focus-visible{outline:3px solid #2168a8;outline-offset:3px}
+@media(max-width:600px){.control-preview-banner{margin:12px 10px;padding:14px}.intent-box{min-width:190px}.preview-toolbar button{flex:1}}
