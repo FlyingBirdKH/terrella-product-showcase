@@ -1,6 +1,6 @@
 {
-    "stamps":  "scripts/stamp-version.mjs",
-    "builtAt":  "2026-11-22T00:37:12+08:00",
+    "note":  "部署时写入；与线上产出一致",
+    "builtAt":  "2026-11-22T00:51:47+08:00",
     "builtBy":  "DeepSeek Harness",
-    "sha":  "db653872cf78dbd3e7e1a85cb2579e5ecb170ef2"
+    "sha":  "e64ff0f5811568d7ad01b759470b6a26593848c0"
 }
