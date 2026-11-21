@@ -1,0 +1,28 @@
+name: validate-catalog
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 数据字段与页面一致性校验
+        run: node scripts/validate-data.mjs
+      - name: 发布包不得含本地工作台代码
+        run: |
+          if grep -q "local-sync-panel" index.html; then
+            echo "✗ index.html 含本地面板代码，不能发布"; exit 1
+          fi
+          if grep -q "127.0.0.1:8790" index.html; then
+            echo "✗ index.html 含本机控制台地址，不能发布"; exit 1
+          fi
+          echo "✓ 无本地面板痕迹"
+      - name: 缩略图清单可解析
+        run: node -e "const fs=require('fs');const t=fs.readFileSync('thumbs/manifest.js','utf8');const m=t.match(/window\.THUMB_MANIFEST = (\{[\s\S]*\});?\s*$/);if(!m)throw new Error('manifest 结构异常');const j=JSON.parse(m[1]);console.log('manifest 条目:',Object.keys(j).length)"

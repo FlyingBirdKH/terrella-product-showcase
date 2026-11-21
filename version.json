@@ -1,5 +1,6 @@
 {
-  "sha": "444ff7b95b0a8bb9860dfb030f0ef619e6135cd7",
-  "builtAt": "2026-11-15T18:20:08+08:00",
-  "stampedBy": "scripts/stamp-version.mjs"
+    "stamps":  "scripts/stamp-version.mjs",
+    "builtAt":  "2026-11-22T00:37:12+08:00",
+    "builtBy":  "DeepSeek Harness",
+    "sha":  "db653872cf78dbd3e7e1a85cb2579e5ecb170ef2"
 }
