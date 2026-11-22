@@ -1,7 +1,7 @@
 {
   "meta": {
     "extractedFrom": "index.html",
-    "extractedAt": "2026-11-21T16:16:15.355Z",
+    "extractedAt": "2026-11-22T06:24:22.245Z",
     "note": "真源改为本 JSON；改完跑 node scripts/apply-data.mjs 注回 index.html，再跑 validate-data.mjs 校验"
   },
   "gallery": {
@@ -197,28 +197,6 @@
           "byteVerified": true
         },
         {
-          "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-6d84740e630c96d59c52.jpg",
-          "sourceSha256": "6d84740e630c96d59c52541450ba0bfc3fbfe475baf6ab2ec4a45d918168af0a",
-          "outputSha256": "b05747567b1a9d1271ee8e29594917b60b417aa2f033232bdcfb77e890fe3084",
-          "assignedSku": "CAT-004",
-          "label": "处理图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-1c29f2691fb714b359ea.jpg",
-          "sourceSha256": "1c29f2691fb714b359ea5c05c4bb238f3fae5d688330e7e9fd0eab8d34b1f3fd",
-          "outputSha256": "96a72e6b60b5924f4df7c8a0ed427d4328b7c05c242e48d2d0047bddaf871a85",
-          "assignedSku": "CAT-004",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-8bcf1243ec23624c3868.jpg",
           "sourceSha256": "8bcf1243ec23624c3868e9403e60ebe1c57d8effcdaff6cad077176f9744a2ff",
           "outputSha256": "656951c0475ef51219cc045595c03f24ba13f9e262c4d253f56b791292448f13",
@@ -260,17 +238,6 @@
           "byteVerified": true
         },
         {
-          "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-6d84740e630c96d59c52.jpg",
-          "sourceSha256": "6d84740e630c96d59c52541450ba0bfc3fbfe475baf6ab2ec4a45d918168af0a",
-          "outputSha256": "b05747567b1a9d1271ee8e29594917b60b417aa2f033232bdcfb77e890fe3084",
-          "assignedSku": "CAT-005",
-          "label": "处理图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-e4f2ca0fe5ed12987fcb.jpg",
           "sourceSha256": "e4f2ca0fe5ed12987fcb299e23de7cb338cbcebbc191497888b538f33c4ca6c3",
           "outputSha256": "3984057c0c567dd5a3f05ed343cc88242108f09fa9d4b6e76b728885142f5681",
@@ -296,17 +263,6 @@
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-e36a633c6a85bae4ccaa.jpg",
           "sourceSha256": "e36a633c6a85bae4ccaa51b5d30815c2dc68981fb8e97652196d3051bda07aa3",
           "outputSha256": "a099ec20a6c6b8bf46ce32624f3a6cf8e09834d2989dacba39422403e9b90574",
-          "assignedSku": "CAT-005",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-005/g-1c29f2691fb714b359ea.jpg",
-          "sourceSha256": "1c29f2691fb714b359ea5c05c4bb238f3fae5d688330e7e9fd0eab8d34b1f3fd",
-          "outputSha256": "96a72e6b60b5924f4df7c8a0ed427d4328b7c05c242e48d2d0047bddaf871a85",
           "assignedSku": "CAT-005",
           "label": "产品图",
           "publicCopyApproved": true,
@@ -3175,31 +3131,9 @@
           "byteVerified": true
         },
         {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-056/g-9a19e2c42595d9dea1f2.jpg",
-          "sourceSha256": "9a19e2c42595d9dea1f24da0c5a71afe3e4472fab5520340f16b4b576e25d3c6",
-          "outputSha256": "dce4d594865798743a2e902273625f17056cf02b6e143069fc77b4e1e10bb766",
-          "assignedSku": "CAT-056",
-          "label": "处理图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-056/g-2addda7efd056861a01f.jpg",
           "sourceSha256": "2addda7efd056861a01f45ae798633c247014c30bc7d5425c5e2453f59dc24e6",
           "outputSha256": "eef94e3bf08fa6d56d7fdbb8466f41ff243a4b0ce7ca47bfd5d56d00491b1868",
-          "assignedSku": "CAT-056",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-056/g-868c4f7838d0317b7bb2.jpg",
-          "sourceSha256": "868c4f7838d0317b7bb2d9af0c45c08c24a24a5e9fbe1d36347471192ad4f94a",
-          "outputSha256": "e908791aeadd407b78c3e33dc96829b41552c7cb83d062d181b47fdb26588e4b",
           "assignedSku": "CAT-056",
           "label": "产品图",
           "publicCopyApproved": true,
@@ -3574,28 +3508,6 @@
     "CAT-073": {
       "images": [
         {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-faf8f0e21d9b5bd85c04.jpg",
-          "sourceSha256": "faf8f0e21d9b5bd85c0461b9c46f74d3bebe2362a0367cdb1fe0c8b71f540dac",
-          "outputSha256": "05eb8e72669e2ee5e5dfc75ec65c5c2224c63ed1c12e80eca1548352abfe7fb6",
-          "assignedSku": "CAT-073",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-69e33349b07149977130.jpg",
-          "sourceSha256": "69e33349b071499771301c19127af83dd7c518fb0f12796ad7764e016159ce3c",
-          "outputSha256": "309912604d1bcd9ab6aecaf356de14b0254ccae83bb4f677f1b7f75096768fc6",
-          "assignedSku": "CAT-073",
-          "label": "处理图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-263b7ba89b86f185e91a.jpg",
           "sourceSha256": "263b7ba89b86f185e91aa3cfec4df432337df6c768d28f6cc79bb69551dc55ed",
           "outputSha256": "cb62217d1c3a4637b8d01882beb66e30a4abfa758cf9fa8330642dd59f2a8a88",
@@ -3607,53 +3519,9 @@
           "byteVerified": true
         },
         {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-e7046f3439cb8438d097.jpg",
-          "sourceSha256": "e7046f3439cb8438d097a32abdfb104cdca90c60579e21509ac421ebaf6e42d0",
-          "outputSha256": "186558ddaa78af5d1e11bcaa93b98da723d1d245f4f432351a572bb3c125bae5",
-          "assignedSku": "CAT-073",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-63cff0d38698e4970063.jpg",
-          "sourceSha256": "63cff0d38698e4970063466af1514b9b3fe075278efb1257c9d2d3de9dc92a5b",
-          "outputSha256": "3cbdd6ebc07ba29df1638f5f1e1b869adfb745c2f6d16a38e010553dda2670cf",
-          "assignedSku": "CAT-073",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-cb32ff32ad66e846113c.jpg",
           "sourceSha256": "cb32ff32ad66e846113cfc1b17d9730d25d1c6dd8acfd3490e4b306d9671ab97",
           "outputSha256": "207032e86fe205d1355b32a19271123f4422304f2204b6f9908e86ad9e1a4335",
-          "assignedSku": "CAT-073",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-8ee7b2d29d6661e6c57d.jpg",
-          "sourceSha256": "8ee7b2d29d6661e6c57d87e9909f18a39636037b832f3ab8ba27ed1edab90cc5",
-          "outputSha256": "c8236f478863b53343012f7b01cc4c40e0493651c8ad6b99ba771161f6ebc274",
-          "assignedSku": "CAT-073",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-073/g-f82d5c237654aba18b3a.jpg",
-          "sourceSha256": "f82d5c237654aba18b3a50b7a259eb84c055dd56732f8518e6202b6e3f3c2970",
-          "outputSha256": "6aa7054a90267e0f640013588ba1a6cdc378bf7be8a088ba81afa68a78c6e478",
           "assignedSku": "CAT-073",
           "label": "产品图",
           "publicCopyApproved": true,
@@ -4005,42 +3873,9 @@
     "CAT-076": {
       "images": [
         {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-d7053c85a68d3b85d4d5.jpg",
-          "sourceSha256": "d7053c85a68d3b85d4d58ab36ed30b28f55a44c248288f6955b82de8bdeb5756",
-          "outputSha256": "f0e20e7263038e264bcb3608319ac41b801d752d09cff22d164e8d05fcd4346f",
-          "assignedSku": "CAT-076",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
           "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-87b028fee99604120284.jpg",
           "sourceSha256": "87b028fee996041202849e48e82daa38ee999900af4f3712061b4f6ef9b38630",
           "outputSha256": "738b2abd03598f0c628540f96c8b6ef8ea9fb9fda8e68bd604a33b2a27af3a55",
-          "assignedSku": "CAT-076",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-3e02151d1ca45442eee1.jpg",
-          "sourceSha256": "3e02151d1ca45442eee13125ad61d3c1fd4dbd3b0bb45c41d56f6c482dd20729",
-          "outputSha256": "642c6331f09c7bfbbb86e8654be32e0ae02600793b87d92f06531d70dcfad041",
-          "assignedSku": "CAT-076",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-e691d8cb48ce6e857b10.jpg",
-          "sourceSha256": "e691d8cb48ce6e857b10d8b5a21da91d237a2aedd2afadcf749b735cc70a1579",
-          "outputSha256": "130a7ecbd4c3738d9ebb6506a706f60b1ae24f86c55938fdf3e4535ac02086df",
           "assignedSku": "CAT-076",
           "label": "产品图",
           "publicCopyApproved": true,
@@ -4074,17 +3909,6 @@
           "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-5f128da11ac96a928eb6.jpg",
           "sourceSha256": "5f128da11ac96a928eb6c5071dabf4fdbde39082de785c5d1cc3b7d4696db544",
           "outputSha256": "ec05f3e4b5037817f19d21181d8eb0c39263207ad1410c0d0f3f4e6973da2685",
-          "assignedSku": "CAT-076",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-c859c0735cd11d6626dd.jpg",
-          "sourceSha256": "c859c0735cd11d6626dd59753c1f6f9d3da21b3f055b820251ef2069fa82bfcd",
-          "outputSha256": "9a016a03ae423d15c87af177db1af1bf1a664e141f67a43c9da3613e95b64260",
           "assignedSku": "CAT-076",
           "label": "产品图",
           "publicCopyApproved": true,
@@ -4157,39 +3981,6 @@
           "contentVerified": true,
           "skuAssignmentVerified": true,
           "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-a161037a163d04b344f8.jpg",
-          "sourceSha256": "a161037a163d04b344f88d6d1eb80a0c95ef11dbdf985d6253e733ec63313fac",
-          "outputSha256": "4e5af0086c53628568b2c1204432b3f4fcafb54bf8cbd4dc0d987d420cd00dcb",
-          "assignedSku": "CAT-076",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-87985bed7ae96ecd2109.jpg",
-          "sourceSha256": "87985bed7ae96ecd2109d24d0b1c6c6530002ee78c14e199640cdc442c742a1a",
-          "outputSha256": "077af4cda1d6324af217b1145cdc31c184931d172006f76893326d6316614d79",
-          "assignedSku": "CAT-076",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-076/g-45f2b15c3d34e24d356c.jpg",
-          "sourceSha256": "45f2b15c3d34e24d356c8f12c7d45941ef9e0e261726d1320ba1dd19e4081eae",
-          "outputSha256": "34717d71c579d6e5663e061746c1bdb6ce49c61a6a907237437cbd3573986bf2",
-          "assignedSku": "CAT-076",
-          "label": "处理图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
         }
       ],
       "folderUrl": "https://drive.google.com/drive/folders/1BdJbO_zUtM6ztTQz1dAwSfWv7cVw2PUB",
@@ -4211,64 +4002,9 @@
           "byteVerified": true
         },
         {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-0e216e37c6ec9e739ea5.jpg",
-          "sourceSha256": "0e216e37c6ec9e739ea5d8c6e9b932fc21eec3b886cf4b4a9a0e756e51406f51",
-          "outputSha256": "3b6a2e32efdc3f564c961662e72c362b7a053381837e64b25c09f2741f5ce7b2",
-          "assignedSku": "CAT-077",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-6de462eff26643e1fe5f.jpg",
-          "sourceSha256": "6de462eff26643e1fe5f6d08bac767110825f2b8afbdc7dde609b843463129e1",
-          "outputSha256": "ced010512f1f0b326cde87fd8d29cbd8000600da62911e6765b5a4949e67d3fd",
-          "assignedSku": "CAT-077",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-e7420dcb3f214d050d19.jpg",
-          "sourceSha256": "e7420dcb3f214d050d198a3b9bc0aae458cadc05ec30c214a958c1e272a19cba",
-          "outputSha256": "1f63b6a125481c33b8e634f4d4e7275f49e2b7ca63a2168615242ce719803cd9",
-          "assignedSku": "CAT-077",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
           "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-24720c5251af349533fc.jpg",
           "sourceSha256": "24720c5251af349533fce73dac9a0297e50d9c75b2c4cc5dee1e52f7a5147fc4",
           "outputSha256": "e16a9d59491cdb22a05855c3ae2f0a3fb22968439f2d3d642b4a68a94a5b2668",
-          "assignedSku": "CAT-077",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-742f03062f3cfb89fb19.jpg",
-          "sourceSha256": "742f03062f3cfb89fb19e4b186db20768b43f493eb908ee63c1f1c8d7f1bd19e",
-          "outputSha256": "fbb69e9ac3c57c4158ef324efb090aa4836d93d9fd8d4552f483ec1708affa9d",
-          "assignedSku": "CAT-077",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-80d7cb26244179c3eefa.jpg",
-          "sourceSha256": "80d7cb26244179c3eefaf7f09659be6edac12c7f645ed9b280f3987fa4a317f1",
-          "outputSha256": "fcc05cb36a1c68aa0f30001789e4bc7a364f9f431b46a656efefb09b5cff6448",
           "assignedSku": "CAT-077",
           "label": "产品图",
           "publicCopyApproved": true,
@@ -4330,17 +4066,6 @@
           "contentVerified": true,
           "skuAssignmentVerified": true,
           "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-077/g-525c063a0f5b8587dc99.jpg",
-          "sourceSha256": "525c063a0f5b8587dc99298ba2d3b4353f5dede2f17d5382c63484052617ef9d",
-          "outputSha256": "393e795702c1060ef9ef1c90b704ec94bdae877632b4f37f2d93813b1a9b8267",
-          "assignedSku": "CAT-077",
-          "label": "处理图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
         }
       ],
       "folderUrl": "https://drive.google.com/drive/folders/133XHXTxjzXu0dQVBEASnduzBoDIqEb9l",
@@ -4350,17 +4075,6 @@
     },
     "CAT-078": {
       "images": [
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-06902ad2221919dabcd9.jpg",
-          "sourceSha256": "06902ad2221919dabcd9ab7f1964e2ce174714b46081bb13067dd226010cf6b9",
-          "outputSha256": "ff90768d98eda712ffaaa5eecc8c47343852e3634ad8a8a3e80c3a882dacc46d",
-          "assignedSku": "CAT-078",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
         {
           "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-52a6fe5d9d9647db35da.jpg",
           "sourceSha256": "52a6fe5d9d9647db35da7379d09c3fe773202c4364e1389a069e8a3eb77dddf1",
@@ -4376,39 +4090,6 @@
           "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-186326d20f8f08902c35.jpg",
           "sourceSha256": "186326d20f8f08902c35c39d4d827c254a7850fb1b82716a48138bd1e92f9f6c",
           "outputSha256": "4b1979adefbff3a0676ac63459b576222f79ec64bb55caa6f85f213abf99fe2c",
-          "assignedSku": "CAT-078",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-2aa5b255c0157673848d.jpg",
-          "sourceSha256": "2aa5b255c0157673848d5b7fe2e91dcdfe2c3d09a58dda6f2802132fd219739d",
-          "outputSha256": "00727d9afe79a34d3734f186bde942359b90a51f58af386eba2fa3326ddbbb9e",
-          "assignedSku": "CAT-078",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-f078762062fb3f46f7ae.jpg",
-          "sourceSha256": "f078762062fb3f46f7ae197ad8e2e69b579fec603cadf6626bed14590255dab0",
-          "outputSha256": "1f20e5769f734e03ed6b3c4859bcb9dbcef4d7821a625a0c4d991d808e6c0acd",
-          "assignedSku": "CAT-078",
-          "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-b646461a0c5c93e641a5.jpg",
-          "sourceSha256": "b646461a0c5c93e641a579dd18ee8a42da375a011416ca4dbe53deb9e84d6120",
-          "outputSha256": "ac824361ea07ddccb551497fefe948c011fcb95251b4ed8195058c11f8b9cf55",
           "assignedSku": "CAT-078",
           "label": "产品图",
           "publicCopyApproved": true,
@@ -4433,17 +4114,6 @@
           "outputSha256": "95d0b0d7e0b82aa96dec1433fd9a205e59538cc705438e01efc63f8267ee9d8c",
           "assignedSku": "CAT-078",
           "label": "产品图",
-          "publicCopyApproved": true,
-          "contentVerified": true,
-          "skuAssignmentVerified": true,
-          "byteVerified": true
-        },
-        {
-          "path": "https://terralla-internal.b-cdn.net/products/antique/CAT-078/g-7c22ef472e1c6c6dbe51.jpg",
-          "sourceSha256": "7c22ef472e1c6c6dbe51338258ab283bc2d6ee6de2509ccb7ab65f88d6864e5d",
-          "outputSha256": "9b2ab0fece370771c32ccc624bcb903ecfac1222a99b48641400db56e2ef9136",
-          "assignedSku": "CAT-078",
-          "label": "处理图",
           "publicCopyApproved": true,
           "contentVerified": true,
           "skuAssignmentVerified": true,
