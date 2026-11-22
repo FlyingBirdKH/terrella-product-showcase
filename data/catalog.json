@@ -5192,7 +5192,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-032/ai/20261109-v01/ai-CAT-032-03-macro.jpg",
@@ -5215,7 +5217,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-032/ai/20261109-v01/ai-CAT-032-09-v07-transfer-20261109-53d96eaa.png",
@@ -5236,7 +5240,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5265,7 +5271,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-045/ai/20261108-batch/ai-CAT-045-02-top.jpg",
@@ -5284,7 +5292,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-045/ai/20261108-batch/ai-CAT-045-03-macro.jpg",
@@ -5303,7 +5313,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-045/ai/20261108-batch/ai-CAT-045-04-side.jpg",
@@ -5322,7 +5334,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-045/ai/20261108-batch/ai-CAT-045-05-editorial.jpg",
@@ -5341,7 +5355,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5370,7 +5386,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-059/ai/20261108-batch/ai-CAT-059-02-top.jpg",
@@ -5389,7 +5407,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-059/ai/20261108-batch/ai-CAT-059-03-macro.jpg",
@@ -5408,7 +5428,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-059/ai/20261108-batch/ai-CAT-059-04-side.jpg",
@@ -5427,7 +5449,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/five-elements/CAT-059/ai/20261108-batch/ai-CAT-059-05-editorial.jpg",
@@ -5446,7 +5470,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5475,7 +5501,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-090/ai/20261108-batch/ai-CAT-090-02-top.jpg",
@@ -5494,7 +5522,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-090/ai/20261108-batch/ai-CAT-090-03-macro.jpg",
@@ -5513,7 +5543,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-090/ai/20261108-batch/ai-CAT-090-04-side.jpg",
@@ -5532,7 +5564,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-090/ai/20261108-batch/ai-CAT-090-05-editorial.jpg",
@@ -5551,7 +5585,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5580,7 +5616,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-085/ai/20261108-batch/ai-CAT-085-02-top.jpg",
@@ -5599,7 +5637,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-085/ai/20261108-batch/ai-CAT-085-03-macro.jpg",
@@ -5618,7 +5658,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-085/ai/20261108-batch/ai-CAT-085-04-side.jpg",
@@ -5637,7 +5679,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/yis/CAT-085/ai/20261108-batch/ai-CAT-085-05-editorial.jpg",
@@ -5656,7 +5700,9 @@
           "imageHeight": 1024,
           "specIssues": [
             "尺寸 1024×1024，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1024×1024（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5681,7 +5727,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-02-af3760c6.png",
@@ -5702,7 +5750,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-03-2f891916.png",
@@ -5723,7 +5773,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-001/ai/20261110-recovered/ai-CAT-001-recovered-04-91cd1d7d.png",
@@ -5744,7 +5796,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5769,7 +5823,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-003/ai/20261110-recovered/ai-CAT-003-recovered-02-2a67281d.png",
@@ -5790,7 +5846,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-003/ai/20261110-recovered/ai-CAT-003-recovered-03-7becb421.png",
@@ -5811,7 +5869,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-003/ai/20261110-recovered/ai-CAT-003-recovered-04-51f2262e.png",
@@ -5832,7 +5892,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-003/ai/20261110-recovered/ai-CAT-003-recovered-05-dc04d6f0.png",
@@ -5853,7 +5915,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5878,7 +5942,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-006/ai/20261110-recovered/ai-CAT-006-recovered-02-87b9da3f.png",
@@ -5899,7 +5965,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-006/ai/20261110-recovered/ai-CAT-006-recovered-03-149bafb1.png",
@@ -5920,7 +5988,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-006/ai/20261110-recovered/ai-CAT-006-recovered-05-bc233f50.png",
@@ -5941,7 +6011,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -5966,7 +6038,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-014/ai/20261110-recovered/ai-CAT-014-recovered-02-9552cb14.png",
@@ -5987,7 +6061,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-014/ai/20261110-recovered/ai-CAT-014-recovered-05-a1c881d4.png",
@@ -6008,7 +6084,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -6033,7 +6111,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-017/ai/20261110-recovered/ai-CAT-017-recovered-02-6d14d068.png",
@@ -6054,7 +6134,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-017/ai/20261110-recovered/ai-CAT-017-recovered-03-fbc48fb2.png",
@@ -6075,7 +6157,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-017/ai/20261110-recovered/ai-CAT-017-recovered-05-b896594e.png",
@@ -6096,7 +6180,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -6121,7 +6207,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-018/ai/20261110-recovered/ai-CAT-018-recovered-02-1738f8ee.png",
@@ -6142,7 +6230,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-018/ai/20261110-recovered/ai-CAT-018-recovered-04-3ff938b6.png",
@@ -6163,7 +6253,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },
@@ -6188,7 +6280,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-019/ai/20261110-recovered/ai-CAT-019-recovered-02-d57bb411.png",
@@ -6209,7 +6303,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         },
         {
           "path": "https://terralla-internal.b-cdn.net/products/eastern-heritage/CAT-019/ai/20261110-recovered/ai-CAT-019-recovered-03-05b49ea4.png",
@@ -6230,7 +6326,9 @@
           "imageHeight": 1254,
           "specIssues": [
             "尺寸 1254×1254，规范要求 1600×1600"
-          ]
+          ],
+          "legacySize": true,
+          "legacyReason": "历史旧尺寸 1254×1254（按现行规则豁免，不重出 1600）"
         }
       ]
     },

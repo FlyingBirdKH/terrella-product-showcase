@@ -26,7 +26,9 @@ for (const [sku, block] of Object.entries(data.aiGallery || {})) {
     if (!img.imageWidth || !img.imageHeight) { missingDims++; }
     else if (img.imageWidth !== 1600 || img.imageHeight !== 1600) {
       notSpec++;
-      if (!img.specIssues) problems.push(`AI 图尺寸非 1600 但无 specIssues 标注: ${sku} ${String(img.path).split("/").pop()} (${img.imageWidth}×${img.imageHeight})`);
+      const legacyOk = img.legacySize === true;
+      if (!img.specIssues && !legacyOk) problems.push(`AI 图尺寸非 1600 但无 specIssues／legacy 标注: ${sku} ${String(img.path).split("/").pop()} (${img.imageWidth}×${img.imageHeight})`);
+      if (legacyOk && !img.legacyReason) problems.push(`标记 legacySize 但缺 legacyReason: ${sku} ${String(img.path).split("/").pop()}`);
       if (specSamples.length < 8) specSamples.push(`${sku}:${img.imageWidth}×${img.imageHeight}`);
     }
     if (img.assignedSku && img.assignedSku !== sku) problems.push(`assignedSku 与所在 SKU 不一致: ${sku} 内标 ${img.assignedSku}`);
