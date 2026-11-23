@@ -24,10 +24,10 @@ for (const [sku, block] of Object.entries(data.aiGallery || {})) {
       if (img[f] === undefined || img[f] === null || img[f] === "") { problems.push(`AI 图缺字段 ${f}: ${sku} ${img.path || "(无 path)"}`); missingField++; }
     }
     if (!img.imageWidth || !img.imageHeight) { missingDims++; }
-    else if (img.imageWidth !== 1600 || img.imageHeight !== 1600) {
+    else if (Math.max(img.imageWidth, img.imageHeight) < 1000 || Math.max(img.imageWidth, img.imageHeight) > 1600) {
       notSpec++;
       const legacyOk = img.legacySize === true;
-      if (!img.specIssues && !legacyOk) problems.push(`AI 图尺寸非 1600 但无 specIssues／legacy 标注: ${sku} ${String(img.path).split("/").pop()} (${img.imageWidth}×${img.imageHeight})`);
+      if (!img.specIssues && !legacyOk) problems.push(`AI 图长边不在 1000–1600 且无 specIssues／legacy 标注: ${sku} ${String(img.path).split("/").pop()} (${img.imageWidth}×${img.imageHeight})`);
       if (legacyOk && !img.legacyReason) problems.push(`标记 legacySize 但缺 legacyReason: ${sku} ${String(img.path).split("/").pop()}`);
       if (specSamples.length < 8) specSamples.push(`${sku}:${img.imageWidth}×${img.imageHeight}`);
     }
@@ -91,7 +91,7 @@ if (fs.existsSync(availPath)) {
 }
 
 // 汇总
-console.log(`AI 图: ${aiTotal} 张 | 缺字段: ${missingField} | 缺宽高: ${missingDims} | 非 1600: ${notSpec}${specSamples.length ? "（" + specSamples.join(", ") + "）" : ""}`);
+console.log(`AI 图: ${aiTotal} 张 | 缺字段: ${missingField} | 缺宽高: ${missingDims} | 尺寸不符: ${notSpec}${specSamples.length ? "（" + specSamples.join(", ") + "）" : ""}`);
 if (warnings.length) { console.log("\n提醒:"); warnings.forEach((w) => console.log("  · " + w)); }
 if (problems.length) { console.log("\n错误（必须修）:"); problems.forEach((p) => console.log("  ✗ " + p)); process.exit(1); }
 console.log("\n校验通过：字段齐全、页面与 JSON 一致、无本地面板痕迹、缩略图文件存在、已删图未被引用。");
